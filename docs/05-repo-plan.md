@@ -9,7 +9,7 @@ Mục tiêu: cài lại Arch trên máy cũ hoặc máy khác, clone repo, chạ
 
 ## Cấu trúc dự kiến
 
-Chưa có thư mục nào dưới đây ngoài `docs/`.
+Hiện mới có `docs/`, `install/arch-install.sh` và `.gitattributes`.
 
 ```text
 .
@@ -18,10 +18,12 @@ Chưa có thư mục nào dưới đây ngoài `docs/`.
 ├── .gitattributes        # ép line ending LF
 ├── .gitignore            # chặn file bí mật
 ├── docs/                 # tài liệu
+├── install/
+│   ├── arch-install.sh   # cài Arch nền từ USB live (đã có)
+│   └── setup.sh          # sau khi boot: cài gói, link config, bật service
 ├── packages/             # danh sách gói theo nhóm
 ├── config/               # dotfiles, mỗi thành phần một thư mục
-├── hosts/                # phần riêng từng máy
-└── install.sh            # cài gói, link config, bật service
+└── hosts/                # phần riêng từng máy
 ```
 
 Nhóm gói dự kiến: nền, Hyprland, dev, NVIDIA, ASUS. Gói chính thức và gói AUR để riêng.
@@ -66,7 +68,6 @@ Nhóm gói dự kiến: nền, Hyprland, dev, NVIDIA, ASUS. Gói chính thức v
 
 ## Việc kỹ thuật cần nhớ khi viết script
 
-- `genfstab` ghi cả `subvolid` vào fstab. Cần bỏ `subvolid` để rollback bằng snapper hoạt động đúng.
 - `/.snapshots` đã được mount sẵn từ lúc cài, nên `snapper create-config` sẽ báo trùng. Script phải xử lý trường hợp này.
-- Module `vmd` phải nằm trong `MODULES` của mkinitcpio trên máy TUF F16.
+- `arch-install.sh` đã bỏ `subvolid` khỏi fstab và thêm module `vmd` qua `/etc/mkinitcpio.conf.d/10-vmd.conf`; script sau không cần làm lại.
 - Xác minh cổng HDMI/USB-C nối vào GPU nào trước khi viết config màn hình ngoài.

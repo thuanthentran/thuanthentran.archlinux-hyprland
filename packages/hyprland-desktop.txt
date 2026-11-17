@@ -1,0 +1,2 @@
+# Hyprland desktop components (official repos)
+waybar

@@ -30,7 +30,9 @@ The machine this is checked out on is the target machine itself, running Hyprlan
 
 Unlike `hyprland.lua`, `hyprlock.conf`, `hypridle.conf` and `hyprpaper.conf` (hyprpaper 0.8 block syntax) still use hyprlang; they are started from the autostart block in `hyprland.lua`, as is `cliphist`. The wallpaper is `wallpapers/default.png` in the same Stow package. The `hyprbars` plugin is built by `hyprpm` and must be rebuilt (`hyprpm update`) after every Hyprland upgrade; its config is wrapped in `pcall` so a missing plugin doesn't break the config.
 
-Window buttons: the `hyprbars` title bar is the only set of min/max/close buttons; app-drawn ones are hidden (`button-layout 'appmenu:'` in `apply-theme.sh` for GTK/Firefox, `window.controlsStyle: hidden` in `config/code` for VS Code). Minimized windows live in `special:magic`; `scripts/minimize.sh minimize|restore` handles it. Moves into a special workspace need `follow = false`, otherwise Hyprland opens the special workspace and the window stays on screen.
+Window buttons: the `hyprbars` title bar is the only set of min/max/close buttons; app-drawn ones are hidden (`button-layout 'appmenu:'` in `apply-theme.sh` for GTK/Firefox, `window.controlsStyle: hidden` in `config/code` for VS Code). Minimized windows live in `special:magic`; `scripts/minimize.sh minimize|restore` handles it. Moves into a special workspace need `follow = false`, otherwise Hyprland opens the special workspace and the window stays on screen. `scripts/toggle-maximize.sh` resizes floating windows to the work area instead of using Hyprland's maximized state; it restores only when the window fills the work area exactly (position and size), otherwise it maximizes.
+
+Focus is click-to-focus (`follow_mouse = 2`) with `cursor.no_warps`, so keyboard/gesture focus changes don't move the pointer. A 150 ms `hl.timer` in `hyprland.lua` (`keep_on_screen`) pushes the active floating window back when its title bar ends up under Waybar or off screen, once the drag has stopped. Don't use `release = true` binds on mouse buttons: they swallow the release even with `non_consuming`, so apps think the button is still held.
 
 Helper scripts live in `config/hypr/.config/hypr/scripts/` and are referenced from the Lua config as `$HOME/.config/hypr/scripts/<name>.sh`, so they must be executable and stowed. Validate after editing:
 ```sh
@@ -50,3 +52,4 @@ Hybrid GPU: the session renders on the Intel iGPU; the NVIDIA dGPU (open driver)
 - Never commit secrets (SSH keys, tokens, Wi-Fi passwords).
 - Commit messages are short imperative English ("Add Waybar config and autostart"); docs and README are written in Vietnamese.
 - README's "Trạng thái" / "Lộ trình" sections track progress and go stale; update them when a milestone lands.
+- `TODO.md` is the backlog (Vietnamese, ordered by priority). Tick items (`[x]`) in the same commit that does them, and add new follow-ups there instead of leaving them only in chat.

@@ -35,12 +35,18 @@ W, H = int(m["width"] / m["scale"]), int(m["height"] / m["scale"])
 print(rl + border, rt + bar + border, W - rl - rr - 2 * border, H - rt - rb - bar - 2 * border)')
 
 saved="$state/$addr-$pid"
-if (( w >= tw - 4 && h >= th - 4 )); then
+# Maximized = filling the work area exactly (position and size). Anything else, including
+# a full-size window that has been dragged aside, gets maximized.
+d() { local v=$(( $1 - $2 )); echo $(( v < 0 ? -v : v )); }
+if (( $(d "$x" "$tx") <= 4 && $(d "$y" "$ty") <= 4 && $(d "$w" "$tw") <= 4 && $(d "$h" "$th") <= 4 )); then
+    sw=0 sh=0
     if [[ -f "$saved" ]]; then
         read -r sx sy sw sh < "$saved"
         rm -f "$saved"
-    else
-        # Opened already filling the screen: nothing to go back to, so use 65%, centered
+    fi
+    if (( sw >= tw - 4 && sh >= th - 4 )); then
+        # Nothing smaller to go back to (opened full size, or a full-size window was
+        # dragged aside before maximizing), so use a 65% popup, centered
         sw=$(( tw * 65 / 100 )) sh=$(( th * 65 / 100 ))
         sx=$(( tx + (tw - sw) / 2 )) sy=$(( ty + (th - sh) / 2 ))
     fi

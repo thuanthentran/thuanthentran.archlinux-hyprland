@@ -271,6 +271,14 @@ hl.config({
 ---- INPUT ----
 ---------------
 
+-- Keep the cursor where it is when focus changes from the keyboard, gestures or rofi.
+-- By default Hyprland warps it to the centre of the newly focused window.
+hl.config({
+    cursor = {
+        no_warps = true,
+    },
+})
+
 hl.config({
     input = {
         kb_layout  = "us",
@@ -279,7 +287,9 @@ hl.config({
         kb_options = "",
         kb_rules   = "",
 
-        follow_mouse = 1,
+        -- Click to focus (Windows/macOS style). Hovering does not steal focus; scrolling
+        -- still goes to the window under the cursor.
+        follow_mouse = 2,
 
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
@@ -411,6 +421,41 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+-- Keep title bars reachable. A floating window dragged so its hyprbars title bar ends up
+-- under Waybar or off the screen edge can no longer be grabbed, so push it back: title
+-- bar fully below the reserved top area, at least `keep` px of it left on screen
+-- horizontally and at the bottom.
+local function keep_on_screen(w)
+    if not w or not w.floating or (w.fullscreen or 0) ~= 0 or not w.monitor then return end
+    local m = w.monitor
+    local bar, border, keep = 30, 1, 120          -- hyprbars bar height, window border
+    local mx, my = m.position.x, m.position.y
+    local mw, mh = m.width / m.scale, m.height / m.scale
+    local r = m.reserved
+    local x, y = w.at.x, w.at.y
+    local nx = math.min(math.max(x, mx + r.left - w.size.x + keep), mx + mw - r.right - keep)
+    local ny = math.min(math.max(y, my + r.top + bar + border), my + mh - r.bottom - keep)
+    if nx ~= x or ny ~= y then
+        hl.dispatch(hl.dsp.window.move({ x = math.floor(nx), y = math.floor(ny), window = "address:" .. w.address }))
+    end
+end
+-- Checked on a short timer rather than on mouse release: a `release` bind on mouse:272
+-- swallows the release even with non_consuming, so apps think the button is still held.
+-- The window is only pushed back once the drag is over (left button up and the position
+-- unchanged for two ticks), so it slides back like the maximize/restore animation.
+local last_pos, still = "", 0
+hl.timer(function()
+    local w = hl.get_active_window()
+    if not w then return end
+    local pos = w.address .. ":" .. w.at.x .. "," .. w.at.y
+    still = (pos == last_pos) and still + 1 or 0
+    last_pos = pos
+    local ok, held = pcall(hl.is_key_down, 272)   -- BTN_LEFT
+    if still >= 2 and not (ok and held) then keep_on_screen(w) end
+end, { timeout = 150, type = "repeat" })
+-- Rescue a window that is already out of reach (or just tidy up): centre it
+hl.bind(mainMod .. " + C", hl.dsp.window.center())
 
 -- Laptop multimedia keys for volume and LCD brightness
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })

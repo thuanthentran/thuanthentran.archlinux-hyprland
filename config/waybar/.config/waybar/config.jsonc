@@ -47,7 +47,7 @@
         "orientation": "inherit",
         "modules": ["custom/hidden", "custom/float", "custom/max", "custom/close"]
     },
-    "custom/hidden": { "format": "󰘸", "tooltip-format": "Show / hide minimized windows", "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"magic\")'" },
+    "custom/hidden": { "format": "󰘸", "tooltip-format": "Restore a minimized window", "on-click": "~/.config/hypr/scripts/minimize.sh restore" },
     "custom/float": { "format": "󰖲", "tooltip-format": "Float / tile", "on-click": "hyprctl dispatch 'hl.dsp.window.float({ action = \"toggle\" })'" },
     "custom/max":   { "format": "󰊓", "tooltip-format": "Maximize / restore", "on-click": "~/.config/hypr/scripts/toggle-maximize.sh" },
     "custom/close": { "format": "󰖭", "tooltip-format": "Close window", "on-click": "hyprctl dispatch 'hl.dsp.window.close()'" },

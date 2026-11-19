@@ -6,11 +6,19 @@ set -eu
 state="${XDG_RUNTIME_DIR:-/tmp}/toggle-maximize"
 mkdir -p "$state"
 
-read -r addr floating x y w h < <(hyprctl -j activewindow | python3 -c '
+read -r addr pid floating x y w h < <(hyprctl -j activewindow | python3 -c '
 import sys, json
 d = json.load(sys.stdin)
-print(d.get("address", ""), int(d.get("floating", False)), *d["at"], *d["size"])') || exit 0
+print(d.get("address", ""), d.get("pid", 0), int(d.get("floating", False)), *d["at"], *d["size"])') || exit 0
 [[ -z "$addr" ]] && exit 0
+
+# Saved sizes are keyed by address AND pid: Hyprland reuses window addresses, so a new
+# window could otherwise inherit a closed window's size (a "restore" to a tiny popup).
+# Forget saved sizes of windows that have been closed.
+alive=$(hyprctl -j clients | python3 -c 'import sys, json; print(" ".join(c["address"] + "-" + str(c["pid"]) for c in json.load(sys.stdin)))')
+for f in "$state"/*; do
+    [[ -e $f && " $alive " != *" ${f##*/} "* ]] && rm -f "$f"
+done
 
 # Tiled windows: use the normal maximized state.
 if [[ "$floating" != 1 ]]; then
@@ -26,12 +34,18 @@ bar, border = 30, 1   # hyprbars bar height, window border
 W, H = int(m["width"] / m["scale"]), int(m["height"] / m["scale"])
 print(rl + border, rt + bar + border, W - rl - rr - 2 * border, H - rt - rb - bar - 2 * border)')
 
-saved="$state/$addr"
-if (( w >= tw - 4 && h >= th - 4 )) && [[ -f "$saved" ]]; then
-    read -r sx sy sw sh < "$saved"
+saved="$state/$addr-$pid"
+if (( w >= tw - 4 && h >= th - 4 )); then
+    if [[ -f "$saved" ]]; then
+        read -r sx sy sw sh < "$saved"
+        rm -f "$saved"
+    else
+        # Opened already filling the screen: nothing to go back to, so use 65%, centered
+        sw=$(( tw * 65 / 100 )) sh=$(( th * 65 / 100 ))
+        sx=$(( tx + (tw - sw) / 2 )) sy=$(( ty + (th - sh) / 2 ))
+    fi
     hyprctl dispatch "hl.dsp.window.resize({ x = $sw, y = $sh })" >/dev/null
     hyprctl dispatch "hl.dsp.window.move({ x = $sx, y = $sy })" >/dev/null
-    rm -f "$saved"
 else
     echo "$x $y $w $h" > "$saved"
     hyprctl dispatch "hl.dsp.window.resize({ x = $tw, y = $th })" >/dev/null

@@ -13,5 +13,8 @@ gsettings set $s font-antialiasing   'rgba'
 gsettings set $s font-hinting        'slight'
 gsettings set $s font-rgba-order     'rgb'
 gsettings set $s font-rendering      'manual'
+# No minimize/maximize/close in app header bars (GTK, Firefox): the hyprbars title bar
+# from hyprland.lua is the one set of window buttons. "appmenu:" keeps only the app menu.
+gsettings set org.gnome.desktop.wm.preferences button-layout 'appmenu:'
 gsettings set $s color-scheme  'prefer-dark'
 command -v hyprctl >/dev/null && hyprctl setcursor WhiteSur-cursors 24 || true

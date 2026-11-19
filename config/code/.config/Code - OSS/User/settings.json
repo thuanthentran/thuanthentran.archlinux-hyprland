@@ -1,0 +1,12 @@
+{
+    // Window buttons come from the hyprbars title bar (hyprland.lua); hide VS Code's own.
+    // Keeps the custom title bar with the command center. Takes effect after a restart.
+    "window.titleBarStyle": "custom",
+    "window.controlsStyle": "hidden",
+
+    // Same fonts as the rest of the desktop (config/fontconfig)
+    "editor.fontFamily": "'CaskaydiaCove Nerd Font', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14,
+    "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font'"
+}

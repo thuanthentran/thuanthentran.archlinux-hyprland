@@ -30,6 +30,8 @@ The machine this is checked out on is the target machine itself, running Hyprlan
 
 Unlike `hyprland.lua`, `hyprlock.conf`, `hypridle.conf` and `hyprpaper.conf` (hyprpaper 0.8 block syntax) still use hyprlang; they are started from the autostart block in `hyprland.lua`, as is `cliphist`. The wallpaper is `wallpapers/default.png` in the same Stow package. The `hyprbars` plugin is built by `hyprpm` and must be rebuilt (`hyprpm update`) after every Hyprland upgrade; its config is wrapped in `pcall` so a missing plugin doesn't break the config.
 
+Window buttons: the `hyprbars` title bar is the only set of min/max/close buttons; app-drawn ones are hidden (`button-layout 'appmenu:'` in `apply-theme.sh` for GTK/Firefox, `window.controlsStyle: hidden` in `config/code` for VS Code). Minimized windows live in `special:magic`; `scripts/minimize.sh minimize|restore` handles it. Moves into a special workspace need `follow = false`, otherwise Hyprland opens the special workspace and the window stays on screen.
+
 Helper scripts live in `config/hypr/.config/hypr/scripts/` and are referenced from the Lua config as `$HOME/.config/hypr/scripts/<name>.sh`, so they must be executable and stowed. Validate after editing:
 ```sh
 hyprctl configerrors        # Lua/config errors in the running session

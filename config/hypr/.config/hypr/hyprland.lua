@@ -136,8 +136,12 @@ hl.config({
             inactive_border = "rgba(ffffff12)",
         },
 
-        -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
-        resize_on_border = false,
+        -- Resize by dragging window edges. Needed because windows float and most apps under
+        -- the hyprbars title bar draw no resize handles of their own. The grab area reaches
+        -- 15 px outside the 1 px border, and the cursor changes when over it.
+        resize_on_border       = true,
+        extend_border_grab_area = 15,
+        hover_icon_on_border   = true,
 
         -- Please see https://wiki.hypr.land/configuring/extra/tearing/ before you turn this on
         allow_tearing = false,
@@ -333,7 +337,7 @@ do
                     bar_title_enabled      = true,
                     bar_text_align         = "center",
                     bar_text_size          = 11,
-                    bar_buttons_alignment  = "left",
+                    bar_buttons_alignment  = "right",
                     bar_padding            = 12,
                     bar_button_padding     = 8,
                     icon_on_hover          = true,
@@ -342,13 +346,14 @@ do
                 },
             },
         })
-        -- macOS traffic lights: close / hide / maximize
+        -- Buttons on the right, Windows order: minimize / maximize / close.
+        -- With right alignment the first button added sits at the far right.
         hl.plugin.hyprbars.add_button({ bg_color = "rgb(ff5f57)", fg_color = "rgb(4d0000)", size = 14, icon = "x",
             action = "hyprctl dispatch 'hl.dsp.window.close()'" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 14, icon = "-",
-            action = "hyprctl dispatch 'hl.dsp.window.move({ workspace = \"special:magic\" })'" })
         hl.plugin.hyprbars.add_button({ bg_color = "rgb(28c840)", fg_color = "rgb(003d0a)", size = 14, icon = "+",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh" })
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 14, icon = "-",
+            action = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh minimize" })
     end)
 end
 
@@ -365,7 +370,8 @@ hl.bind(mainMod .. " + Return",         hl.dsp.exec_cmd(terminal))              
 hl.bind(mainMod .. " + T",              hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q",              hl.dsp.window.close())                     -- Cmd+Q: quit (close) window
 hl.bind(mainMod .. " + W",              hl.dsp.window.close())                     -- Cmd+W: close window
-hl.bind(mainMod .. " + M",              hl.dsp.window.move({ workspace = "special:magic" })) -- Cmd+M: minimize (show again: Super+S)
+local minimize = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh"
+hl.bind(mainMod .. " + M",              hl.dsp.exec_cmd(minimize .. " minimize")) -- Cmd+M: minimize (restore: Super+S)
 hl.bind(mainMod .. " + SHIFT + Q",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")) -- log out
 hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("hyprlock"))               -- lock screen
 hl.bind(mainMod .. " + CTRL + F",       hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh"))
@@ -395,8 +401,8 @@ for i = 1, 10 do
 end
 
 -- Example special workspace (scratchpad)
-hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+hl.bind(mainMod .. " + S",         hl.dsp.exec_cmd(minimize .. " restore"))   -- restore a minimized window
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.workspace.toggle_special("magic"))  -- peek at all minimized windows
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))

@@ -293,7 +293,13 @@ hl.config({
 
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
+        -- Scroll speed for every app (mouse wheel / touchpad). Higher = faster. Inertia is not
+        -- done here (Wayland leaves it to apps): see kitty.conf, VS Code settings and
+        -- extras/firefox/user.js.
+        scroll_factor = 1.0,
+
         touchpad = {
+            scroll_factor        = 1.0,
             natural_scroll       = true,  -- macOS-style scrolling
             tap_to_click         = true,
             clickfinger_behavior = true,  -- two-finger click = right click

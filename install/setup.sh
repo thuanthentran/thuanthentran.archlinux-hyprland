@@ -59,7 +59,8 @@ Steps (default: all, in this order):
   mirrors   rank nearby pacman mirrors by real download speed (install/rank-mirrors.sh)
   packages  official packages from packages/*.txt (full system upgrade first)
   aur       bootstrap yay, then AUR packages from packages/aur.txt
-  dotfiles  link config/* into \$HOME with GNU Stow (existing files are backed up)
+  dotfiles  link config/* into \$HOME with GNU Stow (existing files are backed up),
+            and extras/firefox/user.js into each Firefox profile
   system    copy system/etc and hosts/\$SETUP_HOST/etc into /etc, rebuild initramfs
   services  enable system services (network, bluetooth, login, power, zram)
   snapper   snapper config for /, timeline snapshots, snapshot entries in GRUB
@@ -138,6 +139,15 @@ step_dotfiles() {
     done < <(cd "$REPO/config/$pkg" && find . -type f -printf '%P\n')
     info "stow $pkg"
     run stow -d "$REPO/config" -t "$HOME" -R "$pkg"
+  done
+  # Firefox profile dirs have random names, so Stow can't place user.js; link it into each
+  # existing profile (start Firefox once first so a profile exists).
+  local prof
+  for prof in "$HOME"/.config/mozilla/firefox/*/prefs.js "$HOME"/.mozilla/firefox/*/prefs.js; do
+    [[ -e $prof ]] || continue
+    prof=$(dirname "$prof")
+    info "firefox user.js -> $prof"
+    run ln -sfn "$REPO/extras/firefox/user.js" "$prof/user.js"
   done
 }
 

@@ -34,6 +34,8 @@ Window buttons: the `hyprbars` title bar is the only set of min/max/close button
 
 Focus is click-to-focus (`follow_mouse = 2`) with `cursor.no_warps`, so keyboard/gesture focus changes don't move the pointer. A 150 ms `hl.timer` in `hyprland.lua` (`keep_on_screen`) pushes the active floating window back when its title bar ends up under Waybar or off screen, once the drag has stopped. Don't use `release = true` binds on mouse buttons: they swallow the release even with `non_consuming`, so apps think the button is still held.
 
+Scrolling: Hyprland only scales speed (`scroll_factor` for the mouse and `touchpad.scroll_factor`); inertia is client-side on Wayland, so it is set per app: kitty `momentum_scroll` (touchpad only), VS Code `*.smoothScrolling`, and Firefox prefs in `extras/firefox/user.js` (not a Stow package, since profile dirs have random names; `setup.sh dotfiles` symlinks it into each profile). GTK apps glide on the touchpad by themselves; nothing adds inertia to the mouse wheel system-wide.
+
 Helper scripts live in `config/hypr/.config/hypr/scripts/` and are referenced from the Lua config as `$HOME/.config/hypr/scripts/<name>.sh`, so they must be executable and stowed. Validate after editing:
 ```sh
 hyprctl configerrors        # Lua/config errors in the running session

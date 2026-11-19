@@ -55,8 +55,19 @@ Không còn vùng chưa cấp phát.
 - Màn hình 1920×1200 không cần fractional scaling.
 - 16 GB RAM đủ cho dev; dùng zram thay vì phân vùng swap.
 
+## Kiểm tra lại từ Arch (2026-11-20)
+
+Sau khi cài xong, đọc lại từ Arch (không cần quyền root):
+
+| Mục | Kết quả | Cách kiểm tra |
+|---|---|---|
+| HDMI | Nối vào NVIDIA (`card0-HDMI-A-1`, tức `/dev/dri/dgpu`) | `ls /sys/class/drm` |
+| Cổng màn hình khác | NVIDIA có thêm `DP-5`, Intel có `DP-1`…`DP-4`; máy có Thunderbolt/USB4 (`/sys/bus/thunderbolt`) | như trên |
+| BitLocker | Không bật: C: vẫn là `ntfs`, không phải `BitLocker` | `lsblk -f` |
+| Secure Boot | Đang tắt | biến EFI `SecureBoot` = 0 |
+| Ổ đĩa | Vẫn một NVMe; D: còn 115 GB, Arch (Btrfs) 80 GB | `lsblk` |
+
 ## Chưa xác minh
 
-- Cổng HDMI và USB-C nối vào GPU nào. Điều này quyết định cách cấu hình màn hình ngoài.
-- Máy có khe M.2 thứ hai còn trống hay không.
-- Trạng thái BitLocker. Chủ máy chấp nhận nhập recovery key từ tài khoản Microsoft nếu bị hỏi.
+- Cổng USB-C nào ra màn hình qua GPU nào (`DP-5` trên NVIDIA hay `DP-1`…`DP-4` trên Intel). Cắm thử một màn hình qua USB-C rồi xem `hyprctl monitors`.
+- Máy có khe M.2 thứ hai còn trống hay không. Phần mềm không thấy khe trống; xem `sudo dmidecode -t slot` hoặc mở nắp máy.

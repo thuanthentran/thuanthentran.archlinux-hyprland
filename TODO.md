@@ -8,7 +8,7 @@ Backlog của repo, xếp theo thứ tự nên làm. Mốc lớn nằm ở mục
 - [x] Thêm `LICENSE` (MIT, đã chốt trong [docs/05](docs/05-repo-plan.md))
 - [ ] Tạo snapshot mốc: `sudo snapper -c root create -d "baseline sau setup"`
 - [ ] Cập nhật [docs/04](docs/04-install-arch.md) theo lần cài thật: bỏ cảnh báo "chưa được chạy thử", sửa những bước khác với thực tế
-- [ ] Rà mục "Chưa xác minh" trong [docs/02](docs/02-machine-tuf-f16.md) (BitLocker...) giờ đã có Arch chạy trên máy
+- [x] Rà mục "Chưa xác minh" trong [docs/02](docs/02-machine-tuf-f16.md) (BitLocker...) giờ đã có Arch chạy trên máy
 
 ## Giao diện: Quickshell
 
@@ -28,6 +28,7 @@ Chạy song song với Waybar, thay dần từng phần. Mỗi widget là một 
 - [ ] Waybar: hiện số cửa sổ đang minimize trên nút 󰘸
 - [ ] Nút trên thanh tiêu đề: giữ màu macOS hay đổi sang kiểu Windows (icon xám, nút đóng đỏ khi hover)
 - [ ] Chốt phong cách: bảng màu, mức animation và blur (đang mở trong [docs/05](docs/05-repo-plan.md))
+- [ ] Cắm màn hình qua USB-C, xem đi qua GPU nào (`hyprctl monitors`); ghi vào [docs/02](docs/02-machine-tuf-f16.md)
 - [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
 
 ## Hệ thống và tái lập

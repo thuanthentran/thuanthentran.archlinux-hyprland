@@ -9,7 +9,7 @@ Mục tiêu: cài lại Arch trên máy cũ hoặc máy khác, clone repo, chạ
 
 ## Cấu trúc dự kiến
 
-Hiện mới có `docs/`, `install/arch-install.sh` và `.gitattributes`.
+Đã có đủ các thư mục dưới đây trừ `LICENSE`. Phần riêng của máy hiện tại nằm ở `hosts/tuf-f16/` và `packages/hardware-tuf-f16.txt`; cách dùng xem [06-setup-and-rollback.md](06-setup-and-rollback.md).
 
 ```text
 .
@@ -20,9 +20,10 @@ Hiện mới có `docs/`, `install/arch-install.sh` và `.gitattributes`.
 ├── docs/                 # tài liệu
 ├── install/
 │   ├── arch-install.sh   # cài Arch nền từ USB live (đã có)
-│   └── setup.sh          # sau khi boot: cài gói, link config, bật service
+│   └── setup.sh          # sau khi boot: cài gói, link config, bật service (đã có)
 ├── packages/             # danh sách gói theo nhóm
 ├── config/               # dotfiles, mỗi thành phần một thư mục
+├── system/               # file /etc dùng chung (zram, sysctl)
 └── hosts/                # phần riêng từng máy
 ```
 
@@ -46,15 +47,15 @@ Nhóm gói dự kiến: nền, Hyprland, dev, NVIDIA, ASUS. Gói chính thức v
 | Kernel | `linux` + `linux-lts` | Luôn có kernel dự phòng |
 | Driver NVIDIA | `nvidia-open` | Dòng RTX 40 được hỗ trợ |
 | Swap | zram | Không cần phân vùng swap |
+| AUR helper | `yay` | Đã dùng; setup.sh tự cài `yay-bin` |
 | App chỉ có trên Ubuntu | distrobox | Xem [01-why-arch-hyprland.md](01-why-arch-hyprland.md) |
 | Giao diện | Tự dựng từ tối thiểu | Tham khảo HyDE, ML4W, end-4, không fork |
 | License | MIT | |
 
 ## Chưa quyết định
 
-- Bộ thành phần giao diện: bar, launcher, thông báo, khóa màn hình, terminal, shell.
+- Bộ thành phần giao diện: tạm dùng Waybar, rofi, mako, nwg-dock, hyprlock, kitty. Đã chốt viết dần widget riêng bằng Quickshell, chạy song song với Waybar.
 - Phong cách: bảng màu, font, mức độ animation và blur.
-- AUR helper: `yay` hay `paru`.
 - Có dùng ổ D làm ổ dữ liệu chung với Windows không.
 - Phần mềm công việc bắt buộc nào cần kiểm tra trước trên Arch (VPN công ty, tool của hãng).
 
@@ -68,6 +69,7 @@ Nhóm gói dự kiến: nền, Hyprland, dev, NVIDIA, ASUS. Gói chính thức v
 
 ## Việc kỹ thuật cần nhớ khi viết script
 
-- `/.snapshots` đã được mount sẵn từ lúc cài, nên `snapper create-config` sẽ báo trùng. Script phải xử lý trường hợp này.
+- `/.snapshots` đã được mount sẵn từ lúc cài, nên `snapper create-config` sẽ báo trùng. `setup.sh` (bước `snapper`) đã xử lý.
+- Kernel cmdline ghim `rootflags=subvol=@`, nên `snapper rollback` không dùng được; rollback làm tay, xem [06](06-setup-and-rollback.md).
 - `arch-install.sh` đã bỏ `subvolid` khỏi fstab và thêm module `vmd` qua `/etc/mkinitcpio.conf.d/10-vmd.conf`; script sau không cần làm lại.
 - Xác minh cổng HDMI/USB-C nối vào GPU nào trước khi viết config màn hình ngoài.

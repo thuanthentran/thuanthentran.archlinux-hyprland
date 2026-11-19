@@ -42,6 +42,8 @@ Chi tiết, kiểm tra sau khi cài và cách rollback: [docs/06-setup-and-rollb
 
 ## Lộ trình
 
+Mốc lớn. Việc cụ thể và thứ tự làm: [TODO.md](TODO.md).
+
 - [x] Giải phóng dung lượng và thu nhỏ ổ D
 - [x] Viết script cài Arch nền
 - [x] Cài Arch tối thiểu, dual-boot với Windows

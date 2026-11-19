@@ -1,4 +1,5 @@
 # Minimal mako config; default colours kept.
+font=IBM Plex Sans 10
 default-timeout=5000
 max-visible=5
 anchor=top-right

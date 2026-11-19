@@ -1,6 +1,6 @@
 /* macOS-like menu bar: translucent, flat, no coloured blocks. */
 * {
-    font-family: "SF Pro Text", Inter, "Noto Sans", "JetBrainsMono Nerd Font", sans-serif;
+    font-family: "IBM Plex Sans", "Noto Sans", "JetBrainsMono Nerd Font", sans-serif;
     font-size: 13px;
     border: none;
     border-radius: 0;

@@ -4,7 +4,7 @@
     bg-sel:  rgba(255, 255, 255, 0.14);
     fg:      #f2f2f5;
     fg-dim:  rgba(242, 242, 245, 0.55);
-    font:    "SF Pro Text, Inter, Noto Sans 14";
+    font:    "IBM Plex Sans 14";
     background-color: transparent;
     text-color: @fg;
 }

@@ -54,8 +54,9 @@ nwg-look
 # Spotlight-style launcher / window switcher
 rofi
 
-# Fonts (UI font close to macOS SF)
-inter-font
+# Fonts: IBM Plex Sans for the UI, Cascadia Code (Nerd Font build) for code and icons
+ttf-ibm-plex
+ttf-cascadia-code-nerd
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji

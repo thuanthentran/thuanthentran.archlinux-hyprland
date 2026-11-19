@@ -1,0 +1,3 @@
+# Everyday apps (official repos)
+firefox
+code

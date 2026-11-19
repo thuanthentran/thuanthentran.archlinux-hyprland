@@ -1,0 +1,5 @@
+# Stable names for the two GPUs. /dev/dri/cardN numbers change between boots once the
+# NVIDIA driver loads; hyprland.lua points AQ_DRM_DEVICES at these links instead.
+# PCI addresses from `lspci`: 00:02.0 Intel Raptor Lake-P, 01:00.0 NVIDIA RTX 4050.
+KERNEL=="card*", KERNELS=="0000:00:02.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/igpu"
+KERNEL=="card*", KERNELS=="0000:01:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/dgpu"

@@ -1,0 +1,14 @@
+# ASUS TUF F16: Intel Raptor Lake iGPU + NVIDIA RTX 4050 (hybrid, with MUX)
+mesa
+vulkan-intel
+intel-media-driver
+
+# NVIDIA open kernel modules, prebuilt for both kernels (no DKMS)
+nvidia-open
+nvidia-open-lts
+nvidia-utils
+# prime-run <app>: run one app on the dGPU
+nvidia-prime
+
+# ASUS keyboard backlight, fan / power profiles
+asusctl

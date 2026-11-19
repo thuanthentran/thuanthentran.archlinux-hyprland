@@ -1,2 +1,62 @@
 # Hyprland desktop components (official repos)
+hyprland
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+hyprpolkitagent
+hyprlock
+hypridle
+hyprpaper
+qt5-wayland
+qt6-wayland
+kitty
+libinput-tools
+
+# hyprpm builds plugins (hyprbars) from source
+hyprpm
+cmake
+meson
+ninja
+
+# Helpers called from hyprland.lua, waybar and scripts
+grim
+slurp
+wl-clipboard
+cliphist
+brightnessctl
+playerctl
+pavucontrol
+network-manager-applet
+libnotify
+python
+
 waybar
+mako
+
+# Vietnamese input (Telex) via fcitx5
+fcitx5
+fcitx5-gtk
+fcitx5-qt
+fcitx5-configtool
+fcitx5-unikey
+
+# Mouse-friendly desktop (Ubuntu-like): login, dock, app grid, tray, files, theme
+sddm
+nwg-dock-hyprland
+nwg-drawer
+blueman
+thunar
+thunar-volman
+gvfs
+file-roller
+papirus-icon-theme
+nwg-look
+
+# Spotlight-style launcher / window switcher
+rofi
+
+# Fonts (UI font close to macOS SF)
+inter-font
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-jetbrains-mono-nerd

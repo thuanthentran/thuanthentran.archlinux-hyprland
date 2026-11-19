@@ -1,0 +1,7 @@
+# AUR packages. setup.sh bootstraps yay, then: yay -S --needed - < <(grep -v '^#' packages/aur.txt)
+yay-bin
+
+# macOS-like look
+whitesur-gtk-theme
+whitesur-icon-theme
+whitesur-cursor-theme-git

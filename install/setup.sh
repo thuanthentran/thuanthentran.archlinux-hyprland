@@ -1,0 +1,262 @@
+#!/usr/bin/env bash
+#
+# setup.sh: turn a fresh arch-install.sh system into the full desktop from this repo.
+# Run as your normal user (not root) after the first boot; it asks for sudo when needed.
+# Every step is safe to run again.
+#
+# Usage:
+#   bash install/setup.sh                # all steps
+#   bash install/setup.sh --dry-run      # print what would run, change nothing
+#   bash install/setup.sh dotfiles theme # only some steps (names listed in --help)
+#
+# Environment:
+#   SETUP_HOST   folder under hosts/ with machine-specific packages and /etc files
+#                (default: tuf-f16; set to "none" for a machine without one)
+
+if [ -z "${BASH_VERSION:-}" ]; then
+  echo "Run this script with bash: bash install/setup.sh" >&2
+  exit 1
+fi
+
+set -Eeuo pipefail
+
+REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+readonly REPO
+readonly HOST=${SETUP_HOST:-tuf-f16}
+readonly ALL_STEPS=(packages aur dotfiles system services snapper plugins theme)
+
+readonly BOLD=$'\e[1m' RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' RESET=$'\e[0m'
+DRY_RUN=0
+
+info() { printf '%s\n' "${GREEN}::${RESET} $*"; }
+warn() { printf '%s\n' "${YELLOW}!! $*${RESET}"; }
+die() {
+  printf '%s\n' "${RED}xx $*${RESET}" >&2
+  exit 1
+}
+step() { printf '\n%s\n' "${BOLD}==> $*${RESET}"; }
+trap 'printf "%s\n" "${RED}xx Failed at line ${LINENO}: ${BASH_COMMAND}${RESET}" >&2' ERR
+
+# run CMD...: run it, or only print it in dry-run mode
+run() {
+  if ((DRY_RUN)); then
+    printf '  '
+    printf ' %q' "$@"
+    printf '\n'
+  else
+    "$@"
+  fi
+}
+
+# package names from one or more lists, comments and blank lines removed
+pkgs_from() { sed -e 's/#.*//' -e '/^[[:space:]]*$/d' "$@"; }
+
+usage() {
+  cat <<EOF
+Usage: bash install/setup.sh [--dry-run] [step...]
+
+Steps (default: all, in this order):
+  packages  official packages from packages/*.txt (full system upgrade first)
+  aur       bootstrap yay, then AUR packages from packages/aur.txt
+  dotfiles  link config/* into \$HOME with GNU Stow (existing files are backed up)
+  system    copy system/etc and hosts/\$SETUP_HOST/etc into /etc, rebuild initramfs
+  services  enable system services (network, bluetooth, login, power, zram)
+  snapper   snapper config for /, timeline snapshots, snapshot entries in GRUB
+  plugins   build and enable the hyprbars plugin with hyprpm (inside Hyprland only)
+  theme     GTK/icon/cursor theme and fonts (inside a graphical session only)
+
+Host: ${HOST} (set SETUP_HOST to change)
+EOF
+}
+
+# ---------------------------------------------------------------- steps
+
+step_packages() {
+  step "Official packages"
+  local lists=("$REPO"/packages/base.txt "$REPO"/packages/hyprland-desktop.txt "$REPO"/packages/apps.txt)
+  [[ -f $REPO/packages/hardware-$HOST.txt ]] && lists+=("$REPO/packages/hardware-$HOST.txt")
+  info "Lists: ${lists[*]#"$REPO"/}"
+  mapfile -t pkgs < <(pkgs_from "${lists[@]}")
+  run sudo pacman -Syu --needed "${pkgs[@]}"
+}
+
+step_aur() {
+  step "AUR packages"
+  if ! command -v yay >/dev/null; then
+    info "Bootstrapping yay-bin from the AUR"
+    local tmp
+    tmp=$(mktemp -d)
+    run git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$tmp/yay-bin"
+    if ((DRY_RUN)); then
+      printf '   (cd %q && makepkg -si --noconfirm)\n' "$tmp/yay-bin"
+    else
+      (cd "$tmp/yay-bin" && makepkg -si --noconfirm)
+    fi
+    rm -rf "$tmp"
+  fi
+  mapfile -t pkgs < <(pkgs_from "$REPO/packages/aur.txt")
+  run yay -S --needed "${pkgs[@]}"
+}
+
+step_dotfiles() {
+  step "Dotfiles (GNU Stow)"
+  local pkg rel target stamp
+  stamp=$(date +%Y%m%d-%H%M%S)
+  for pkg in "$REPO"/config/*/; do
+    pkg=$(basename "$pkg")
+    # A real file where Stow wants a link (e.g. the hyprland.lua Hyprland writes on first
+    # start) makes Stow refuse; move it aside first.
+    while IFS= read -r rel; do
+      target="$HOME/$rel"
+      # Already ours: the file itself or one of its parent dirs links into the repo
+      [[ $(realpath -- "$target" 2>/dev/null) == "$REPO/config/$pkg/$rel" ]] && continue
+      if [[ -e $target && ! -L $target && ! -d $target ]]; then
+        warn "Backing up $target -> $target.bak-$stamp"
+        run mv "$target" "$target.bak-$stamp"
+      fi
+    done < <(cd "$REPO/config/$pkg" && find . -type f -printf '%P\n')
+    info "stow $pkg"
+    run stow -d "$REPO/config" -t "$HOME" -R "$pkg"
+  done
+}
+
+# copy every file under SRC (a mirror of /) to the same path under /
+install_tree() {
+  local src=$1 rel
+  [[ -d $src ]] || return 0
+  while IFS= read -r rel; do
+    if cmp -s "$src/$rel" "/$rel" 2>/dev/null; then
+      continue
+    fi
+    info "/$rel"
+    run sudo install -Dm644 "$src/$rel" "/$rel"
+  done < <(cd "$src" && find . -type f -printf '%P\n')
+}
+
+step_system() {
+  step "System files in /etc"
+  install_tree "$REPO/system"
+  [[ $HOST != none ]] && install_tree "$REPO/hosts/$HOST"
+  run sudo udevadm control --reload
+  run sudo udevadm trigger --subsystem-match=drm
+  run sudo sysctl --system --quiet
+  info "Rebuilding initramfs"
+  run sudo mkinitcpio -P
+}
+
+# enable_units [--now] UNIT...: enable the units that are installed, skip the others
+enable_units() {
+  local now=() unit
+  [[ $1 == --now ]] && now=(--now) && shift
+  for unit in "$@"; do
+    if systemctl list-unit-files "$unit" >/dev/null 2>&1; then
+      run sudo systemctl enable "${now[@]}" "$unit"
+    else
+      warn "Skipping $unit (not installed)"
+    fi
+  done
+}
+
+step_services() {
+  step "System services"
+  # sddm only on next boot: starting it now would switch away from the current session
+  enable_units sddm.service
+  enable_units --now NetworkManager.service bluetooth.service power-profiles-daemon.service
+  # NVIDIA: keep video memory across suspend (nvidia-utils ships these, not always enabled)
+  enable_units nvidia-suspend.service nvidia-resume.service nvidia-hibernate.service
+  # asusd is started by udev/D-Bus; just make sure it runs now
+  if systemctl list-unit-files asusd.service >/dev/null 2>&1; then
+    run sudo systemctl start asusd.service || warn "asusd did not start; check: journalctl -u asusd"
+  fi
+  run sudo systemctl daemon-reload
+  run sudo systemctl start systemd-zram-setup@zram0.service
+}
+
+step_snapper() {
+  step "Snapper"
+  if [[ -f /etc/snapper/configs/root ]]; then
+    info "snapper config 'root' already exists"
+  else
+    # arch-install.sh already mounts the @snapshots subvolume at /.snapshots, and
+    # create-config refuses when that path exists. Unmount it, let snapper create its
+    # config (it makes a nested /.snapshots subvolume), drop that nested subvolume and
+    # mount @snapshots back. https://wiki.archlinux.org/title/Snapper#Configuration_of_snapper_and_mount_point
+    if findmnt -n /.snapshots >/dev/null; then
+      run sudo umount /.snapshots
+    fi
+    run sudo rmdir /.snapshots
+    run sudo snapper -c root create-config /
+    run sudo btrfs subvolume delete /.snapshots
+    run sudo mkdir /.snapshots
+    run sudo mount /.snapshots
+    run sudo chmod 750 /.snapshots
+  fi
+  # A few hourly/daily snapshots plus the pre/post pairs snap-pac makes for every pacman run
+  run sudo snapper -c root set-config \
+    "ALLOW_USERS=$USER" SYNC_ACL=yes \
+    TIMELINE_CREATE=yes TIMELINE_LIMIT_HOURLY=5 TIMELINE_LIMIT_DAILY=7 \
+    TIMELINE_LIMIT_WEEKLY=0 TIMELINE_LIMIT_MONTHLY=0 TIMELINE_LIMIT_YEARLY=0 \
+    NUMBER_LIMIT=20 NUMBER_LIMIT_IMPORTANT=10
+  enable_units --now snapper-timeline.timer snapper-cleanup.timer grub-btrfsd.service
+  run sudo grub-mkconfig -o /boot/grub/grub.cfg
+}
+
+step_plugins() {
+  step "Hyprland plugins (hyprpm)"
+  if [[ -z ${HYPRLAND_INSTANCE_SIGNATURE:-} ]]; then
+    warn "Not inside Hyprland. Log in to Hyprland and run: bash install/setup.sh plugins"
+    return 0
+  fi
+  # Plugins are built against the installed Hyprland; rerun `hyprpm update` after every
+  # Hyprland upgrade (window title bars disappear until you do).
+  run hyprpm update
+  if ! hyprpm list 2>/dev/null | grep -q 'hyprland-plugins'; then
+    run hyprpm add https://github.com/hyprwm/hyprland-plugins
+  fi
+  run hyprpm enable hyprbars
+  run hyprpm reload
+}
+
+step_theme() {
+  step "Theme"
+  if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
+    warn "No graphical session. Log in and run: bash install/setup.sh theme"
+    return 0
+  fi
+  run bash "$REPO/install/apply-theme.sh"
+}
+
+# ---------------------------------------------------------------- main
+
+main() {
+  local steps=() s
+  while (($#)); do
+    case $1 in
+      -n | --dry-run) DRY_RUN=1 ;;
+      -h | --help)
+        usage
+        exit 0
+        ;;
+      -*) die "Unknown option: $1 (see --help)" ;;
+      *)
+        [[ " ${ALL_STEPS[*]} " == *" $1 "* ]] || die "Unknown step: $1 (see --help)"
+        steps+=("$1")
+        ;;
+    esac
+    shift
+  done
+  ((${#steps[@]})) || steps=("${ALL_STEPS[@]}")
+
+  [[ $EUID -ne 0 ]] || die "Run as your normal user, not root. The script uses sudo itself."
+  [[ $HOST == none || -d $REPO/hosts/$HOST ]] || die "No such host folder: hosts/$HOST"
+  ((DRY_RUN)) && warn "DRY RUN: commands are printed, not run."
+  info "Repo: $REPO   Host: $HOST   Steps: ${steps[*]}"
+
+  for s in "${steps[@]}"; do
+    "step_$s"
+  done
+
+  printf '\n%s\n' "${GREEN}Done.${RESET} Reboot if the NVIDIA driver, initramfs or services changed."
+}
+
+main "$@"

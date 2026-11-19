@@ -1,0 +1,4 @@
+# Minimal mako config; default colours kept.
+default-timeout=5000
+max-visible=5
+anchor=top-right

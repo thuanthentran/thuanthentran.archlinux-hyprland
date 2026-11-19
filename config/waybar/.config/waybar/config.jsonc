@@ -1,30 +1,64 @@
-// Minimal Waybar config for Hyprland. Style falls back to /etc/xdg/waybar/style.css.
+// Waybar for Hyprland: everything clickable with the mouse.
 {
     "layer": "top",
     "position": "top",
-    "height": 30,
-    "spacing": 4,
-    "modules-left": ["hyprland/workspaces"],
-    "modules-center": ["hyprland/window"],
-    "modules-right": ["pulseaudio", "network", "backlight", "battery", "clock", "tray"],
+    "height": 32,
+    "spacing": 6,
+    "modules-left": ["custom/apps", "hyprland/workspaces", "wlr/taskbar"],
+    "modules-center": ["clock"],
+    "modules-right": ["group/winctl", "pulseaudio", "network", "bluetooth", "backlight", "battery", "tray", "group/power"],
 
-    "hyprland/window": { "max-length": 60 },
-    "clock": { "format": "{:%a %d/%m  %H:%M}" },
+    "custom/apps": { "format": "  Apps", "tooltip": false, "on-click": "nwg-drawer" },
+    "hyprland/workspaces": { "on-click": "activate", "all-outputs": true },
+
+    "clock": {
+        "format": "{:%a %d/%m  %H:%M}",
+        "tooltip-format": "<tt>{calendar}</tt>"
+    },
     "battery": {
         "format": "{capacity}% {icon}",
         "format-icons": ["", "", "", "", ""]
     },
-    "backlight": { "format": "{percent}% ☀" },
+    "backlight": { "format": "{percent}% ☀", "on-scroll-up": "brightnessctl set 5%+", "on-scroll-down": "brightnessctl set 5%-" },
     "network": {
         "format-wifi": "{essid} ({signalStrength}%)",
         "format-ethernet": "{ipaddr}",
-        "format-disconnected": "offline"
+        "format-disconnected": "offline",
+        "on-click": "nm-connection-editor"
     },
+    "bluetooth": { "format": " {status}", "on-click": "blueman-manager" },
     "pulseaudio": {
         "format": "{volume}% {icon}",
         "format-muted": "muted",
         "format-icons": { "default": ["", "", ""] },
         "on-click": "pavucontrol"
     },
-    "tray": { "spacing": 10 }
+    "tray": { "spacing": 10 },
+
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 18,
+        "tooltip-format": "{title}",
+        "on-click": "activate",
+        "on-click-middle": "close"
+    },
+
+    "group/winctl": {
+        "orientation": "inherit",
+        "modules": ["custom/hidden", "custom/float", "custom/max", "custom/close"]
+    },
+    "custom/hidden": { "format": "󰘸", "tooltip-format": "Show / hide minimized windows", "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"magic\")'" },
+    "custom/float": { "format": "󰖲", "tooltip-format": "Float / tile", "on-click": "hyprctl dispatch 'hl.dsp.window.float({ action = \"toggle\" })'" },
+    "custom/max":   { "format": "󰊓", "tooltip-format": "Maximize / restore", "on-click": "~/.config/hypr/scripts/toggle-maximize.sh" },
+    "custom/close": { "format": "󰖭", "tooltip-format": "Close window", "on-click": "hyprctl dispatch 'hl.dsp.window.close()'" },
+
+    "group/power": {
+        "orientation": "inherit",
+        "drawer": { "transition-duration": 300, "children-class": "power-child", "transition-left-to-right": false },
+        "modules": ["custom/power", "custom/lock", "custom/logout", "custom/reboot"]
+    },
+    "custom/power":  { "format": "⏻", "tooltip": false, "on-click": "systemctl poweroff" },
+    "custom/lock":   { "format": "", "tooltip": false, "on-click": "hyprlock" },
+    "custom/logout": { "format": "󰍃", "tooltip": false, "on-click": "hyprctl dispatch 'hl.dsp.exit()'" },
+    "custom/reboot": { "format": "", "tooltip": false, "on-click": "systemctl reboot" }
 }

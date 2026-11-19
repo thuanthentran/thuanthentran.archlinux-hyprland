@@ -1,0 +1,47 @@
+/* macOS Spotlight look */
+* {
+    bg:      rgba(30, 30, 34, 0.88);
+    bg-sel:  rgba(255, 255, 255, 0.14);
+    fg:      #f2f2f5;
+    fg-dim:  rgba(242, 242, 245, 0.55);
+    font:    "SF Pro Text, Inter, Noto Sans 14";
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    location: north;
+    anchor: north;
+    y-offset: 18%;
+    width: 640px;
+    background-color: @bg;
+    border: 1px;
+    border-color: rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+}
+
+mainbox { children: [inputbar, listview]; padding: 6px; }
+
+inputbar {
+    children: [prompt, entry];
+    padding: 12px 14px;
+    spacing: 10px;
+}
+prompt { text-color: @fg-dim; }
+entry { placeholder: "Spotlight Search"; placeholder-color: @fg-dim; }
+
+listview {
+    lines: 7;
+    scrollbar: false;
+    fixed-height: false;
+    margin: 4px 0 0 0;
+}
+
+element {
+    padding: 8px 12px;
+    spacing: 12px;
+    border-radius: 10px;
+}
+element selected.normal { background-color: @bg-sel; }
+element-icon { size: 28px; }
+element-text { vertical-align: 0.5; }

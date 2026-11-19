@@ -1,0 +1,10 @@
+configuration {
+    modi: "drun,window,run";
+    show-icons: true;
+    drun-display-format: "{name}";
+    display-drun: "";
+    display-window: "";
+    display-run: "";
+    window-format: "{c}  {t}";
+}
+@theme "spotlight"

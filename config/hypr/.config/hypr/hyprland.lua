@@ -22,6 +22,15 @@
 ------------------
 
 -- See https://wiki.hypr.land/configuring/core/monitors/
+-- Laptop panel: 1920x1200. Scale: 1.5 big, 1.25 medium, 1.0 = native pixels (smallest UI, most content).
+hl.monitor({
+    output   = "eDP-1",
+    mode     = "preferred",
+    position = "0x0",
+    scale    = 1.0,
+})
+
+-- Any other monitor: automatic
 hl.monitor({
     output   = "",
     mode     = "preferred",
@@ -36,8 +45,8 @@ hl.monitor({
 
 -- Set programs that you use
 local terminal    = "kitty"
-local fileManager = "dolphin"
-local menu        = "hyprlauncher"
+local fileManager = "thunar"
+local menu        = "nwg-drawer"
 
 
 -------------------
@@ -51,6 +60,16 @@ local menu        = "hyprlauncher"
 --
 hl.on("hyprland.start", function ()
   hl.exec_cmd("waybar")
+  hl.exec_cmd("mako")
+  hl.exec_cmd("fcitx5 -d")
+  hl.exec_cmd("systemctl --user start hyprpolkitagent")
+  hl.exec_cmd("nm-applet --indicator")
+  hl.exec_cmd("blueman-applet")
+  hl.exec_cmd("nwg-dock-hyprland -d -i 52 -mb 10 -lp start")
+  hl.exec_cmd("hyprpaper")                              -- wallpaper: hyprpaper.conf
+  hl.exec_cmd("hypridle")                               -- dim / lock / screen off / suspend: hypridle.conf
+  hl.exec_cmd("wl-paste --type text --watch cliphist store")  -- clipboard history (Super+Shift+V)
+  hl.exec_cmd("wl-paste --type image --watch cliphist store")
 end)
 
 
@@ -60,8 +79,25 @@ end)
 
 -- See https://wiki.hypr.land/configuring/core/environment-variables/
 
+hl.env("XCURSOR_THEME", "WhiteSur-cursors")
 hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_THEME", "WhiteSur-cursors")
 hl.env("HYPRCURSOR_SIZE", "24")
+
+-- Input method (fcitx5): native Wayland apps use text-input-v3; XWayland apps need this
+hl.env("XMODIFIERS", "@im=fcitx")
+
+-- Qt apps: native Wayland, fall back to XWayland
+hl.env("QT_QPA_PLATFORM", "wayland;xcb")
+
+-- Hybrid GPU (TUF F16): render on the Intel iGPU, keep the NVIDIA dGPU for the HDMI port
+-- and for `prime-run <app>`. /dev/dri/igpu and /dev/dri/dgpu are stable names from
+-- /etc/udev/rules.d/60-dri-names.rules (installed by install/setup.sh); card numbers change
+-- between boots once the NVIDIA driver loads. Skipped on machines without those links.
+local function exists(p) local f = io.open(p, "r"); if f then f:close() return true end return false end
+if exists("/dev/dri/igpu") then
+    hl.env("AQ_DRM_DEVICES", exists("/dev/dri/dgpu") and "/dev/dri/igpu:/dev/dri/dgpu" or "/dev/dri/igpu")
+end
 
 
 -----------------------
@@ -90,14 +126,14 @@ hl.env("HYPRCURSOR_SIZE", "24")
 -- Refer to https://wiki.hypr.land/configuring/core/config-options/
 hl.config({
     general = {
-        gaps_in  = 5,
-        gaps_out = 20,
+        gaps_in  = 0,
+        gaps_out = 0,
 
-        border_size = 2,
+        border_size = 1,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border   = "rgba(ffffff30)",
+            inactive_border = "rgba(ffffff12)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -110,7 +146,7 @@ hl.config({
     },
 
     decoration = {
-        rounding       = 10,
+        rounding       = 12,
         rounding_power = 2,
 
         -- Change transparency of focused and unfocused windows
@@ -119,15 +155,15 @@ hl.config({
 
         shadow = {
             enabled      = true,
-            range        = 4,
+            range        = 24,
             render_power = 3,
             color        = 0xee1a1a1a,
         },
 
         blur = {
             enabled   = true,
-            size      = 3,
-            passes    = 1,
+            size      = 8,
+            passes    = 2,
             vibrancy  = 0.1696,
         },
     },
@@ -244,13 +280,29 @@ hl.config({
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
         touchpad = {
-            natural_scroll = false,
+            natural_scroll       = true,  -- macOS-style scrolling
+            tap_to_click         = true,
+            clickfinger_behavior = true,  -- two-finger click = right click
+            disable_while_typing = true,
         },
     },
 })
 
+-- 3-finger swipe left/right: cycle between windows in the current workspace
+local cycleScript = os.getenv("HOME") .. "/.config/hypr/scripts/cycle-window.sh"
+hl.gesture({ fingers = 3, direction = "left",  action = function() hl.exec_cmd(cycleScript .. " next") end })
+hl.gesture({ fingers = 3, direction = "right", action = function() hl.exec_cmd(cycleScript .. " prev") end })
+
+-- 3-finger swipe up: show all windows (window overview)
 hl.gesture({
     fingers = 3,
+    direction = "up",
+    action = function() hl.exec_cmd("pkill rofi || rofi -show window") end
+})
+
+-- 4-finger swipe left/right: switch workspace (the old 3-finger behaviour)
+hl.gesture({
+    fingers = 4,
     direction = "horizontal",
     action = "workspace"
 })
@@ -263,6 +315,43 @@ hl.device({
 })
 
 
+-----------------------------
+---- HYPRBARS (title bars) ----
+-----------------------------
+-- Plugin is built by `hyprpm` (see docs). Rebuild after Hyprland updates: hyprpm update
+do
+    local so = "/var/cache/hyprpm/" .. (os.getenv("USER") or "") .. "/hyprland-plugins/hyprbars.so"
+    pcall(hl.plugin.load, so) -- error if already loaded is harmless
+    local ok = pcall(function()
+        hl.config({
+            plugin = {
+                hyprbars = {
+                    bar_height             = 30,
+                    bar_color              = "rgba(2b2b2ef0)",
+                    inactive_button_color  = "rgba(5a5a5eff)",
+                    bar_blur               = true,
+                    bar_title_enabled      = true,
+                    bar_text_align         = "center",
+                    bar_text_size          = 11,
+                    bar_buttons_alignment  = "left",
+                    bar_padding            = 12,
+                    bar_button_padding     = 8,
+                    icon_on_hover          = true,
+                    bar_part_of_window     = true,
+                    bar_precedence_over_border = true,
+                },
+            },
+        })
+        -- macOS traffic lights: close / hide / maximize
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(ff5f57)", fg_color = "rgb(4d0000)", size = 14, icon = "x",
+            action = "hyprctl dispatch 'hl.dsp.window.close()'" })
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 14, icon = "-",
+            action = "hyprctl dispatch 'hl.dsp.window.move({ workspace = \"special:magic\" })'" })
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(28c840)", fg_color = "rgb(003d0a)", size = 14, icon = "+",
+            action = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh" })
+    end)
+end
+
 ---------------------
 ---- KEYBINDINGS ----
 ---------------------
@@ -270,12 +359,23 @@ hl.device({
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- Example binds, see https://wiki.hypr.land/configuring/core/binds/ for more
-hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
--- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+-- macOS-style shortcuts (Super acts as Cmd)
+local shots = "$HOME/Pictures/Screenshot-$(date +%Y%m%d-%H%M%S).png"
+hl.bind(mainMod .. " + Return",         hl.dsp.exec_cmd(terminal))                 -- new terminal
+hl.bind(mainMod .. " + T",              hl.dsp.exec_cmd(terminal))
+hl.bind(mainMod .. " + Q",              hl.dsp.window.close())                     -- Cmd+Q: quit (close) window
+hl.bind(mainMod .. " + W",              hl.dsp.window.close())                     -- Cmd+W: close window
+hl.bind(mainMod .. " + M",              hl.dsp.window.move({ workspace = "special:magic" })) -- Cmd+M: minimize (show again: Super+S)
+hl.bind(mainMod .. " + SHIFT + Q",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")) -- log out
+hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("hyprlock"))               -- lock screen
+hl.bind(mainMod .. " + CTRL + F",       hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh"))
+hl.bind(mainMod .. " + space",          hl.dsp.exec_cmd("pkill rofi || rofi -show drun")) -- Spotlight
+hl.bind(mainMod .. " + Tab",            hl.dsp.exec_cmd("pkill rofi || rofi -show window")) -- window switcher
+hl.bind(mainMod .. " + SHIFT + 3",      hl.dsp.exec_cmd("grim " .. shots .. " && notify-send 'Screenshot saved' 'Pictures/'"))
+hl.bind(mainMod .. " + SHIFT + 4",      hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | tee " .. shots .. " | wl-copy && notify-send 'Screenshot copied' 'Also saved in Pictures/'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("pkill rofi || cliphist list | rofi -dmenu -p Clipboard | cliphist decode | wl-copy")) -- clipboard history
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
@@ -328,6 +428,15 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 -- See https://wiki.hypr.land/configuring/core/rules/
 
 -- Example window rules that are useful
+
+-- Mac-style: windows float and open centered by default
+hl.window_rule({
+    name  = "float-by-default",
+    match = { class = ".*" },
+
+    float  = true,
+    center = true,
+})
 
 local suppressMaximizeRule = hl.window_rule({
     -- Ignore maximize requests from all apps. You'll probably like this.

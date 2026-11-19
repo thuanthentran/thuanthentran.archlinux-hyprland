@@ -1,0 +1,31 @@
+/* macOS-like floating dock */
+window {
+    background: transparent;
+}
+
+#box {
+    background: rgba(40, 40, 46, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 22px;
+    padding: 6px 10px;
+}
+
+button, image {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+button {
+    padding: 4px;
+    margin: 0 3px;
+    border-radius: 14px;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+#active {
+    background: rgba(255, 255, 255, 0.10);
+}

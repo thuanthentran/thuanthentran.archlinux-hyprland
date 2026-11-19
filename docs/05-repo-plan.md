@@ -9,7 +9,7 @@ Mục tiêu: cài lại Arch trên máy cũ hoặc máy khác, clone repo, chạ
 
 ## Cấu trúc dự kiến
 
-Đã có đủ các thư mục dưới đây trừ `LICENSE`. Phần riêng của máy hiện tại nằm ở `hosts/tuf-f16/` và `packages/hardware-tuf-f16.txt`; cách dùng xem [06-setup-and-rollback.md](06-setup-and-rollback.md).
+Đã có đủ các thư mục dưới đây. Phần riêng của máy hiện tại nằm ở `hosts/tuf-f16/` và `packages/hardware-tuf-f16.txt`; cách dùng xem [06-setup-and-rollback.md](06-setup-and-rollback.md).
 
 ```text
 .

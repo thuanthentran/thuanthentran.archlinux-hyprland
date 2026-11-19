@@ -60,6 +60,7 @@ local menu        = "nwg-drawer"
 --
 hl.on("hyprland.start", function ()
   hl.exec_cmd("waybar")
+  hl.exec_cmd("qs")                                     -- Quickshell widgets: ~/.config/quickshell
   hl.exec_cmd("mako")
   hl.exec_cmd("fcitx5 -d")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")

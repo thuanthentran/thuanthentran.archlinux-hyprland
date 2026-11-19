@@ -14,7 +14,7 @@ Backlog của repo, xếp theo thứ tự nên làm. Mốc lớn nằm ở mục
 
 Chạy song song với Waybar, thay dần từng phần. Mỗi widget là một Stow package hoặc một thư mục trong `config/quickshell/`.
 
-- [ ] Dựng khung: cài `quickshell`, thêm vào `packages/`, autostart trong `hyprland.lua`, hot reload chạy được
+- [x] Dựng khung: cài `quickshell`, thêm vào `packages/`, autostart trong `hyprland.lua`, hot reload chạy được
 - [ ] Control Center: panel bật ra từ Waybar với Wi-Fi, Bluetooth, âm lượng, độ sáng, power profile
 - [ ] OSD khi đổi âm lượng / độ sáng (thay cho việc không có phản hồi gì)
 - [ ] Lịch + thông báo khi bấm đồng hồ

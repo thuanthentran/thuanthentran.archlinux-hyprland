@@ -31,6 +31,8 @@ python
 
 waybar
 mako
+# Custom widgets (QML), alongside Waybar: config/quickshell
+quickshell
 
 # Vietnamese input (Telex) via fcitx5
 fcitx5

@@ -42,7 +42,9 @@ hyprctl configerrors        # Lua/config errors in the running session
 hyprctl reload
 ```
 
-The desktop aims to be mouse-friendly and macOS/Ubuntu-like: Waybar top bar, nwg-dock-hyprland dock, nwg-drawer app grid, rofi as Spotlight (`SUPER+space`) and window switcher, mako notifications, fcitx5-unikey for Vietnamese Telex input, kitty, thunar. The decided next step is custom widgets written in Quickshell (QML), running alongside Waybar rather than replacing it at once.
+The desktop aims to be mouse-friendly and macOS/Ubuntu-like: Waybar top bar, nwg-dock-hyprland dock, nwg-drawer app grid, rofi as Spotlight (`SUPER+space`) and window switcher, mako notifications, fcitx5-unikey for Vietnamese Telex input, kitty, thunar. Custom widgets are written in Quickshell (QML) and run alongside Waybar rather than replacing it at once.
+
+Quickshell: `config/quickshell/.config/quickshell/shell.qml` is the entry point, widgets live in `widgets/` (one `PascalCase.qml` per type, imported with `import "widgets"`). `~/.config/quickshell` is a single Stow symlink to the repo dir, so new files are live without restowing, and Quickshell reloads on save. It is started as `qs` from the autostart block. Waybar, keybinds and scripts talk to it through `IpcHandler`s: `qs ipc show` lists targets, `qs ipc call shell ping` is the smoke test. Debug with `qs log` (or run `qs` in a terminal after `pkill qs`).
 
 Hybrid GPU: the session renders on the Intel iGPU; the NVIDIA dGPU (open driver) drives the HDMI port and runs apps via `prime-run`. The laptop has a MUX: `eDP-1` is the panel on Intel, `eDP-2` the same panel on NVIDIA.
 

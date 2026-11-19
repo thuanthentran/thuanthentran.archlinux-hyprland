@@ -21,6 +21,17 @@ Hai bước `plugins` và `theme` cần đang ở trong Hyprland. Lần đầu c
 bash install/setup.sh plugins theme
 ```
 
+## Mirror pacman
+
+Mirrorlist mặc định có mirror CDN đứng đầu, đo từ Việt Nam (2026-11-19) chỉ được ~11 KiB/s với gói lớn, dù file database nhỏ vẫn tải nhanh. Bước `mirrors` chạy [install/rank-mirrors.sh](../install/rank-mirrors.sh): tải thử vài giây một gói ~100 MB từ từng mirror ở VN, SG, HK, JP, TW, KR rồi giữ 8 mirror nhanh nhất (bản cũ lưu ở `/etc/pacman.d/mirrorlist.bak`). Thấy tải chậm lại thì chạy lại:
+
+```sh
+bash install/rank-mirrors.sh --dry-run   # chỉ đo, không ghi
+bash install/rank-mirrors.sh
+```
+
+Đổi danh sách nước bằng `MIRROR_COUNTRIES=VN,SG,HK`.
+
 ## Repo được tổ chức thế nào
 
 | Thư mục | Nội dung | Bước |

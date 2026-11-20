@@ -41,6 +41,22 @@ ShellRoot {
         function popup(name: string): void { BarState.popupRequested(name); }
     }
 
+    Osd {
+        id: osd
+    }
+    // `qs ipc call osd brightness|volume|mic`: show the OSD (brightness keys call this,
+    // since sysfs changes can't be watched)
+    IpcHandler {
+        target: "osd"
+
+        function brightness(): void {
+            Backlight.refresh();
+            osd.show("brightness");
+        }
+        function volume(): void { osd.show("volume"); }
+        function mic(): void { osd.show("mic"); }
+    }
+
     Toast {
         id: toast
     }

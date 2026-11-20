@@ -6,7 +6,7 @@ Backlog của repo, xếp theo thứ tự nên làm. Mốc lớn nằm ở mục
 
 - [ ] Push các commit đang chờ lên GitHub
 - [x] Thêm `LICENSE` (MIT, đã chốt trong [docs/05](docs/05-repo-plan.md))
-- [ ] Tạo snapshot mốc: `sudo snapper -c root create -d "baseline sau setup"`
+- [x] Tạo snapshot mốc: `sudo snapper -c root create -d "baseline sau setup"` (snapshot #2, 2026-11-20)
 - [x] Cập nhật [docs/04](docs/04-install-arch.md) theo lần cài thật: bỏ cảnh báo "chưa được chạy thử", sửa những bước khác với thực tế
 - [x] Rà mục "Chưa xác minh" trong [docs/02](docs/02-machine-tuf-f16.md) (BitLocker...) giờ đã có Arch chạy trên máy
 

@@ -398,7 +398,9 @@ hl.bind(mainMod .. " + SHIFT + Q",      hl.dsp.exec_cmd("command -v hyprshutdown
 hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("hyprlock"))               -- lock screen
 hl.bind(mainMod .. " + CTRL + F",       hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh"))
 hl.bind(mainMod .. " + space",          hl.dsp.exec_cmd("pkill rofi || rofi -show drun")) -- Spotlight
-hl.bind(mainMod .. " + Tab",            hl.dsp.exec_cmd("pkill rofi || rofi -show window")) -- window switcher
+-- Window overview (Quickshell Overview.qml): tap Super alone, or Super+Tab
+hl.bind(mainMod .. " + Tab",            hl.dsp.global("quickshell:overview"))
+hl.bind(mainMod .. " + Super_L",        hl.dsp.global("quickshell:overview-tap"), { release = true })
 hl.bind(mainMod .. " + SHIFT + 3",      hl.dsp.exec_cmd("grim " .. shots .. " && notify-send 'Screenshot saved' 'Pictures/'"))
 hl.bind(mainMod .. " + SHIFT + 4",      hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | tee " .. shots .. " | wl-copy && notify-send 'Screenshot copied' 'Also saved in Pictures/'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
@@ -533,6 +535,14 @@ hl.window_rule({
     },
 
     no_focus = true,
+})
+
+-- Quickshell window overview animates itself; a layer fade would make the windows under
+-- it look like they fade out while their thumbnails fly to the grid
+hl.layer_rule({
+    name    = "overview-no-anim",
+    match   = { namespace = "^quickshell-overview$" },
+    no_anim = true,
 })
 
 -- Layer rules also return a handle.

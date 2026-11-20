@@ -69,6 +69,16 @@ ShellRoot {
         }
     }
 
+    Overview {
+        id: overview
+    }
+    // `qs ipc call overview toggle`: window overview (keys use the GlobalShortcut inside)
+    IpcHandler {
+        target: "overview"
+
+        function toggle(): void { overview.toggle(); }
+    }
+
     Toast {
         id: toast
     }

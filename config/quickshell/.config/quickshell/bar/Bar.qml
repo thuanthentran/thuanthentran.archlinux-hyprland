@@ -1,4 +1,4 @@
-// Top bar, one per screen. Replaces Waybar; reserves its height like Waybar did, so
+// Top bar, one per screen. Reserves its height (exclusive zone), so
 // tiling, maximize and keep_on_screen (which read the monitor's reserved area) follow it.
 import QtQuick
 import QtQuick.Layouts

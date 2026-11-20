@@ -1,4 +1,4 @@
-// Small message in the top-right corner, below Waybar; hides itself after 2 s.
+// Small message in the top-right corner, below the top bar; hides itself after 2 s.
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
@@ -23,7 +23,7 @@ PanelWindow {
         top: 8
         right: 12
     }
-    // Stay clear of Waybar's exclusive zone without reserving space of our own
+    // Stay clear of the bar's exclusive zone without reserving space of our own
     exclusionMode: ExclusionMode.Normal
     exclusiveZone: 0
     WlrLayershell.layer: WlrLayer.Overlay

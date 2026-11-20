@@ -52,5 +52,5 @@ Mốc lớn. Việc cụ thể và thứ tự làm: [TODO.md](TODO.md).
 - [x] Viết danh sách gói và script cài đặt
 - [x] Thiết lập snapshot Btrfs (snapper, snap-pac, grub-btrfs)
 - [ ] Thiết lập distrobox
-- [ ] Shell giao diện riêng bằng Quickshell
+- [x] Thanh trên cùng bằng Quickshell thay Waybar (cài đặt nhanh, đồ thị hệ thống, media, lời bài hát)
 - [ ] Cài thử lại từ đầu để kiểm tra khả năng tái lập

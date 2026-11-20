@@ -17,7 +17,7 @@ cmake
 meson
 ninja
 
-# Helpers called from hyprland.lua, waybar and scripts
+# Helpers called from hyprland.lua, the Quickshell bar and scripts
 grim
 slurp
 wl-clipboard
@@ -25,11 +25,11 @@ cliphist
 brightnessctl
 playerctl
 pavucontrol
+# nm-connection-editor ("Network settings…" in the bar's Wi-Fi list)
 network-manager-applet
 libnotify
 python
 
-waybar
 mako
 # Top bar (QML): config/quickshell; cava feeds its audio visualizer
 quickshell
@@ -46,6 +46,7 @@ fcitx5-unikey
 sddm
 nwg-dock-hyprland
 nwg-drawer
+# blueman-manager ("Bluetooth settings…" in the bar's Bluetooth list)
 blueman
 thunar
 thunar-volman

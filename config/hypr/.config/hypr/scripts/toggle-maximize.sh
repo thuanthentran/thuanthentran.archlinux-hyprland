@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Maximize / restore the active window to fill the work area (below Waybar).
+# Maximize / restore the active window to fill the work area (below the top bar).
 # Uses a real resize instead of Hyprland's "maximized" state, because maximized windows
 # are drawn below floating ones, which breaks window switching.
 set -eu

@@ -63,8 +63,6 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("mako")
   hl.exec_cmd("fcitx5 -d")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
-  hl.exec_cmd("nm-applet --indicator")
-  hl.exec_cmd("blueman-applet")
   hl.exec_cmd("nwg-dock-hyprland -d -i 52 -mb 10 -lp start")
   hl.exec_cmd("hyprpaper")                              -- wallpaper: hyprpaper.conf
   hl.exec_cmd("hypridle")                               -- dim / lock / screen off / suspend: hypridle.conf
@@ -433,7 +431,7 @@ hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Keep title bars reachable. A floating window dragged so its hyprbars title bar ends up
--- under Waybar or off the screen edge can no longer be grabbed, so push it back: title
+-- under the top bar or off the screen edge can no longer be grabbed, so push it back: title
 -- bar fully below the reserved top area, at least `keep` px of it left on screen
 -- horizontally and at the bottom.
 local function keep_on_screen(w)

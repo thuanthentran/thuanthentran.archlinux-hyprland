@@ -23,7 +23,7 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 - [x] Bước 6: peak meter đè lên thanh âm lượng (`PwNodePeakMonitor`); lời bài hát (LRCLIB, có cache), làm cho chạy được trước rồi hoàn thiện sau
 - [ ] Âm thanh: card NVIDIA đang ở profile "Pro Audio" (mỗi cổng HDMI/DP một output) và output mặc định là HDMI 0 dù không cắm màn hình; kiểm tra rồi chuyển profile / output mặc định về loa trong máy nếu cần
 - [ ] Lời bài hát: tên video YouTube lộn xộn thì tra sai / không ra; cân nhắc cho chọn kết quả khác hoặc chỉnh offset thời gian (bản live lệch với bản phòng thu)
-- [ ] Bước 7: bỏ `config/waybar` và gói `waybar`; cân nhắc bỏ `nm-applet` / `blueman-applet` khi bước 4 đã đủ
+- [x] Bước 7: bỏ `config/waybar` và gói `waybar`, bỏ `nm-applet` / `blueman-applet` khỏi autostart (giữ gói vì nút settings trong popup dùng `nm-connection-editor` / `blueman-manager`)
 - [ ] OSD khi đổi âm lượng / độ sáng (thay cho việc không có phản hồi gì)
 - [ ] Lịch + thông báo khi bấm đồng hồ
 

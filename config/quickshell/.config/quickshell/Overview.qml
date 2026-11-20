@@ -1,6 +1,15 @@
-// Window overview (Mission Control / Task View): every window of the current workspace
-// as a live thumbnail in a grid, minimized ones in a strip at the bottom. Opened by a
-// Super tap and Super+Tab (Hyprland binds -> GlobalShortcut "quickshell:overview").
+// Window overview (Mission Control / Task View) and Alt+Tab switcher.
+//
+// Grid mode: every window of the current workspace as a live thumbnail in a grid,
+// minimized ones in a row at the bottom. Opened by a Super tap and Super+Tab (Hyprland
+// binds -> GlobalShortcut "quickshell:overview" / "overview-tap").
+//
+// Strip mode (Alt+Tab, Alt+Shift+Tab): the windows side by side, the selected one in the
+// middle, the next ones to its right and the previous ones to its left (wrapping round).
+// A quick Alt+Tab switches straight to the next window without showing anything; holding
+// Alt for a moment, or pressing Tab again, shows the strip; releasing Alt picks. Alt's
+// release comes from a timer in hyprland.lua watching the Alt keys
+// ("quickshell:alttab-release").
 //
 // The real windows are never scaled: a full-screen overlay below the bar paints the
 // wallpaper and live screencopies of the windows. At progress 0 each thumbnail sits
@@ -9,7 +18,7 @@
 // directly later on.
 //
 // Order is most recently used first (Hyprland's focusHistoryID), frozen while open.
-// Keys: arrows / Tab move, Enter picks, Esc closes. Click picks, middle click closes a
+// Keys: arrows / Tab move (strip: left / right), Enter picks, Esc closes. Click picks, middle click closes a
 // window, click on empty space goes back to the current window.
 import QtQuick
 import Quickshell
@@ -30,6 +39,21 @@ PanelWindow {
     property string target: ""            // window to focus once closed ("" = none)
     property var mon: null                // monitor JSON from hyprctl, frozen while open
     property bool ready: false            // every thumbnail has its first frame
+    property string mode: "grid"          // "grid" or "strip"
+    property bool loaded: false           // tiles hold fresh data for this opening
+    property bool session: false          // Alt is held after an Alt+Tab
+    property bool commitPending: false    // Alt released before the window list arrived
+    property int pos: 0                   // strip: index of the picked card (unbounded, wraps)
+    property real scroll: pos             // pos, animated: which card is in the middle
+    property real slot: 0                 // strip: distance between card centres
+
+    Behavior on scroll {
+        enabled: root.open
+        NumberAnimation {
+            duration: 220
+            easing.type: Easing.OutCubic
+        }
+    }
 
     readonly property int gap: 28
     readonly property int labelH: 26
@@ -45,15 +69,91 @@ PanelWindow {
     }
 
     function show() {
-        if (open || fetch.running)
+        if (open || fetch.running || session)
             return;
+        mode = "grid";
+        loaded = false;
         fetch.running = true;
+    }
+
+    // Alt+Tab (dir 1) / Alt+Shift+Tab (dir -1)
+    function altTab(dir) {
+        if (open && mode === "grid") {
+            const n = Math.max(1, tiles.length);
+            selected = (selected + dir + n) % n;
+            return;
+        }
+        if (!session) {
+            if (open)                     // still closing from the last pick
+                return;
+            session = true;
+            commitPending = false;
+            mode = "strip";
+            loaded = false;
+            pos = dir;
+            hold.restart();
+            fetch.running = true;
+            return;
+        }
+        pos += dir;
+        if (loaded) {
+            selected = wrap(pos);
+            present();                    // pressing Tab again shows the strip at once
+        }
+    }
+
+    function altReleased() {
+        if (!session)
+            return;
+        session = false;
+        hold.stop();
+        if (!loaded)
+            commitPending = true;
+        else
+            commit();
+    }
+
+    // Focus the window in the middle of the strip
+    function commit() {
+        commitPending = false;
+        const addr = tiles[wrap(pos)]?.addr ?? "";
+        if (open) {
+            close(addr);
+        } else {
+            if (addr)
+                focusWindow(addr);
+            tiles = [];
+            minimized = [];
+            loaded = false;
+        }
+    }
+
+    function wrap(i) {
+        const n = Math.max(1, tiles.length);
+        return ((i % n) + n) % n;
+    }
+
+    // Strip: where card i sits for the current scroll; d is its signed distance from the
+    // middle, wrapped so the next windows are on the right and the previous on the left
+    function stripRect(t, i) {
+        const n = tiles.length;
+        let d = ((i - scroll) % n + n) % n;
+        if (d > n / 2)
+            d -= n;
+        return {
+            x: width / 2 + d * slot - t.sw / 2,
+            y: (height - t.sh + labelH) / 2,
+            w: t.sw,
+            h: t.sh
+        };
     }
 
     // Close, focusing `addr` (a window address) or nothing
     function close(addr) {
         if (!open)
             return;
+        session = false;
+        hold.stop();
         open = false;
         target = addr;
         // Hyprland ignores a focus change while this layer holds the keyboard, so wait
@@ -135,7 +235,16 @@ PanelWindow {
 
         const W = mon.width / mon.scale, H = mon.height / mon.scale - Theme.barHeight;
         const g = grid(wins, W - 2 * pad, H - 2 * pad - (mins.length > 0 ? 120 : 0));
-        tiles = wins.map((w, i) => Object.assign(w, { gx: g[i].x + pad, gy: g[i].y + pad, gw: g[i].w, gh: g[i].h }));
+        // Strip cards: same height, at most 55 % of the screen wide
+        const ch = H * 0.6, maxW = W * 0.55;
+        tiles = wins.map((w, i) => {
+            const sw = Math.min(ch * w.w / w.h, maxW, w.w);
+            return Object.assign(w, {
+                gx: g[i].x + pad, gy: g[i].y + pad, gw: g[i].w, gh: g[i].h,
+                sw, sh: sw * w.h / w.w
+            });
+        });
+        slot = Math.max(...tiles.map(t => t.sw), 0) + 60;
 
         // Minimized: a strip of small thumbnails, sliding up from below the screen
         const sh = 80;
@@ -151,9 +260,32 @@ PanelWindow {
             return o;
         });
 
-        // Windows the grid rearranges: the active one is selected
-        selected = 0;
+        if (open) {                       // refreshed while open (a window went away)
+            selected = Math.min(selected, Math.max(0, tiles.length - 1));
+            if (tiles.length === 0)
+                close("");
+            return;
+        }
+        loaded = true;
         target = "";
+        if (mode === "grid") {
+            selected = 0;
+            present();
+        } else {
+            selected = wrap(pos);
+            if (tiles.length < 2)
+                altReleased();             // nothing to switch to
+            else if (commitPending)
+                commit();
+            else if (!hold.running || Math.abs(pos) > 1)
+                present();
+        }
+    }
+
+    // Show the overlay; the windows start flying once their thumbnails are ready
+    function present() {
+        if (open)
+            return;
         progress = 0;
         ready = false;
         open = true;
@@ -207,6 +339,12 @@ PanelWindow {
         interval: 150
         onTriggered: root.go()
     }
+    // How long Alt must be held after Alt+Tab before the strip shows
+    Timer {
+        id: hold
+        interval: 160
+        onTriggered: if (root.session && root.loaded) root.present()
+    }
     Timer {
         id: refocus
         interval: 40
@@ -238,6 +376,7 @@ PanelWindow {
             if (root.progress === 0 && !root.open) {
                 root.tiles = [];
                 root.minimized = [];
+                root.loaded = false;
             }
         }
     }
@@ -259,6 +398,26 @@ PanelWindow {
         name: "overview"
         description: "Show all windows"
         onPressed: root.toggle()
+    }
+    GlobalShortcut {
+        appid: "quickshell"
+        name: "alttab"
+        description: "Switch to the next window"
+        onPressed: root.altTab(1)
+    }
+    GlobalShortcut {
+        appid: "quickshell"
+        name: "alttab-back"
+        description: "Switch to the previous window"
+        onPressed: root.altTab(-1)
+    }
+    GlobalShortcut {
+        appid: "quickshell"
+        name: "alttab-release"
+        description: "Alt released (picks the window in the Alt+Tab strip)"
+        // sent from a Hyprland timer, which may pass it as either
+        onPressed: root.altReleased()
+        onReleased: root.altReleased()
     }
     // Super tap: a release bind, and Hyprland's `global` passes a release as `released`
     GlobalShortcut {
@@ -306,7 +465,26 @@ PanelWindow {
         anchors.fill: parent
         focus: true
 
+        // Backup for the release bind, while the strip has the keyboard
+        Keys.onReleased: e => {
+            if (e.key === Qt.Key_Alt)
+                root.altReleased();
+        }
         Keys.onPressed: e => {
+            if (root.mode === "strip") {
+                if (e.key === Qt.Key_Escape)
+                    root.close(root.tiles[0]?.addr ?? "");
+                else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter)
+                    root.commit();
+                else if (e.key === Qt.Key_Left)
+                    root.altTab(-1);
+                else if (e.key === Qt.Key_Right)
+                    root.altTab(1);
+                else
+                    return;
+                e.accepted = true;
+                return;
+            }
             if (e.key === Qt.Key_Escape)
                 root.close(root.tiles[0]?.addr ?? "");
             else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || e.key === Qt.Key_Space)
@@ -342,6 +520,7 @@ PanelWindow {
                 required property int index
                 info: modelData
                 progress: root.progress
+                visible: root.mode === "grid"
                 dim: true
                 onPicked: {
                     root.open = false;
@@ -362,10 +541,12 @@ PanelWindow {
                 required property int index
                 info: modelData
                 progress: root.progress
-                selected: root.open && index === root.selected
+                goal: root.mode === "strip" ? root.stripRect(modelData, index)
+                    : { x: modelData.gx, y: modelData.gy, w: modelData.gw, h: modelData.gh }
+                selected: root.open && index === root.selected && root.mode === "grid"
                 // most recently used on top; the picked one above everything while closing
                 z: modelData.addr === root.target ? 1000 : root.tiles.length - index
-                onHoveredChanged: if (hovered && root.open) root.selected = index
+                onHoveredChanged: if (hovered && root.open && root.mode === "grid") root.selected = index
                 onPaintedChanged: root.checkReady()
                 onPicked: root.close(modelData.addr)
                 onCloseRequested: root.toplevelFor(modelData.addr)?.wayland?.close()
@@ -377,6 +558,7 @@ PanelWindow {
         id: tile
 
         property var info
+        property var goal: ({ x: info.gx, y: info.gy, w: info.gw, h: info.gh })   // where it goes at progress 1
         property real progress
         property bool selected: false
         property bool dim: false
@@ -386,10 +568,10 @@ PanelWindow {
         signal picked
         signal closeRequested
 
-        x: info.x + (info.gx - info.x) * progress
-        y: info.y + (info.gy - info.y) * progress
-        width: info.w + (info.gw - info.w) * progress
-        height: info.h + (info.gh - info.h) * progress
+        x: info.x + (goal.x - info.x) * progress
+        y: info.y + (goal.y - info.y) * progress
+        width: info.w + (goal.w - info.w) * progress
+        height: info.h + (goal.h - info.h) * progress
 
         Rectangle {
             anchors.fill: parent
@@ -453,7 +635,7 @@ PanelWindow {
                 height: parent.height - titleBar.height
                 captureSource: tile.toplevel?.wayland ?? null
                 live: true
-                constraintSize: Qt.size(tile.info.gw * 1.5, tile.info.gh * 1.5)
+                constraintSize: Qt.size(Math.max(tile.info.gw, tile.info.sw ?? 0) * 1.5, Math.max(tile.info.gh, tile.info.sh ?? 0) * 1.5)
             }
             // No picture (yet, or minimized windows Hyprland doesn't render): app icon
             IconImage {

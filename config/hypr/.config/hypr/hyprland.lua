@@ -401,6 +401,32 @@ hl.bind(mainMod .. " + space",          hl.dsp.exec_cmd("pkill rofi || rofi -sho
 -- Window overview (Quickshell Overview.qml): tap Super alone, or Super+Tab
 hl.bind(mainMod .. " + Tab",            hl.dsp.global("quickshell:overview"))
 hl.bind(mainMod .. " + Super_L",        hl.dsp.global("quickshell:overview-tap"), { release = true })
+-- Alt+Tab / Alt+Shift+Tab: switcher strip in the same Overview.qml. Releasing Alt picks,
+-- but Quickshell can't see that unless it has the keyboard, and a release bind on Alt_L
+-- doesn't fire once Tab was pressed in between. So each Alt+Tab also starts a short timer
+-- here that watches the Alt keys and tells Quickshell when both are up. hl.is_key_down
+-- takes xkb keycodes for keys (evdev + 8: Alt_L 64, Alt_R 108), unlike mouse buttons.
+local alt_codes = { 64, 108 }
+local function alt_down()
+    for _, k in ipairs(alt_codes) do
+        local ok, d = pcall(hl.is_key_down, k)
+        if ok and d then return true end
+    end
+    return false
+end
+local alt_watch
+alt_watch = hl.timer(function()
+    if not alt_down() then
+        alt_watch:set_enabled(false)
+        hl.dispatch(hl.dsp.global("quickshell:alttab-release"))
+    end
+end, { timeout = 20, type = "repeat" })
+alt_watch:set_enabled(false)
+local function watch_alt() alt_watch:set_enabled(true) end
+hl.bind("ALT + Tab",                    hl.dsp.global("quickshell:alttab"))
+hl.bind("ALT + SHIFT + Tab",            hl.dsp.global("quickshell:alttab-back"))
+hl.bind("ALT + Tab",                    watch_alt, { non_consuming = true })
+hl.bind("ALT + SHIFT + Tab",            watch_alt, { non_consuming = true })
 hl.bind(mainMod .. " + SHIFT + 3",      hl.dsp.exec_cmd("grim " .. shots .. " && notify-send 'Screenshot saved' 'Pictures/'"))
 hl.bind(mainMod .. " + SHIFT + 4",      hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | tee " .. shots .. " | wl-copy && notify-send 'Screenshot copied' 'Also saved in Pictures/'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))

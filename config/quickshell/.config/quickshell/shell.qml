@@ -72,11 +72,15 @@ ShellRoot {
     Overview {
         id: overview
     }
-    // `qs ipc call overview toggle`: window overview (keys use the GlobalShortcut inside)
+    // `qs ipc call overview toggle|alttab <1|-1>|release`: window overview / Alt+Tab strip
+    // (keys use the GlobalShortcuts inside)
     IpcHandler {
         target: "overview"
 
         function toggle(): void { overview.toggle(); }
+        // Alt+Tab steps (1 / -1) and Alt release, for testing without the keyboard
+        function alttab(dir: int): void { overview.altTab(dir); }
+        function release(): void { overview.altReleased(); }
     }
 
     Toast {

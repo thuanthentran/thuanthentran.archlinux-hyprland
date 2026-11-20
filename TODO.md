@@ -32,7 +32,13 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 
 - [ ] Bấm icon trên dock (nwg-dock) của app đang minimize có thể mở ngăn ẩn thay vì đưa cửa sổ về; kiểm tra và sửa (hoặc để Quickshell làm dock sau này)
 - [ ] Kéo cửa sổ lên thanh trên cùng rồi giữ chuột đứng yên ~1 giây: kiểm tra cửa sổ có bị đẩy về trước khi thả không (tùy `hl.is_key_down(272)` có đọc được nút chuột không)
-- [ ] Vuốt 3 ngón đôi lúc chỉ lẩn quẩn giữa 2 cửa sổ (đã có ý tưởng, làm sau)
+- [ ] Đa nhiệm kiểu thanh home iOS (`Overview.qml`), thay cho vuốt 3 ngón cũ hay lẩn quẩn giữa 2 cửa sổ:
+  - [x] Overview: nhấn Super / Super+Tab hiện mọi cửa sổ trong workspace
+  - [x] Alt+Tab / Alt+Shift+Tab: nhấn nhanh nhảy thẳng, giữ Alt hiện dải cửa sổ
+  - [ ] Helper đọc touchpad (libinput) + udev rule `uaccess` cho riêng touchpad, bỏ cử chỉ 3 ngón của Hyprland
+  - [ ] Vuốt ngang 3 ngón: chuyển thẳng cửa sổ trước / sau
+  - [ ] Thêm trục dọc: kéo lên thì cửa sổ nhỏ dần thành dải, kéo đủ cao thì vào overview
+  - [ ] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (giờ theo ô rộng nhất)
 - [ ] Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸
 - [ ] Nút trên thanh tiêu đề: giữ màu macOS hay đổi sang kiểu Windows (icon xám, nút đóng đỏ khi hover)
 - [ ] Chốt phong cách: bảng màu, mức animation và blur (đang mở trong [docs/05](docs/05-repo-plan.md))

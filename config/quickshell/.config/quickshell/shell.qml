@@ -31,7 +31,7 @@ ShellRoot {
     }
 
     // `qs ipc call bar expand|collapse|toggle` -> quick settings; `qs ipc call bar popup
-    // sound|wifi|bluetooth|media` opens a drop-down (also handy for testing)
+    // sound|wifi|bluetooth|media|clock` opens a drop-down (also handy for testing)
     IpcHandler {
         target: "bar"
 
@@ -44,6 +44,7 @@ ShellRoot {
     Osd {
         id: osd
     }
+    Popups {}
     // `qs ipc call osd brightness|volume|mic`: show the OSD (brightness keys call this,
     // since sysfs changes can't be watched)
     IpcHandler {
@@ -55,6 +56,17 @@ ShellRoot {
         }
         function volume(): void { osd.show("volume"); }
         function mic(): void { osd.show("mic"); }
+    }
+
+    // `qs ipc call notifs clear|dnd`: clear the notification list / toggle Do Not Disturb
+    IpcHandler {
+        target: "notifs"
+
+        function clear(): void { Notifs.clearAll(); }
+        function dnd(): bool {
+            Notifs.dnd = !Notifs.dnd;
+            return Notifs.dnd;
+        }
     }
 
     Toast {

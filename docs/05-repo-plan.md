@@ -54,7 +54,7 @@ Nhóm gói dự kiến: nền, Hyprland, dev, NVIDIA, ASUS. Gói chính thức v
 
 ## Chưa quyết định
 
-- Bộ thành phần giao diện: rofi, mako, nwg-dock, hyprlock, kitty. Thanh trên cùng đã chuyển từ Waybar sang Quickshell (2026-11-20) để thêm widget có trạng thái; kế hoạch trong [TODO](../TODO.md).
+- Bộ thành phần giao diện: rofi, nwg-dock, hyprlock, kitty; thông báo do Quickshell đảm nhận (thay mako). Thanh trên cùng đã chuyển từ Waybar sang Quickshell (2026-11-20) để thêm widget có trạng thái; kế hoạch trong [TODO](../TODO.md).
 - Phong cách: bảng màu, font, mức độ animation và blur.
 - Có dùng ổ D làm ổ dữ liệu chung với Windows không.
 - Phần mềm công việc bắt buộc nào cần kiểm tra trước trên Arch (VPN công ty, tool của hãng).

@@ -30,7 +30,6 @@ network-manager-applet
 libnotify
 python
 
-mako
 # Top bar (QML): config/quickshell; cava feeds its audio visualizer
 quickshell
 cava

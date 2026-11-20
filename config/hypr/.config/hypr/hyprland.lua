@@ -250,6 +250,10 @@ hl.config({
     misc = {
         force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
+        -- "Sleep" here only locks and turns the screen off (real suspend hangs on the TUF),
+        -- so any key or mouse movement has to bring the screen back
+        key_press_enables_dpms  = true,
+        mouse_move_enables_dpms = true,
     },
 })
 
@@ -473,6 +477,15 @@ hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_S
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+ && qs ipc call osd brightness"),                  { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%- && qs ipc call osd brightness"),                  { locked = true, repeating = true })
+
+-- Suspend hangs on the TUF, so logind leaves the power key and the lid alone
+-- (hosts/tuf-f16/etc/systemd/logind.conf.d): a short press of the power button turns the
+-- screen back on, closing the lid locks (logind) and turns the screen off.
+local dpms_on  = hl.dsp.exec_cmd("hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'")
+local dpms_off = hl.dsp.exec_cmd("hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'")
+hl.bind("XF86PowerOff",         dpms_on,  { locked = true })
+hl.bind("switch:on:Lid Switch",  dpms_off, { locked = true })
+hl.bind("switch:off:Lid Switch", dpms_on,  { locked = true })
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })

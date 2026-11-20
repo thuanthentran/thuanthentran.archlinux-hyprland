@@ -23,7 +23,7 @@ set -Eeuo pipefail
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 readonly REPO
 readonly HOST=${SETUP_HOST:-tuf-f16}
-readonly ALL_STEPS=(mirrors packages aur dotfiles system services snapper plugins theme)
+readonly ALL_STEPS=(mirrors packages aur dotfiles system services snapper hibernate plugins theme)
 
 readonly BOLD=$'\e[1m' RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' RESET=$'\e[0m'
 DRY_RUN=0
@@ -64,6 +64,7 @@ Steps (default: all, in this order):
   system    copy system/etc and hosts/\$SETUP_HOST/etc into /etc, rebuild initramfs
   services  enable system services (network, bluetooth, login, power, zram)
   snapper   snapper config for /, timeline snapshots, snapshot entries in GRUB
+  hibernate swapfile (size of RAM) on its own Btrfs subvolume @swap, for hibernation
   plugins   build and enable the hyprbars plugin with hyprpm (inside Hyprland only)
   theme     GTK/icon/cursor theme and fonts (inside a graphical session only)
 
@@ -237,6 +238,40 @@ step_snapper() {
     NUMBER_LIMIT=20 NUMBER_LIMIT_IMPORTANT=10
   enable_units --now snapper-timeline.timer snapper-cleanup.timer grub-btrfsd.service
   run sudo grub-mkconfig -o /boot/grub/grub.cfg
+}
+
+# Hibernation needs swap on disk (zram lives in RAM). A swapfile on its own Btrfs
+# subvolume @swap, mounted at /swap, so snapper never snapshots it; as big as RAM; low
+# priority, so zram is still used first. With a systemd initramfs on UEFI no resume= /
+# resume_offset= is needed: systemd stores the location in an EFI variable when hibernating.
+step_hibernate() {
+  step "Hibernation swapfile"
+  local dev uuid size mnt
+  if swapon --show=NAME --noheadings | grep -qx /swap/swapfile; then
+    info "/swap/swapfile already in use"
+    return
+  fi
+  dev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+  uuid=$(findmnt -no UUID /)
+  # @swap exists once /swap is in fstab (checking the subvolume list needs root)
+  if ! grep -q '[[:space:]]/swap[[:space:]]' /etc/fstab; then
+    mnt=$(mktemp -d)
+    run sudo mount -o subvolid=5 "$dev" "$mnt"
+    run sudo btrfs subvolume create "$mnt/@swap"
+    run sudo umount "$mnt"
+    rmdir "$mnt"
+  fi
+  run sudo mkdir -p /swap
+  if ! grep -q '[[:space:]]/swap[[:space:]]' /etc/fstab; then
+    run sudo sh -c "printf 'UUID=%s\t/swap\tbtrfs\trw,noatime,ssd,space_cache=v2,subvol=/@swap\t0 0\n' '$uuid' >> /etc/fstab"
+  fi
+  findmnt -n /swap >/dev/null || run sudo mount /swap
+  size=$(awk '/MemTotal/ { printf "%d", ($2 + 1048575) / 1048576 }' /proc/meminfo)
+  [[ -f /swap/swapfile ]] || run sudo btrfs filesystem mkswapfile --size "${size}g" --uuid clear /swap/swapfile
+  if ! grep -q '^/swap/swapfile' /etc/fstab; then
+    run sudo sh -c "printf '/swap/swapfile\tnone\tswap\tdefaults,pri=0\t0 0\n' >> /etc/fstab"
+  fi
+  run sudo swapon /swap/swapfile
 }
 
 step_plugins() {

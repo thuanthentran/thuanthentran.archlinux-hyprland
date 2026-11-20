@@ -1,7 +1,9 @@
-// Power button with a menu: lock, sleep, log out, restart, shut down. Restart and shut
+// Power button with a menu: lock, sleep, hibernate (only when logind says it can), log
+// out, restart, shut down. Restart and shut
 // down ask for a second click so a slip doesn't turn the machine off.
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs
 import qs.widgets
 
@@ -27,11 +29,32 @@ BarButton {
 
     readonly property var actions: [
         { id: "lock", icon: "\u{F033E}", label: "Lock", cmd: "loginctl lock-session" },
-        { id: "sleep", icon: "\u{F04B2}", label: "Sleep", cmd: "systemctl suspend" },
+        // Real suspend hangs on the TUF (CLAUDE.md "Sleep and hibernation"): lock, then
+        // turn the screen off; a key, the mouse or the power button brings it back
+        { id: "sleep", icon: "\u{F04B2}", label: "Sleep", cmd: "loginctl lock-session; sleep 1; hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'" },
+        { id: "hibernate", icon: "\u{F0717}", label: "Hibernate", cmd: "systemctl hibernate" },
         { id: "logout", icon: "\u{F0343}", label: "Log out", cmd: "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'" },
         { id: "reboot", icon: "\u{F0709}", label: "Restart", confirm: "Click again to restart", cmd: "systemctl reboot" },
         { id: "poweroff", icon: "\u{F0425}", label: "Shut down", confirm: "Click again to shut down", cmd: "systemctl poweroff" }
     ]
+
+    // Hibernate needs swap on disk (setup.sh hibernate); ask logind each time the menu opens
+    property bool canHibernate: false
+    Process {
+        id: canHib
+        command: ["busctl", "call", "org.freedesktop.login1", "/org/freedesktop/login1",
+            "org.freedesktop.login1.Manager", "CanHibernate"]
+        stdout: StdioCollector {
+            onStreamFinished: root.canHibernate = text.includes('"yes"')
+        }
+    }
+    Connections {
+        target: menu
+        function onVisibleChanged() {
+            if (menu.visible)
+                canHib.running = true;
+        }
+    }
 
     Timer {
         id: disarm
@@ -70,7 +93,7 @@ BarButton {
                 spacing: 2
 
                 Repeater {
-                    model: root.actions
+                    model: root.actions.filter(a => a.id !== "hibernate" || root.canHibernate)
 
                     Rectangle {
                         required property var modelData

@@ -1,5 +1,6 @@
 // Collapsed: shown only while Bluetooth is on (another icon once a device is connected).
-// Expanded: always shown with its state; click turns it on / off, right click opens Blueman.
+// Expanded: always shown with its state; click opens the device list (with the on / off
+// switch), right click opens Blueman.
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
@@ -18,7 +19,13 @@ BarButton {
     text: !enabled ? "\u{F00B2}" : connected.length > 0 ? "\u{F00B1}" : "\u{F00AF}"
     textColor: enabled ? Theme.fg : Theme.fgOff
     pill: BarState.expanded      // collapsed, the whole cluster is one button
+    highlighted: menu.visible
     tooltip: BarState.expanded ? "" : label
+
+    BluetoothMenu {
+        id: menu
+        anchorItem: root
+    }
 
     Reveal {
         anchors.verticalCenter: parent.verticalCenter
@@ -38,7 +45,17 @@ BarButton {
             Quickshell.execDetached(["blueman-manager"]);
         else if (!BarState.expanded)
             BarState.expanded = true;
-        else if (adapter)
-            adapter.enabled = !adapter.enabled;
+        else
+            menu.toggle();
+    }
+
+    Connections {
+        target: BarState
+        function onPopupRequested(name) {
+            if (name === "bluetooth") {
+                BarState.expanded = true;
+                menu.openWithoutGrab();
+            }
+        }
     }
 }

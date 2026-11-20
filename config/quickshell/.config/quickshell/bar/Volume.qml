@@ -25,11 +25,17 @@ BarButton {
         : "\u{F057E}"
     textColor: muted ? Theme.fgOff : Theme.fg
     pill: BarState.expanded      // collapsed, the whole cluster is one button
+    highlighted: mixer.visible
     tooltip: BarState.expanded ? "" : muted ? "Muted" : Math.round(volume * 100) + "%"
 
     // Needed for sink.audio to be populated
     PwObjectTracker {
         objects: [root.sink]
+    }
+
+    VolumeMixer {
+        id: mixer
+        anchorItem: root
     }
 
     Reveal {
@@ -58,7 +64,17 @@ BarButton {
         else if (!BarState.expanded)
             BarState.expanded = true;
         else
-            Quickshell.execDetached(["pavucontrol"]);
+            mixer.toggle();
     }
     onWheel: w => setVolume(volume + w.angleDelta.y / 120 * 0.05)
+
+    Connections {
+        target: BarState
+        function onPopupRequested(name) {
+            if (name === "sound") {
+                BarState.expanded = true;
+                mixer.openWithoutGrab();
+            }
+        }
+    }
 }

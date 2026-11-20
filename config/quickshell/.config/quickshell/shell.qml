@@ -30,13 +30,15 @@ ShellRoot {
         }
     }
 
-    // `qs ipc call bar expand|collapse|toggle` -> quick settings (also handy for testing)
+    // `qs ipc call bar expand|collapse|toggle` -> quick settings; `qs ipc call bar popup
+    // sound|wifi|bluetooth` opens a drop-down (also handy for testing)
     IpcHandler {
         target: "bar"
 
         function expand(): void { BarState.expanded = true; }
         function collapse(): void { BarState.expanded = false; }
         function toggle(): void { BarState.expanded = !BarState.expanded; }
+        function popup(name: string): void { BarState.popupRequested(name); }
     }
 
     Toast {

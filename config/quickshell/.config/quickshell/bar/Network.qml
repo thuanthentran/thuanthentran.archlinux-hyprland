@@ -1,5 +1,5 @@
-// Wi-Fi signal bars, a cable when wired, crossed out when offline.
-// Expanded: network name and signal %. Click (expanded) opens the connection editor.
+// Wi-Fi signal arcs, a cable when wired, crossed out when offline.
+// Expanded: network name and signal %; click opens the Wi-Fi list.
 import QtQuick
 import Quickshell
 import Quickshell.Networking
@@ -16,16 +16,25 @@ BarButton {
     readonly property real strength: wifiNet?.signalStrength ?? 0
     readonly property string label: wired ? "Wired" : wifiNet ? wifiNet.name + "  " + Math.round(strength * 100) + "%" : "Offline"
 
-    text: wired ? "\u{F0200}"
-        : !wifiNet ? "\u{F092E}"
-        : strength < 0.2 ? "\u{F092F}"
-        : strength < 0.4 ? "\u{F091F}"
-        : strength < 0.6 ? "\u{F0922}"
-        : strength < 0.8 ? "\u{F0925}"
-        : "\u{F0928}"
+    // Wi-Fi uses the drawn WifiIcon below; glyphs only for wired / offline
+    text: wired ? "\u{F0200}" : !wifiNet ? "\u{F092E}" : ""
     textColor: wired || wifiNet ? Theme.fg : Theme.fgOff
     pill: BarState.expanded      // collapsed, the whole cluster is one button
+    highlighted: menu.visible
     tooltip: BarState.expanded ? "" : label
+
+    WifiMenu {
+        id: menu
+        anchorItem: root
+        wifi: root.wifi
+    }
+
+    WifiIcon {
+        visible: !root.wired && root.wifiNet !== null
+        anchors.verticalCenter: parent.verticalCenter
+        level: root.strength
+        color: root.textColor
+    }
 
     Reveal {
         anchors.verticalCenter: parent.verticalCenter
@@ -44,6 +53,16 @@ BarButton {
         if (!BarState.expanded)
             BarState.expanded = true;
         else
-            Quickshell.execDetached(["nm-connection-editor"]);
+            menu.toggle();
+    }
+
+    Connections {
+        target: BarState
+        function onPopupRequested(name) {
+            if (name === "wifi") {
+                BarState.expanded = true;
+                menu.openWithoutGrab();
+            }
+        }
     }
 }

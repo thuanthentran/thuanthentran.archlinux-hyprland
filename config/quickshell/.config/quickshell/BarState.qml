@@ -8,4 +8,6 @@ Singleton {
     property bool expanded: false
     // Number of sliders being dragged; the cluster stays open while > 0
     property int held: 0
+    // Set by `qs ipc call bar popup <name>` (sound, wifi, bluetooth) to open that drop-down
+    signal popupRequested(string name)
 }

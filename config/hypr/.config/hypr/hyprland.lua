@@ -59,8 +59,7 @@ local menu        = "nwg-drawer"
 -- Or execute your favorite apps at launch like this:
 --
 hl.on("hyprland.start", function ()
-  hl.exec_cmd("waybar")
-  hl.exec_cmd("qs")                                     -- Quickshell widgets: ~/.config/quickshell
+  hl.exec_cmd("qs")                                     -- top bar (Quickshell): ~/.config/quickshell
   hl.exec_cmd("mako")
   hl.exec_cmd("fcitx5 -d")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
@@ -291,6 +290,10 @@ hl.config({
         -- Click to focus (Windows/macOS style). Hovering does not steal focus; scrolling
         -- still goes to the window under the cursor.
         follow_mouse = 2,
+        -- Default 1 moves focus to the window under the cursor whenever focus goes between a
+        -- tiled and a floating window, which undoes 3-finger window cycling. Keep focus where
+        -- the cycle / click put it.
+        float_switch_override_focus = 0,
 
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 

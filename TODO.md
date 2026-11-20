@@ -10,28 +10,35 @@ Backlog của repo, xếp theo thứ tự nên làm. Mốc lớn nằm ở mục
 - [ ] Cập nhật [docs/04](docs/04-install-arch.md) theo lần cài thật: bỏ cảnh báo "chưa được chạy thử", sửa những bước khác với thực tế
 - [x] Rà mục "Chưa xác minh" trong [docs/02](docs/02-machine-tuf-f16.md) (BitLocker...) giờ đã có Arch chạy trên máy
 
-## Giao diện: Quickshell
+## Giao diện: thanh trên cùng bằng Quickshell
 
-Chạy song song với Waybar, thay dần từng phần. Mỗi widget là một Stow package hoặc một thư mục trong `config/quickshell/`.
+Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "control center" ngay trên thanh. Mỗi bước một commit, chạy thử xong mới sang bước sau.
 
 - [x] Dựng khung: cài `quickshell`, thêm vào `packages/`, autostart trong `hyprland.lua`, hot reload chạy được
-- [ ] Control Center: panel bật ra từ Waybar với Wi-Fi, Bluetooth, âm lượng, độ sáng, power profile
+- [x] Bước 1: thanh Quickshell giống Waybar cũ; âm lượng / Wi-Fi chỉ còn icon, Bluetooth chỉ hiện khi bật, nút nguồn mở menu (Lock, Sleep, Log out, Restart và Shut down bấm 2 lần)
+- [ ] Bước 2: cụm Wi-Fi / Bluetooth / tray bấm vào thì bung ngang ngay trên thanh (đồ thị thu thành %, ngày tháng ẩn), rời chuột thì thu về; animation trong thanh, kích thước thanh không đổi
+- [ ] Bước 3: đồ thị CPU / RAM nhỏ (lấy mẫu mỗi giây, giữ ~60 điểm, chạy cả khi chưa bung), tốc độ mạng ↓ / ↑
+- [ ] Bước 4: cài đặt nhanh khi bung: Wi-Fi (tên, % tín hiệu, popup chọn mạng), âm lượng (thanh %, cuộn để chỉnh, bấm mở mixer kèm chọn thiết bị ra), độ sáng (thanh %, cuộn), Bluetooth, power profile
+- [ ] Bước 5: media (MPRIS): tên bài, thanh thời gian, nút điều khiển, visualizer bằng `cava`
+- [ ] Bước 6: peak meter đè lên thanh âm lượng (`PwNodePeakMonitor`); lời bài hát (LRCLIB, có cache), làm cho chạy được trước rồi hoàn thiện sau
+- [ ] Bước 7: bỏ `config/waybar` và gói `waybar`; cân nhắc bỏ `nm-applet` / `blueman-applet` khi bước 4 đã đủ
 - [ ] OSD khi đổi âm lượng / độ sáng (thay cho việc không có phản hồi gì)
 - [ ] Lịch + thông báo khi bấm đồng hồ
-- [ ] Trình phát nhạc (MPRIS)
-- [ ] Cân nhắc thay Waybar hoàn toàn khi các widget trên đã ổn
 
 ## Cửa sổ và desktop
 
 - [ ] Bấm icon trên dock (nwg-dock) của app đang minimize có thể mở ngăn ẩn thay vì đưa cửa sổ về; kiểm tra và sửa (hoặc để Quickshell làm dock sau này)
-- [ ] Kéo cửa sổ lên Waybar rồi giữ chuột đứng yên ~1 giây: kiểm tra cửa sổ có bị đẩy về trước khi thả không (tùy `hl.is_key_down(272)` có đọc được nút chuột không)
-- [ ] Waybar: hiện số cửa sổ đang minimize trên nút 󰘸
+- [ ] Kéo cửa sổ lên thanh trên cùng rồi giữ chuột đứng yên ~1 giây: kiểm tra cửa sổ có bị đẩy về trước khi thả không (tùy `hl.is_key_down(272)` có đọc được nút chuột không)
+- [ ] Vuốt 3 ngón đôi lúc chỉ lẩn quẩn giữa 2 cửa sổ (đã có ý tưởng, làm sau)
+- [ ] Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸
 - [ ] Nút trên thanh tiêu đề: giữ màu macOS hay đổi sang kiểu Windows (icon xám, nút đóng đỏ khi hover)
 - [ ] Chốt phong cách: bảng màu, mức animation và blur (đang mở trong [docs/05](docs/05-repo-plan.md))
 - [ ] Cắm màn hình qua USB-C, xem đi qua GPU nào (`hyprctl monitors`); ghi vào [docs/02](docs/02-machine-tuf-f16.md)
 - [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
 
 ## Hệ thống và tái lập
+
+- [ ] Hibernate: zram không dùng được để ngủ đông; cần swapfile ~16 GB trên Btrfs, hook `resume` trong mkinitcpio, `resume=` + `resume_offset=` trong cmdline, rồi thêm Hibernate vào menu nguồn
 
 - [ ] Thiết lập distrobox (Ubuntu) cho app chỉ có trên Ubuntu
 - [ ] Kiểm tra phần mềm công việc bắt buộc trên Arch (VPN công ty, tool của hãng)

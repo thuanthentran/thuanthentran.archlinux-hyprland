@@ -3,7 +3,8 @@
 # workspace "magic".
 #   minimize.sh minimize   hide the active window (title bar "-", Super+M)
 #   minimize.sh restore    bring a minimized window back to the current workspace
-#                          (Waybar button, Super+S); asks with rofi when there are several
+#                          (bar button, Super+S); asks with rofi when there are several
+#   minimize.sh restore ADDR   restore that window (bar taskbar click); ADDR with or without 0x
 #
 # The move uses follow = false: without it Hyprland opens the special workspace to follow
 # the window, so it stays on screen and minimize looks like it did nothing.
@@ -25,7 +26,14 @@ for c in json.load(sys.stdin):
         print(c["address"] + "\t" + c["class"] + ": " + c["title"])
 ' "$special")
 
-    if ((${#wins[@]} == 0)); then
+    if [[ -n ${2:-} ]]; then
+      want=0x${2#0x}
+      pick=-1
+      for i in "${!wins[@]}"; do
+        [[ ${wins[$i]%%$'\t'*} == "$want" ]] && pick=$i
+      done
+      ((pick >= 0)) || exit 0
+    elif ((${#wins[@]} == 0)); then
       notify-send -t 1500 "No minimized windows"
       exit 0
     elif ((${#wins[@]} == 1)); then
@@ -48,7 +56,7 @@ print(m["activeWorkspace"]["id"], 1 if m["specialWorkspace"]["name"] else 0)')
     ;;
 
   *)
-    echo "Usage: minimize.sh minimize|restore" >&2
+    echo "Usage: minimize.sh minimize|restore [ADDR]" >&2
     exit 1
     ;;
 esac

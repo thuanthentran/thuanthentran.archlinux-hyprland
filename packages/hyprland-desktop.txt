@@ -29,6 +29,8 @@ pavucontrol
 network-manager-applet
 libnotify
 python
+# Gio bindings for scripts/bt-agent.py (Bluetooth pairing prompts)
+python-gobject
 
 # Top bar (QML): config/quickshell; cava feeds its audio visualizer
 quickshell

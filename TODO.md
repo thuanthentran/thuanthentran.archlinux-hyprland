@@ -22,9 +22,9 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 - [x] Bước 5: media (MPRIS): tên bài, thanh thời gian, nút điều khiển, visualizer bằng `cava`
 - [x] Bước 6: peak meter đè lên thanh âm lượng (`PwNodePeakMonitor`); lời bài hát (LRCLIB, có cache), làm cho chạy được trước rồi hoàn thiện sau
 - [x] Âm thanh: card NVIDIA rơi vào profile "Pro Audio" khi không cắm màn hình (4 output HDMI "ma", có lúc thành output mặc định); đã ẩn Pro Audio bằng rule WirePlumber trong `config/wireplumber`
-- [ ] Lời bài hát: tên video YouTube lộn xộn thì tra sai / không ra; cân nhắc cho chọn kết quả khác hoặc chỉnh offset thời gian (bản live lệch với bản phòng thu)
+- [x] Lời bài hát: chọn kết quả khác (‹ ›), chỉnh lệch thời gian (− / +), tự gõ câu tra; nhớ theo từng bài
 - [x] Bước 7: bỏ `config/waybar` và gói `waybar`, bỏ `nm-applet` / `blueman-applet` khỏi autostart (giữ gói vì nút settings trong popup dùng `nm-connection-editor` / `blueman-manager`)
-- [ ] Bluetooth: không còn `blueman-applet` nên không có agent hỏi xác nhận mã khi ghép đôi (bàn phím, điện thoại); ghép đôi các thiết bị đó từ popup sẽ thất bại không báo gì. Tạm thời dùng "Bluetooth settings…" (`blueman-manager`); sau này làm agent hỏi mã ngay trên thanh
+- [x] Bluetooth: agent ghép đôi riêng (`scripts/bt-agent.py`) thay cho `blueman-applet`; hỏi xác nhận mã qua thông báo có nút Pair / Cancel, PIN qua rofi
 - [x] OSD khi đổi âm lượng / độ sáng (thay cho việc không có phản hồi gì)
 - [x] Lịch + thông báo khi bấm đồng hồ (Quickshell thay mako)
 

@@ -60,6 +60,7 @@ local menu        = "nwg-drawer"
 --
 hl.on("hyprland.start", function ()
   hl.exec_cmd("qs")                                     -- top bar (Quickshell): ~/.config/quickshell
+  hl.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/bt-agent.py")  -- Bluetooth pairing prompts (via notifications)
   hl.exec_cmd("fcitx5 -d")
   hl.exec_cmd("systemctl --user start hyprpolkitagent")
   hl.exec_cmd("nwg-dock-hyprland -d -i 52 -mb 10 -lp start")

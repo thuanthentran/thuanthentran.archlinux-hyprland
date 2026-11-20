@@ -1,5 +1,6 @@
 // Player panel: large cover, title / artist / album, seek bar with times, controls,
-// synced lyrics (LRCLIB, fetched when the panel opens), visualizer, and a player
+// synced lyrics (LRCLIB, fetched when the panel opens; other matches, timing offset and
+// a hand-typed search below them), visualizer, and a player
 // switcher when several are running.
 import QtQuick
 import Quickshell
@@ -234,6 +235,117 @@ DropPopup {
         LyricLine { visible: Lyrics.status === "ok"; offset: -1 }
         LyricLine { visible: Lyrics.status === "ok"; offset: 0 }
         LyricLine { visible: Lyrics.status === "ok"; offset: 1 }
+
+        // Lyrics source: step through candidates, nudge the timing, search by hand
+        Item {
+            visible: Lyrics.forTrack !== "" && Lyrics.status !== "loading"
+            width: parent.width
+            height: 24
+
+            component Tiny: Rectangle {
+                id: tiny
+                property string icon: ""
+                property string label: ""
+                property bool on: true
+                signal hit
+                anchors.verticalCenter: parent.verticalCenter
+                width: Math.max(22, tinyText.implicitWidth + 10)
+                height: 22
+                radius: 5
+                color: tinyArea.containsMouse && on ? Theme.hover : "transparent"
+                Text {
+                    id: tinyText
+                    anchors.centerIn: parent
+                    text: tiny.icon || tiny.label
+                    color: tiny.on ? Theme.fgDim : Theme.fgOff
+                    font.family: tiny.icon ? Theme.iconFont : Theme.font
+                    font.pixelSize: tiny.icon ? 13 : 11
+                    font.features: { "tnum": 1 }
+                }
+                MouseArea {
+                    id: tinyArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: if (tiny.on) tiny.hit()
+                }
+            }
+
+            Row {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 0
+
+                Tiny { icon: "\u{F0141}"; on: Lyrics.candidates.length > 1; onHit: Lyrics.choose(-1) }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Math.min(implicitWidth, 170)
+                    elide: Text.ElideRight
+                    text: {
+                        const c = Lyrics.candidates[Lyrics.pick];
+                        if (!c)
+                            return "No match";
+                        return (Lyrics.candidates.length > 1 ? (Lyrics.pick + 1) + "/" + Lyrics.candidates.length + "  " : "")
+                            + c.name + " · " + c.artist + " · " + Players.time(c.duration);
+                    }
+                    color: Theme.fgOff
+                    font.family: Theme.font
+                    font.pixelSize: 11
+                }
+                Tiny { icon: "\u{F0142}"; on: Lyrics.candidates.length > 1; onHit: Lyrics.choose(1) }
+            }
+            Row {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 0
+
+                Tiny { label: "−"; on: Lyrics.status === "ok"; onHit: Lyrics.nudge(-0.5) }
+                Tiny {
+                    label: (Lyrics.offset > 0 ? "+" : "") + Lyrics.offset.toFixed(1) + "s"
+                    on: Lyrics.offset !== 0
+                    onHit: Lyrics.nudge(-Lyrics.offset)      // click resets to 0
+                }
+                Tiny { label: "+"; on: Lyrics.status === "ok"; onHit: Lyrics.nudge(0.5) }
+                Tiny {
+                    icon: "\u{F0349}"                        // magnify: search by hand
+                    onHit: {
+                        queryField.visible = !queryField.visible;
+                        if (queryField.visible) {
+                            queryInput.text = Lyrics.query;
+                            queryInput.selectAll();
+                            queryInput.forceActiveFocus();
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            id: queryField
+            visible: false
+            width: parent.width
+            height: 30
+            radius: 6
+            color: Qt.rgba(1, 1, 1, 0.08)
+            border.color: queryInput.activeFocus ? Theme.cpu : Theme.popupBorder
+
+            TextInput {
+                id: queryInput
+                anchors.fill: parent
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8
+                verticalAlignment: TextInput.AlignVCenter
+                color: Theme.fg
+                font.family: Theme.font
+                font.pixelSize: 12
+                clip: true
+                onAccepted: {
+                    if (text.trim() !== "")
+                        Lyrics.search(text.trim());
+                    queryField.visible = false;
+                }
+                Keys.onEscapePressed: queryField.visible = false
+            }
+        }
     }
 
     Item {

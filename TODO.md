@@ -41,7 +41,7 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 
 ## Hệ thống và tái lập
 
-- [ ] Hibernate: chạy `setup.sh system` + `setup.sh hibernate`, thử `systemctl hibernate`; nếu ổn thì cho hypridle hibernate khi để máy lâu
+- [x] Hibernate: swapfile 16 GB trên subvolume `@swap` (`setup.sh hibernate`), có trong menu nguồn, hypridle tự hibernate sau 30 phút
 - [ ] Sleep thật (suspend to RAM) treo ở giai đoạn noirq/ACPI; đang thay bằng khóa + tắt màn hình. Nếu muốn dò tiếp: boot không có driver NVIDIA (`module_blacklist=nvidia,nvidia_modeset,nvidia_drm,nvidia_uvm`), rồi `pcie_port_pm=off`; xem bản BIOS mới hơn FX607VUR.340
 
 - [ ] Thiết lập distrobox (Ubuntu) cho app chỉ có trên Ubuntu

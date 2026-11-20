@@ -14,6 +14,8 @@ Singleton {
     readonly property color red: "#ff5f57"
     readonly property color redHover: Qt.rgba(1, 95 / 255, 87 / 255, 0.7)
     readonly property color yellow: "#ffbd2e"
+    readonly property color cpu: "#0a84ff"
+    readonly property color ram: "#30d158"
     readonly property color popupBg: Qt.rgba(40 / 255, 40 / 255, 44 / 255, 0.95)
     readonly property color popupBorder: Qt.rgba(1, 1, 1, 0.12)
 

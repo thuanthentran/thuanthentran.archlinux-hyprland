@@ -35,6 +35,7 @@ PanelWindow {
         Item { Layout.fillWidth: true }
 
         WindowControls {}
+        SystemStats {}
         QuickSettings {}
         Tray {}
         Battery {}

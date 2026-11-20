@@ -11,6 +11,7 @@ Item {
     required property PwNode node
     property string label: ""
     property string appIcon: ""            // icon theme name; empty = speaker glyph
+    property bool metering: true           // show the level meter (measured only while visible)
     readonly property real volume: node?.audio?.volume ?? 0
     readonly property bool muted: node?.audio?.muted ?? false
 
@@ -75,6 +76,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             width: parent.width - 22 - 40 - 16
             value: root.volume
+            peak: peaks.enabled && !root.muted ? peaks.peak : -1
             opacity: root.muted ? 0.5 : 1
             onMoved: v => root.set(v)
         }
@@ -87,6 +89,12 @@ Item {
             font.family: Theme.font
             font.pixelSize: 12
         }
+    }
+
+    PwNodePeakMonitor {
+        id: peaks
+        node: root.node
+        enabled: root.metering && root.visible && (QsWindow.window?.visible ?? false)
     }
 
     // Scroll anywhere on the row changes this node's volume

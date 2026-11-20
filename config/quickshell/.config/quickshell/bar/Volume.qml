@@ -28,6 +28,13 @@ BarButton {
     highlighted: mixer.visible
     tooltip: BarState.expanded ? "" : muted ? "Muted" : Math.round(volume * 100) + "%"
 
+    // Level meter on the slider, only measured while the slider is shown
+    PwNodePeakMonitor {
+        id: peaks
+        node: root.sink
+        enabled: BarState.expanded
+    }
+
     // Needed for sink.audio to be populated
     PwObjectTracker {
         objects: [root.sink]
@@ -45,6 +52,7 @@ BarButton {
         BarSlider {
             anchors.verticalCenter: parent.verticalCenter
             value: root.volume
+            peak: peaks.enabled && !root.muted ? peaks.peak : -1
             opacity: root.muted ? 0.5 : 1
             onMoved: v => root.setVolume(v)
         }

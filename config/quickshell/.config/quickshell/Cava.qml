@@ -1,5 +1,6 @@
 // Audio spectrum from cava (12 bars, 0..1), running only while something plays.
-// `import qs`, then Cava.values.
+// `import qs`, then Cava.values. If cava exits while music plays (e.g. `pkill cava`
+// after editing cava.conf) it is started again a second later.
 pragma Singleton
 import QtQuick
 import Quickshell
@@ -10,12 +11,17 @@ Singleton {
 
     readonly property int bars: 12
     property var values: Array(bars).fill(0)
-    readonly property bool running: Players.active?.isPlaying ?? false
+    readonly property bool wanted: Players.active?.isPlaying ?? false
 
-    onRunningChanged: if (!running) values = Array(bars).fill(0)
+    onWantedChanged: {
+        proc.running = wanted;
+        if (!wanted)
+            values = Array(bars).fill(0);
+    }
+    Component.onCompleted: proc.running = wanted
 
     Process {
-        running: root.running
+        id: proc
         command: ["cava", "-p", Quickshell.shellPath("cava.conf")]
         stdout: SplitParser {
             onRead: line => {
@@ -24,5 +30,11 @@ Singleton {
                     root.values = v;
             }
         }
+        onExited: if (root.wanted) restart.start()
+    }
+    Timer {
+        id: restart
+        interval: 1000
+        onTriggered: if (root.wanted) proc.running = true
     }
 }

@@ -1,5 +1,6 @@
 // Player panel: large cover, title / artist / album, seek bar with times, controls,
-// visualizer, and a player switcher when several are running.
+// synced lyrics (LRCLIB, fetched when the panel opens), visualizer, and a player
+// switcher when several are running.
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
@@ -13,6 +14,15 @@ DropPopup {
     readonly property var player: Players.active
 
     contentWidth: 360
+
+    onVisibleChanged: if (visible) Lyrics.request()
+    Connections {
+        target: Players
+        function onTrackChanged() {
+            if (root.visible)
+                Lyrics.request();
+        }
+    }
 
     component Ctl: Rectangle {
         id: ctl
@@ -187,6 +197,43 @@ DropPopup {
                     : root.player.loopState === MprisLoopState.Playlist ? MprisLoopState.Track : MprisLoopState.None
             }
         }
+    }
+
+    // Lyrics: previous, current and next line
+    Column {
+        width: parent.width
+        spacing: 4
+        topPadding: 2
+        bottomPadding: 6
+
+        component LyricLine: Text {
+            property int offset: 0
+            readonly property var line: Lyrics.lines[Lyrics.current + offset]
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
+            text: line ? (line.text || "♪") : ""
+            color: offset === 0 ? Theme.fg : Theme.fgOff
+            font.family: Theme.font
+            font.pixelSize: offset === 0 ? 14 : 12
+            font.weight: offset === 0 ? Font.DemiBold : Font.Normal
+        }
+
+        Text {
+            visible: Lyrics.status !== "ok"
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            text: Lyrics.status === "loading" ? "Looking up lyrics…"
+                : Lyrics.status === "plain" ? "Only unsynced lyrics found"
+                : Lyrics.status === "error" ? "Couldn't reach lrclib.net"
+                : "No lyrics found"
+            color: Theme.fgOff
+            font.family: Theme.font
+            font.pixelSize: 12
+        }
+        LyricLine { visible: Lyrics.status === "ok"; offset: -1 }
+        LyricLine { visible: Lyrics.status === "ok"; offset: 0 }
+        LyricLine { visible: Lyrics.status === "ok"; offset: 1 }
     }
 
     Item {

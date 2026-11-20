@@ -9,7 +9,7 @@ Có hai cách:
 
 Cả hai làm cùng một việc, bám theo [Installation guide](https://wiki.archlinux.org/title/Installation_guide) và trang [GRUB](https://wiki.archlinux.org/title/GRUB) của Arch Wiki (đọc ngày 2026-11-17).
 
-> **Chưa được chạy thử.** Script và các lệnh dưới đây chưa chạy trên máy thật. Trên Windows mới kiểm tra được cú pháp và các hàm phụ. Sau lần cài đầu tiên cần sửa lại tài liệu theo thực tế.
+> **Đã dùng để cài máy thật** (2026-11-19). Không ghi nhận chỗ nào khác với thực tế. Nếu lần cài sau gặp bước lệch, sửa thẳng vào đây.
 
 Yêu cầu: đã làm xong [03-windows-dual-boot-prep.md](03-windows-dual-boot-prep.md), và ổ đĩa đã có vùng Unallocated (trên máy này là 80 GB, nằm giữa ổ D và phân vùng Recovery cuối).
 

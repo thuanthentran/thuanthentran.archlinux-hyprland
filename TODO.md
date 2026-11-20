@@ -16,9 +16,9 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 
 - [x] Dựng khung: cài `quickshell`, thêm vào `packages/`, autostart trong `hyprland.lua`, hot reload chạy được
 - [x] Bước 1: thanh Quickshell giống Waybar cũ; âm lượng / Wi-Fi chỉ còn icon, Bluetooth chỉ hiện khi bật, nút nguồn mở menu (Lock, Sleep, Log out, Restart và Shut down bấm 2 lần)
-- [ ] Bước 2: cụm Wi-Fi / Bluetooth / tray bấm vào thì bung ngang ngay trên thanh (đồ thị thu thành %, ngày tháng ẩn), rời chuột thì thu về; animation trong thanh, kích thước thanh không đổi
+- [x] Bước 2: cụm âm lượng / độ sáng / Wi-Fi / Bluetooth (tray tách ra ngoài) bấm vào thì bung ngang ngay trên thanh (đồ thị thu thành %, ngày tháng ẩn), rời chuột thì thu về; animation trong thanh, kích thước thanh không đổi
 - [ ] Bước 3: đồ thị CPU / RAM nhỏ (lấy mẫu mỗi giây, giữ ~60 điểm, chạy cả khi chưa bung), tốc độ mạng ↓ / ↑
-- [ ] Bước 4: cài đặt nhanh khi bung: Wi-Fi (tên, % tín hiệu, popup chọn mạng), âm lượng (thanh %, cuộn để chỉnh, bấm mở mixer kèm chọn thiết bị ra), độ sáng (thanh %, cuộn), Bluetooth, power profile
+- [ ] Bước 4: popup khi bấm trong cụm đã bung: Wi-Fi (chọn mạng, nhập mật khẩu), âm lượng (mixer theo app, chọn thiết bị ra), Bluetooth (danh sách thiết bị). Thanh âm lượng / độ sáng, tên Wi-Fi + %, bật tắt Bluetooth và power profile đã có từ bước 2
 - [ ] Bước 5: media (MPRIS): tên bài, thanh thời gian, nút điều khiển, visualizer bằng `cava`
 - [ ] Bước 6: peak meter đè lên thanh âm lượng (`PwNodePeakMonitor`); lời bài hát (LRCLIB, có cache), làm cho chạy được trước rồi hoàn thiện sau
 - [ ] Bước 7: bỏ `config/waybar` và gói `waybar`; cân nhắc bỏ `nm-applet` / `blueman-applet` khi bước 4 đã đủ

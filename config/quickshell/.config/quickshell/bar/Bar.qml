@@ -35,17 +35,18 @@ PanelWindow {
         Item { Layout.fillWidth: true }
 
         WindowControls {}
-        Volume {}
-        Network {}
-        Bluetooth {}
-        Brightness {}
-        Battery {}
+        QuickSettings {}
         Tray {}
+        Battery {}
         PowerButton {}
     }
 
-    // Centred on the screen, not between the left and right groups
+    // Centred on the screen, not between the left and right groups. Fades out while the
+    // quick settings are expanded, which may need its space.
     Clock {
         anchors.centerIn: parent
+        opacity: BarState.expanded ? 0 : 1
+        visible: opacity > 0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
     }
 }

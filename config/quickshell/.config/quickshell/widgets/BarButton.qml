@@ -13,8 +13,9 @@ Rectangle {
     property color textColor: Theme.fg
     property color hoverColor: Theme.hover
     property bool highlighted: false
+    property bool pill: true              // own hover pill; off when a parent highlights instead
     property int padding: 8
-    readonly property bool hovered: mouse.containsMouse
+    readonly property bool hovered: hover.hovered
     default property alias content: row.data
 
     signal clicked(var mouse)
@@ -23,8 +24,20 @@ Rectangle {
     implicitWidth: row.implicitWidth + padding * 2
     implicitHeight: Theme.barHeight - 6
     radius: 6
-    color: highlighted ? Theme.active : hovered ? hoverColor : "transparent"
+    color: highlighted ? Theme.active : hovered && pill ? hoverColor : "transparent"
     Behavior on color { ColorAnimation { duration: 120 } }
+
+    // Below the content, so interactive children (sliders) take their own clicks
+    MouseArea {
+        id: mouse
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+        onClicked: m => root.clicked(m)
+        onWheel: w => root.wheel(w)
+    }
+    HoverHandler {
+        id: hover
+    }
 
     Row {
         id: row
@@ -39,15 +52,6 @@ Rectangle {
             font.family: root.iconText ? Theme.iconFont : Theme.font
             font.pixelSize: root.iconText ? Theme.iconSize : Theme.fontSize
         }
-    }
-
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-        hoverEnabled: true
-        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-        onClicked: m => root.clicked(m)
-        onWheel: w => root.wheel(w)
     }
 
     Tooltip {

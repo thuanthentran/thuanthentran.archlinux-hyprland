@@ -1,15 +1,44 @@
-// Shown only while Bluetooth is on; a different icon when a device is connected.
+// Collapsed: shown only while Bluetooth is on (another icon once a device is connected).
+// Expanded: always shown with its state; click turns it on / off, right click opens Blueman.
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
+import qs
 import qs.widgets
 
 BarButton {
+    id: root
+
+    readonly property var adapter: Bluetooth.defaultAdapter
+    readonly property bool enabled: adapter?.enabled ?? false
     readonly property var connected: Bluetooth.devices.values.filter(d => d.connected)
+    readonly property string label: !enabled ? "Off" : connected.length > 0 ? connected.map(d => d.name).join(", ") : "On"
 
-    visible: Bluetooth.defaultAdapter?.enabled ?? false
-    text: connected.length > 0 ? "\u{F00B1}" : "\u{F00AF}"
-    tooltip: connected.length > 0 ? connected.map(d => d.name).join("\n") : "Bluetooth on"
+    visible: adapter !== null && (enabled || BarState.expanded)
+    text: !enabled ? "\u{F00B2}" : connected.length > 0 ? "\u{F00B1}" : "\u{F00AF}"
+    textColor: enabled ? Theme.fg : Theme.fgOff
+    pill: BarState.expanded      // collapsed, the whole cluster is one button
+    tooltip: BarState.expanded ? "" : label
 
-    onClicked: Quickshell.execDetached(["blueman-manager"])
+    Reveal {
+        anchors.verticalCenter: parent.verticalCenter
+        shown: BarState.expanded
+
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.label
+            color: root.textColor
+            font.family: Theme.font
+            font.pixelSize: Theme.fontSize
+        }
+    }
+
+    onClicked: m => {
+        if (m.button === Qt.RightButton)
+            Quickshell.execDetached(["blueman-manager"]);
+        else if (!BarState.expanded)
+            BarState.expanded = true;
+        else if (adapter)
+            adapter.enabled = !adapter.enabled;
+    }
 }

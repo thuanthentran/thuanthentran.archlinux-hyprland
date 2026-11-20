@@ -9,6 +9,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs
 import qs.bar
 import qs.widgets
 
@@ -27,6 +28,15 @@ ShellRoot {
             toast.show("Quickshell đang chạy");
             return "pong";
         }
+    }
+
+    // `qs ipc call bar expand|collapse|toggle` -> quick settings (also handy for testing)
+    IpcHandler {
+        target: "bar"
+
+        function expand(): void { BarState.expanded = true; }
+        function collapse(): void { BarState.expanded = false; }
+        function toggle(): void { BarState.expanded = !BarState.expanded; }
     }
 
     Toast {

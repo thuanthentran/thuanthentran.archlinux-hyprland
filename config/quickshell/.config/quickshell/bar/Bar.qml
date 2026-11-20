@@ -31,6 +31,7 @@ PanelWindow {
         AppsButton {}
         Workspaces {}
         Taskbar {}
+        NowPlaying {}
 
         Item { Layout.fillWidth: true }
 

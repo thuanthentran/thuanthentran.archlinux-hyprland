@@ -19,7 +19,7 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 - [x] Bước 2: cụm âm lượng / độ sáng / Wi-Fi / Bluetooth (tray tách ra ngoài) bấm vào thì bung ngang ngay trên thanh (đồ thị CPU / RAM hiện thêm %, ngày tháng ẩn), rời chuột thì thu về; animation trong thanh, kích thước thanh không đổi
 - [x] Bước 3: đồ thị CPU / RAM nhỏ (lấy mẫu mỗi giây, giữ ~60 điểm, chạy cả khi chưa bung), tốc độ mạng ↓ / ↑
 - [x] Bước 4: popup khi bấm trong cụm đã bung: Wi-Fi (chọn mạng, nhập mật khẩu), âm lượng (mixer theo app, chọn thiết bị ra), Bluetooth (danh sách thiết bị). Thanh âm lượng / độ sáng, tên Wi-Fi + %, bật tắt Bluetooth và power profile đã có từ bước 2
-- [ ] Bước 5: media (MPRIS): tên bài, thanh thời gian, nút điều khiển, visualizer bằng `cava`
+- [x] Bước 5: media (MPRIS): tên bài, thanh thời gian, nút điều khiển, visualizer bằng `cava`
 - [ ] Bước 6: peak meter đè lên thanh âm lượng (`PwNodePeakMonitor`); lời bài hát (LRCLIB, có cache), làm cho chạy được trước rồi hoàn thiện sau
 - [ ] Âm thanh: card NVIDIA đang ở profile "Pro Audio" (mỗi cổng HDMI/DP một output) và output mặc định là HDMI 0 dù không cắm màn hình; kiểm tra rồi chuyển profile / output mặc định về loa trong máy nếu cần
 - [ ] Bước 7: bỏ `config/waybar` và gói `waybar`; cân nhắc bỏ `nm-applet` / `blueman-applet` khi bước 4 đã đủ

@@ -34,6 +34,11 @@ PopupWindow {
             if (!BarState.expanded)
                 root.visible = false;
         }
+        // `qs ipc call bar collapse` sends "": close every drop-down
+        function onPopupRequested(name) {
+            if (name === "")
+                root.visible = false;
+        }
     }
 
     anchor.item: anchorItem

@@ -31,8 +31,9 @@ python
 
 waybar
 mako
-# Custom widgets (QML), alongside Waybar: config/quickshell
+# Top bar (QML): config/quickshell; cava feeds its audio visualizer
 quickshell
+cava
 
 # Vietnamese input (Telex) via fcitx5
 fcitx5

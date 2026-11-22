@@ -42,7 +42,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Tốc độ chuột / touchpad tách riêng, chỉnh trong Settings
 3. Diện mạo
    - [x] Tông trắng + đen + xanh lá, sạch, tối giản; xanh lá chỉ để nhấn, hover / chọn ám trắng xám (Quickshell, hyprbars, rofi, kitty, hình nền, accent GTK4)
-   - [ ] GTK3: WhiteSur bản xanh lá (gói AUR chỉ có bản xanh dương; tự build bằng `install.sh -t green` của WhiteSur vào `~/.themes`)
+   - [x] GTK3: WhiteSur bản xanh lá (gói AUR chỉ có bản xanh dương; tự build bằng `install.sh -t green` của WhiteSur vào `~/.themes`)
    - [x] Font: Lexend cho giao diện, Comfortaa cho chữ lớn (đã thử font pixel 8-bit, bỏ); chọn lại được trong Settings
    - [x] Sửa chữ "rách" nét xéo, nét cong trong Quickshell (`NativeTextRendering`)
    - [ ] Scale / DPI: chỉnh dần cho đến khi vừa mắt

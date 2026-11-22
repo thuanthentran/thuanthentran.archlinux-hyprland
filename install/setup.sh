@@ -291,12 +291,31 @@ step_plugins() {
   run hyprpm reload
 }
 
+# GTK3 theme in the desktop's green: the AUR whitesur-gtk-theme only ships WhiteSur's blue,
+# so the green variant is built from upstream (pinned tag) into ~/.themes. GTK4 apps take
+# their accent from gsettings instead (apply-theme.sh). Delete ~/.themes/WhiteSur-Dark-green
+# to rebuild (after bumping the tag).
+readonly WHITESUR_TAG=2026-09-10
+build_whitesur_green() {
+  if [[ -d $HOME/.themes/WhiteSur-Dark-green ]]; then
+    info "WhiteSur-Dark-green already built"
+    return 0
+  fi
+  local src=${XDG_CACHE_HOME:-$HOME/.cache}/whitesur-gtk-theme
+  run rm -rf "$src"
+  run git clone --quiet --depth 1 --branch "$WHITESUR_TAG" \
+    https://github.com/vinceliuice/WhiteSur-gtk-theme.git "$src"
+  run "$src/install.sh" --dest "$HOME/.themes" --color dark --theme green
+  run rm -rf "$src"
+}
+
 step_theme() {
   step "Theme"
   if [[ -z ${WAYLAND_DISPLAY:-} ]]; then
     warn "No graphical session. Log in and run: bash install/setup.sh theme"
     return 0
   fi
+  build_whitesur_green
   run bash "$REPO/install/apply-theme.sh"
 }
 

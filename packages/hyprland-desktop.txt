@@ -54,6 +54,8 @@ gvfs
 file-roller
 papirus-icon-theme
 nwg-look
+# builds the green WhiteSur GTK3 theme (setup.sh theme)
+sassc
 
 # Spotlight-style launcher / window switcher
 rofi

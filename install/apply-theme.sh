@@ -2,7 +2,10 @@
 # Apply the macOS-like look (WhiteSur + Lexend, Cascadia Code). Run inside a graphical session.
 set -euo pipefail
 s=org.gnome.desktop.interface
-gsettings set $s gtk-theme     'WhiteSur-Dark'
+# GTK3: the green build from setup.sh (build_whitesur_green), else the packaged blue one
+gtk=WhiteSur-Dark
+[[ -d $HOME/.themes/WhiteSur-Dark-green ]] && gtk=WhiteSur-Dark-green
+gsettings set $s gtk-theme     "$gtk"
 gsettings set $s icon-theme    'WhiteSur-dark'
 # Accent for libadwaita (GTK4) apps: green, as in the desktop palette (Theme.qml)
 gsettings set $s accent-color  'green'

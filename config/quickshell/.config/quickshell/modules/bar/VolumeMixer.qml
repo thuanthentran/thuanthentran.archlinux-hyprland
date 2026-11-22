@@ -65,7 +65,7 @@ DropPopup {
         text: "Sound settings…"
         dim: true
         onClicked: {
-            root.visible = false;
+            root.close();
             Quickshell.execDetached(["pavucontrol"]);
         }
     }

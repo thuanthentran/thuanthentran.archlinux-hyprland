@@ -570,11 +570,12 @@ hl.window_rule({
     no_focus = true,
 })
 
--- Quickshell window overview animates itself; a layer fade would make the windows under
--- it look like they fade out while their thumbnails fly to the grid
+-- Quickshell animates these itself: the window overview (a layer fade would make the
+-- windows under it look like they fade out while their thumbnails fly to the grid) and
+-- the bar's drop-down panels (they grow out of their button and back)
 hl.layer_rule({
     name    = "overview-no-anim",
-    match   = { namespace = "^quickshell-overview$" },
+    match   = { namespace = "^quickshell-(overview|popup)$" },
     no_anim = true,
 })
 

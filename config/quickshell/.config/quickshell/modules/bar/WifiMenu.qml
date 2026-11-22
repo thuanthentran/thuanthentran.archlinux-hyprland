@@ -134,7 +134,7 @@ DropPopup {
         text: "Network settings…"
         dim: true
         onClicked: {
-            root.visible = false;
+            root.close();
             Quickshell.execDetached(["nm-connection-editor"]);
         }
     }

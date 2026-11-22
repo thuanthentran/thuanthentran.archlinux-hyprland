@@ -91,7 +91,7 @@ DropPopup {
         text: "Bluetooth settings…"
         dim: true
         onClicked: {
-            root.visible = false;
+            root.close();
             Quickshell.execDetached(["blueman-manager"]);
         }
     }

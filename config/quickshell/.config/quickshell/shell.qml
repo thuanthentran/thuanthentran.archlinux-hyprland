@@ -22,6 +22,7 @@ import qs.modules.osd
 import qs.modules.notifications
 import qs.modules.settings
 import qs.modules.launcher
+import qs.modules.lock
 import qs.widgets
 
 ShellRoot {
@@ -50,6 +51,19 @@ ShellRoot {
         function collapse(): void { BarState.expanded = false; BarState.popupRequested(""); }
         function toggle(): void { BarState.expanded = !BarState.expanded; }
         function popup(name: string): void { BarState.popupRequested(name); }
+    }
+
+    // `qs ipc call lock lock|preview|closePreview`: lock the session (scripts/lock.sh, which hypridle
+    // and `loginctl lock-session` use) or only show the lock screen
+    Lock {
+        id: lockScreen
+    }
+    IpcHandler {
+        target: "lock"
+
+        function lock(): string { lockScreen.lock(); return "locked"; }
+        function preview(): void { lockScreen.preview(); }
+        function closePreview(): void { lockScreen.closePreview(); }
     }
 
     // `qs ipc call windows refresh`: re-read Hyprland's windows (toggle-maximize.sh calls

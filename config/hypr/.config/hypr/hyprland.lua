@@ -247,6 +247,9 @@ hl.config({
 
 hl.config({
     misc = {
+        -- The lock screen is Quickshell's: if it dies while locked, a restarted Quickshell
+        -- (it remembers it was locked) may take the lock over again
+        allow_session_lock_restore = true,
         force_default_wallpaper = -1,    -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = false, -- If true disables the random hyprland logo / anime girl background. :(
         -- "Sleep" here only locks and turns the screen off (real suspend hangs on the TUF),
@@ -403,7 +406,7 @@ hl.bind(mainMod .. " + W",              hl.dsp.window.close())                  
 local minimize = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh"
 hl.bind(mainMod .. " + M",              hl.dsp.exec_cmd(minimize .. " minimize")) -- Cmd+M: minimize (restore: Super+S)
 hl.bind(mainMod .. " + SHIFT + Q",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")) -- log out
-hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("hyprlock"))               -- lock screen
+hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("loginctl lock-session"))  -- lock screen (hypridle -> scripts/lock.sh)
 hl.bind(mainMod .. " + CTRL + F",       hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh"))
 hl.bind(mainMod .. " + space",          hl.dsp.global("quickshell:launcher"))  -- app launcher (Quickshell), like Spotlight
 -- Window overview (Quickshell Overview.qml): tap Super alone, or Super+Tab

@@ -45,7 +45,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] GTK3: WhiteSur bản xanh lá (gói AUR chỉ có bản xanh dương; tự build bằng `install.sh -t green` của WhiteSur vào `~/.themes`)
    - [x] Font: Lexend cho giao diện, Comfortaa cho chữ lớn (đã thử font pixel 8-bit, bỏ); chọn lại được trong Settings
    - [x] Sửa chữ "rách" nét xéo, nét cong trong Quickshell (`NativeTextRendering`)
-   - [ ] Scale / DPI: chỉnh dần cho đến khi vừa mắt
+   - [ ] Scale / DPI: tạm gác. Scale < 1 làm chữ mờ (app không tự vẽ ở scale lẻ) và VS Code vẽ lệch khi đổi lúc đang chạy; hướng còn lại là thu nhỏ từng app (zoom VS Code, cờ Chrome, font GTK / kitty, cỡ trong Theme.qml)
    - [x] Panel (lịch + thông báo, media, Wi-Fi, Bluetooth, âm lượng, menu nguồn) mọc ra từ nút trên thanh bằng nội suy hình học, thay slide + fade
    - [x] Thanh trên cùng thấp hơn (26 px), tùy chọn tự ẩn trong Settings (chạm mép trên thì hiện)
    - [x] Thanh tiêu đề mảnh (20 px), 3 nút là chấm nhỏ, ký hiệu chỉ hiện khi rê chuột
@@ -56,7 +56,8 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Cửa sổ mới mở ở 70% màn hình, căn giữa (rule `open-large`; trừ hộp thoại modal, PiP, cửa sổ tiện ích)
    - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
 5. Đăng nhập
-   - [ ] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell, khóa màn hình bằng Quickshell thay hyprlock
+   - [x] Khóa màn hình bằng Quickshell thay hyprlock (`modules/lock`; hyprlock còn làm dự phòng)
+   - [ ] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell (cần sudo)
 
 ## Cửa sổ và desktop
 

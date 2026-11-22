@@ -79,6 +79,7 @@ PanelWindow {
     property int cur: 0                   // index of the active window in tiles
     property var slots: []                // grid: tile indices in display order
     property string query: ""             // grid: typed search
+    property bool searching: false        // the field was clicked or typed in: caret shown, hint gone
     property real scroll: 0               // strip / film: which card is in the middle
     property real slot: 0                 // strip: distance between card centres
     property real lift: 0                 // film: how far the fingers went up, past deadMm
@@ -730,8 +731,10 @@ PanelWindow {
     // only while nothing is typed, else they move the text cursor. Returns true if used.
     function gridKey(e) {
         const n = Math.max(1, tiles.length);
-        if (e.key === Qt.Key_Escape && query)
+        if (e.key === Qt.Key_Escape && (query || searching)) {
             query = "";
+            searching = false;
+        }
         else if (e.key === Qt.Key_Escape)
             close(tiles[cur]?.addr ?? "");
         else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || (e.key === Qt.Key_Space && !query))
@@ -762,7 +765,10 @@ PanelWindow {
             content.forceActiveFocus();
     }
     onModeChanged: placeFocus()
-    onOpenChanged: placeFocus()
+    onOpenChanged: {
+        searching = false;
+        placeFocus();
+    }
 
     // Arrow keys: nearest tile in that direction, by grid position
     function move(dx, dy) {
@@ -1050,13 +1056,16 @@ PanelWindow {
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.IBeamCursor
-                onPressed: searchInput.forceActiveFocus()
+                onPressed: {
+                    root.searching = true;
+                    searchInput.forceActiveFocus();
+                }
             }
             // the hint, while nothing is typed
             Text {
                 id: queryText
                 anchors.centerIn: parent
-                visible: searchInput.text === ""
+                visible: !root.searching && searchInput.text === ""
                 text: "Type to search windows and apps"
                 color: Theme.fgOff
                 font.family: Theme.font
@@ -1082,10 +1091,18 @@ PanelWindow {
                 cursorDelegate: Rectangle {
                     width: 1.5
                     color: Theme.accent
-                    visible: searchInput.cursorVisible
+                    visible: searchInput.cursorVisible && root.searching
                 }
-                onTextChanged: root.query = text
+                onTextChanged: {
+                    root.query = text;
+                    if (text)
+                        root.searching = true;
+                }
                 Keys.onPressed: e => root.gridKey(e)
+                // a press on the text itself (selecting) counts as clicking the field
+                TapHandler {
+                    onPressedChanged: if (pressed) root.searching = true
+                }
             }
         }
 

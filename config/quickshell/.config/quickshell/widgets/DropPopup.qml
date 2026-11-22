@@ -2,7 +2,8 @@
 //
 // It grows out of the item: `grow` 0 -> 1 interpolates the frame from a sliver as wide as
 // the item, right under it, to the full panel (position, size and corner radius together);
-// the content stays put and fades in (more slowly, see openAnim). Closing runs it back.
+// the content slides down into place and fades in (more slowly, see openAnim). Closing
+// runs it all back.
 //
 // Not an xdg popup: the compositor closes those on an outside click at once, so the
 // closing animation could never run (and Hyprland faded them instead). It is a
@@ -97,6 +98,7 @@ PanelWindow {
     readonly property real fullH: col.implicitHeight + 24
     property real grow: 0
     property real fade: 0                 // content opacity: slower than `grow`, so it shows
+    readonly property real slideBy: 16    // content slides in from this far above
 
     // The item's rect on the screen (the bar sits at the screen's top left), taken when
     // opening; the panel goes centred under it, kept on screen
@@ -160,8 +162,10 @@ PanelWindow {
             }
 
             // the content in its final place, whatever the frame's size now
+            // ... sliding down into it while the frame grows (and back up as it shrinks)
             Item {
                 opacity: root.fade
+                transform: Translate { y: -root.slideBy * (1 - root.grow) }
                 x: root.openX - frame.x
                 y: root.openY - frame.y
                 width: root.contentWidth

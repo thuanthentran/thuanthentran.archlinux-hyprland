@@ -23,5 +23,7 @@ Singleton {
     readonly property string iconFont: "CaskaydiaCove Nerd Font"
     readonly property int fontSize: 13
     readonly property int iconSize: 15
-    readonly property int barHeight: 32
+    readonly property int barHeight: 26
+    // Space the bar takes from the windows (none when it auto-hides)
+    readonly property int barReserved: Settings.barAutoHide ? 0 : barHeight
 }

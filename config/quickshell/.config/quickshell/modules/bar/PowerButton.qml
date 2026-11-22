@@ -69,7 +69,17 @@ BarButton {
 
         visible: false
         grabFocus: true          // the compositor closes the menu on a click outside it
-        onVisibleChanged: if (!visible) root.armed = ""
+        // counted in BarState.held so an auto-hiding bar stays down while it's open
+        property bool counted: false
+        onVisibleChanged: {
+            if (!visible)
+                root.armed = "";
+            if (visible !== counted) {
+                BarState.held += visible ? 1 : -1;
+                counted = visible;
+            }
+        }
+        Component.onDestruction: if (counted) BarState.held -= 1
         anchor.item: root
         anchor.rect.x: 0
         anchor.rect.y: root.height + 6

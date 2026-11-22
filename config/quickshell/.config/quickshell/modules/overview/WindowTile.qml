@@ -129,27 +129,27 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    width: parent.width - 120
+                    width: parent.width - 100
                     horizontalAlignment: Text.AlignHCenter
                     text: tile.info.title
                     color: Theme.fg
                     font.family: Theme.font
-                    font.pixelSize: 11 * 1.33
+                    font.pixelSize: 9 * 1.33           // hyprbars bar_text_size (pt)
                     elide: Text.ElideRight
                 }
                 Row {
                     anchors.right: parent.right
-                    anchors.rightMargin: 12
+                    anchors.rightMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 8
+                    spacing: 6
                     layoutDirection: Qt.RightToLeft
                     Repeater {
                         model: ["#ff5f57", "#28c840", "#febc2e"]
                         Rectangle {
                             required property string modelData
-                            width: 14
-                            height: 14
-                            radius: 7
+                            width: 11
+                            height: 11
+                            radius: 5.5
                             color: modelData
                         }
                     }

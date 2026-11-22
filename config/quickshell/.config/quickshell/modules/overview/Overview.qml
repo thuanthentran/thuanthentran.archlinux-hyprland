@@ -56,6 +56,7 @@ PanelWindow {
     readonly property real zoomRate: 14    // zoom-out speed (1/s; 14: about 0.2 s), quick so it's
                                            // done before a fast swipe brings the next window in
     readonly property real coast: 0.22     // letting go: s of the swipe's speed to coast on
+    readonly property int titleBar: 20     // hyprbars bar_height in hyprland.lua
     readonly property real pageGap: 80     // film at full size: space between screens (px)
 
     property bool open: false
@@ -587,7 +588,7 @@ PanelWindow {
         }
         mon = monitors.find(m => m.focused) ?? monitors[0];
         const ws = mon.activeWorkspace.id;
-        const ox = mon.x, oy = mon.y + Theme.barHeight;     // overlay origin (below the bar)
+        const ox = mon.x, oy = mon.y + Theme.barReserved;     // overlay origin (below the bar)
         const mru = (a, b) => a.focusHistoryID - b.focusHistoryID;
         const byOrder = (a, b) => WindowOrder.rank(a.address) - WindowOrder.rank(b.address);
         const info = c => ({
@@ -597,13 +598,13 @@ PanelWindow {
             appId: c["class"],
             // real place, relative to the overlay, including the hyprbars title bar
             // (not part of the screencopy, so the tile draws its own)
-            bar: c.fullscreen ? 0 : 30,
-            x: c.at[0] - ox, y: c.at[1] - oy - (c.fullscreen ? 0 : 30), w: c.size[0], h: c.size[1] + (c.fullscreen ? 0 : 30)
+            bar: c.fullscreen ? 0 : root.titleBar,
+            x: c.at[0] - ox, y: c.at[1] - oy - (c.fullscreen ? 0 : root.titleBar), w: c.size[0], h: c.size[1] + (c.fullscreen ? 0 : root.titleBar)
         });
         const wins = clients.filter(c => c.mapped && c.workspace.id === ws).sort(byOrder).map(info);
         const mins = clients.filter(c => c.workspace.name === "special:magic").sort(mru).map(info);
 
-        const W = mon.width / mon.scale, H = mon.height / mon.scale - Theme.barHeight;
+        const W = mon.width / mon.scale, H = mon.height / mon.scale - Theme.barReserved;
         areaW = W;
         areaH = H;
         // Strip cards: same height, at most 55 % of the screen wide
@@ -851,7 +852,7 @@ PanelWindow {
         left: true
         right: true
     }
-    margins.top: Theme.barHeight
+    margins.top: Theme.barReserved
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell-overview"
@@ -860,7 +861,7 @@ PanelWindow {
     // Wallpaper (hides the real windows), then a dim
     Image {
         anchors.fill: parent
-        anchors.topMargin: -Theme.barHeight
+        anchors.topMargin: -Theme.barReserved
         source: "file://" + root.home + "/.config/hypr/wallpapers/default.png"
         opacity: root.settleFade
         fillMode: Image.PreserveAspectCrop

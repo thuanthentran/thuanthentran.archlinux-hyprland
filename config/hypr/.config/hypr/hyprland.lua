@@ -356,16 +356,16 @@ do
         hl.config({
             plugin = {
                 hyprbars = {
-                    bar_height             = 30,
+                    bar_height             = 20,   -- thin; keep in sync with titleBar in Overview.qml
                     bar_color              = "rgba(2b2b2ef0)",
                     inactive_button_color  = "rgba(5a5a5eff)",
                     bar_blur               = true,
                     bar_title_enabled      = true,
                     bar_text_align         = "center",
-                    bar_text_size          = 11,
+                    bar_text_size          = 9,
                     bar_buttons_alignment  = "right",
-                    bar_padding            = 12,
-                    bar_button_padding     = 8,
+                    bar_padding            = 10,
+                    bar_button_padding     = 6,
                     icon_on_hover          = true,
                     bar_part_of_window     = true,
                     bar_precedence_over_border = true,
@@ -374,11 +374,11 @@ do
         })
         -- Buttons on the right, Windows order: minimize / maximize / close.
         -- With right alignment the first button added sits at the far right.
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(ff5f57)", fg_color = "rgb(4d0000)", size = 14, icon = "x",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(ff5f57)", fg_color = "rgb(4d0000)", size = 11, icon = "x",
             action = "hyprctl dispatch 'hl.dsp.window.close()'" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(28c840)", fg_color = "rgb(003d0a)", size = 14, icon = "+",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(28c840)", fg_color = "rgb(003d0a)", size = 11, icon = "+",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 14, icon = "-",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 11, icon = "-",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh minimize" })
     end)
 end

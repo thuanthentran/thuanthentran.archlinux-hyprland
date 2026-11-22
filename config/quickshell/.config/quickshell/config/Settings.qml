@@ -20,6 +20,7 @@ Singleton {
     property alias mouseAccel: data.mouseAccel           // false: flat (same speed slow or fast)
     property alias mouseScroll: data.mouseScroll         // scroll distance factor
     property alias touchpadScroll: data.touchpadScroll
+    property alias barAutoHide: data.barAutoHide         // top bar hides until the pointer touches the top edge
 
     FileView {
         id: file
@@ -43,6 +44,7 @@ Singleton {
             property bool mouseAccel: true
             property real mouseScroll: 1.0
             property real touchpadScroll: 0.5
+            property bool barAutoHide: false
         }
     }
 

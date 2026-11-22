@@ -13,7 +13,7 @@ FloatingWindow {
     title: "Settings"
     visible: false
     implicitWidth: 560
-    implicitHeight: 420
+    implicitHeight: 500
     color: Theme.popupBg
 
     // Closing it from the title bar destroys the surface but leaves `visible` true, so
@@ -87,6 +87,14 @@ FloatingWindow {
         }
     }
 
+    component Heading: Text {
+        color: Theme.fg
+        font.family: Theme.font
+        font.pixelSize: 18
+        font.weight: Font.DemiBold
+        bottomPadding: 8
+    }
+
     component SwitchRow: Item {
         id: srow
 
@@ -136,13 +144,19 @@ FloatingWindow {
             width: parent.width - 56
             spacing: 4
 
-            Text {
+            Heading {
+                text: "Top bar"
+            }
+            SwitchRow {
+                label: "Auto-hide"
+                hint: "Hidden until the pointer touches the top edge of the screen"
+                checked: Settings.barAutoHide
+                onToggled: Settings.barAutoHide = !Settings.barAutoHide
+            }
+
+            Heading {
                 text: "Mouse & touchpad"
-                color: Theme.fg
-                font.family: Theme.font
-                font.pixelSize: 18
-                font.weight: Font.DemiBold
-                bottomPadding: 8
+                topPadding: 20
             }
 
             SliderRow {

@@ -3,5 +3,6 @@
     "mouseScroll": 1,
     "mouseSpeed": 0,
     "touchpadScroll": 0.5,
-    "touchpadSpeed": 0
+    "touchpadSpeed": 0,
+    "barAutoHide": false
 }

@@ -46,7 +46,6 @@ fcitx5-unikey
 # Mouse-friendly desktop (Ubuntu-like): login, dock, app grid, tray, files, theme
 sddm
 nwg-dock-hyprland
-nwg-drawer
 # blueman-manager ("Bluetooth settings…" in the bar's Bluetooth list)
 blueman
 thunar

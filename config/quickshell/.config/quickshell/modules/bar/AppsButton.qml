@@ -17,8 +17,5 @@ BarButton {
         font.weight: Font.Bold
     }
 
-    onClicked: {
-        BarState.overviewDismiss();      // the drawer would open under the overview
-        Quickshell.execDetached(["nwg-drawer"]);
-    }
+    onClicked: BarState.launcherToggle()      // modules/launcher/Launcher.qml
 }

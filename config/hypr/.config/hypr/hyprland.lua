@@ -46,7 +46,6 @@ hl.monitor({
 -- Set programs that you use
 local terminal    = "kitty"
 local fileManager = "thunar"
-local menu        = "nwg-drawer"
 
 
 -------------------
@@ -439,7 +438,7 @@ hl.bind(mainMod .. " + SHIFT + 4",      hl.dsp.exec_cmd("grim -g \"$(slurp)\" - 
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("pkill rofi || cliphist list | rofi -dmenu -p Clipboard | cliphist decode | wl-copy")) -- clipboard history
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + R", hl.dsp.global("quickshell:launcher"))   -- app launcher (Quickshell)
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
@@ -590,8 +589,16 @@ hl.window_rule({
 -- the bar's drop-down panels (they grow out of their button and back)
 hl.layer_rule({
     name    = "overview-no-anim",
-    match   = { namespace = "^quickshell-(overview|popup)$" },
+    match   = { namespace = "^quickshell-(overview|popup|launcher)$" },
     no_anim = true,
+})
+
+-- The app launcher's backdrop is translucent: blur what is behind it
+hl.layer_rule({
+    name         = "launcher-blur",
+    match        = { namespace = "^quickshell-launcher$" },
+    blur         = true,
+    ignore_alpha = 0.1,
 })
 
 -- Layer rules also return a handle.

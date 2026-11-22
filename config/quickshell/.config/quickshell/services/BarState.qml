@@ -12,4 +12,6 @@ Singleton {
     signal popupRequested(string name)
     // The Apps button asks the overview to close before opening the drawer
     signal overviewDismiss()
+    // The Apps button: open / close the launcher
+    signal launcherToggle()
 }

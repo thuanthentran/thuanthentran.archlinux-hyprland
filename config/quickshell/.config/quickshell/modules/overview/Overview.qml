@@ -38,6 +38,7 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 import qs.config
 import qs.services
+import qs.widgets
 
 PanelWindow {
     id: root
@@ -79,7 +80,6 @@ PanelWindow {
     property int cur: 0                   // index of the active window in tiles
     property var slots: []                // grid: tile indices in display order
     property string query: ""             // grid: typed search
-    property bool searching: false        // the field was clicked or typed in: caret shown, hint gone
     property real scroll: 0               // strip / film: which card is in the middle
     property real slot: 0                 // strip: distance between card centres
     property real lift: 0                 // film: how far the fingers went up, past deadMm
@@ -567,8 +567,8 @@ PanelWindow {
 
     onQueryChanged: {
         // `query` is also cleared from code (Esc, a new opening): keep the field in step
-        if (searchInput.text !== query)
-            searchInput.text = query;
+        if (searchField.text !== query)
+            searchField.setText(query);
         if (!query || tileMatches(tiles[selected] ?? {}))
             return;
         for (const i of slots)
@@ -731,10 +731,8 @@ PanelWindow {
     // only while nothing is typed, else they move the text cursor. Returns true if used.
     function gridKey(e) {
         const n = Math.max(1, tiles.length);
-        if (e.key === Qt.Key_Escape && (query || searching)) {
-            query = "";
-            searching = false;
-        }
+        if (e.key === Qt.Key_Escape && (query || searchField.engaged))
+            searchField.clear();
         else if (e.key === Qt.Key_Escape)
             close(tiles[cur]?.addr ?? "");
         else if (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || (e.key === Qt.Key_Space && !query))
@@ -760,13 +758,13 @@ PanelWindow {
     // The keyboard goes to the search field in the grid, to the overlay otherwise
     function placeFocus() {
         if (open && mode === "grid")
-            searchInput.forceActiveFocus();
+            searchField.takeFocus();
         else
             content.forceActiveFocus();
     }
     onModeChanged: placeFocus()
     onOpenChanged: {
-        searching = false;
+        searchField.clear();
         placeFocus();
     }
 
@@ -962,9 +960,9 @@ PanelWindow {
             // grid: the search field normally has the keyboard; if not, send it there
             if (root.gridKey(e))
                 return;
-            searchInput.forceActiveFocus();
+            searchField.takeFocus();
             if (e.text && e.text.length === 1 && e.text >= " " && !(e.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))) {
-                searchInput.insert(searchInput.cursorPosition, e.text);
+                searchField.insert(e.text);
                 e.accepted = true;
             }
         }
@@ -1035,75 +1033,13 @@ PanelWindow {
         visible: root.mode === "grid" && root.open
         opacity: Math.max(0, root.labels * 2 - 1)
 
-        Rectangle {
+        // typing anywhere in the grid lands here (it has the keyboard, see placeFocus)
+        SearchField {
+            id: searchField
             anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.max(320, searchInput.contentWidth + 80)
-            height: 34
-            radius: 17
-            color: Theme.popupBg
-            border.color: Theme.popupBorder
-
-            Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 14
-                anchors.verticalCenter: parent.verticalCenter
-                text: "\u{F0349}"    // magnify
-                color: Theme.fgDim
-                font.family: Theme.iconFont
-                font.pixelSize: Theme.iconSize
-            }
-            // the whole pill takes clicks (around the field too): focus the field
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.IBeamCursor
-                onPressed: {
-                    root.searching = true;
-                    searchInput.forceActiveFocus();
-                }
-            }
-            // the hint, while nothing is typed
-            Text {
-                id: queryText
-                anchors.centerIn: parent
-                visible: !root.searching && searchInput.text === ""
-                text: "Type to search windows and apps"
-                color: Theme.fgOff
-                font.family: Theme.font
-                font.pixelSize: Theme.fontSize + 1
-            }
-            // A real text field: typing anywhere in the grid lands here (it has the
-            // keyboard), and it selects, copies and pastes like any other. Clicks on it
-            // don't reach the empty space behind (which closes the overview).
-            TextInput {
-                id: searchInput
-                anchors.fill: parent
-                anchors.leftMargin: 36
-                anchors.rightMargin: 24
-                verticalAlignment: TextInput.AlignVCenter
-                horizontalAlignment: TextInput.AlignHCenter
-                color: Theme.fg
-                selectionColor: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.35)
-                selectedTextColor: Theme.fg
-                selectByMouse: true
-                clip: true
-                font.family: Theme.font
-                font.pixelSize: Theme.fontSize + 1
-                cursorDelegate: Rectangle {
-                    width: 1.5
-                    color: Theme.accent
-                    visible: searchInput.cursorVisible && root.searching
-                }
-                onTextChanged: {
-                    root.query = text;
-                    if (text)
-                        root.searching = true;
-                }
-                Keys.onPressed: e => root.gridKey(e)
-                // a press on the text itself (selecting) counts as clicking the field
-                TapHandler {
-                    onPressedChanged: if (pressed) root.searching = true
-                }
-            }
+            hint: "Type to search windows and apps"
+            onKey: e => root.gridKey(e)
+            onTextChanged: root.query = text
         }
 
         Row {

@@ -21,6 +21,7 @@ import qs.modules.overview
 import qs.modules.osd
 import qs.modules.notifications
 import qs.modules.settings
+import qs.modules.launcher
 import qs.widgets
 
 ShellRoot {
@@ -76,6 +77,22 @@ ShellRoot {
         function dnd(): bool {
             Notifs.dnd = !Notifs.dnd;
             return Notifs.dnd;
+        }
+    }
+
+    Launcher {
+        id: launcher
+    }
+    // `qs ipc call launcher toggle|search <text>`: the app launcher (also the Apps button,
+    // Super+R)
+    IpcHandler {
+        target: "launcher"
+
+        function toggle(): void { launcher.toggle(); }
+        function search(text: string): void {   // for testing: open it with this typed
+            if (!launcher.open)
+                launcher.show();
+            launcher.typeText(text);
         }
     }
 

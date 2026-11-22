@@ -25,7 +25,7 @@ ShellRoot {
         target: "shell"
 
         function ping(): string {
-            toast.show("Quickshell đang chạy");
+            toast.show("Quickshell is running");
             return "pong";
         }
     }
@@ -72,7 +72,8 @@ ShellRoot {
     Overview {
         id: overview
     }
-    // `qs ipc call overview toggle|alttab <1|-1>|release`: window overview / Alt+Tab strip
+    // `qs ipc call overview toggle|alttab <1|-1>|release|swipe begin|move dx dy|swipe end`:
+    // window overview, Alt+Tab strip, 3-finger gesture
     // (keys use the GlobalShortcuts inside)
     IpcHandler {
         target: "overview"
@@ -81,6 +82,14 @@ ShellRoot {
         // Alt+Tab steps (1 / -1) and Alt release, for testing without the keyboard
         function alttab(dir: int): void { overview.altTab(dir); }
         function release(): void { overview.altReleased(); }
+        // 3-finger swipe by hand: swipe begin|end, then swipe move with dx dy in mm (dy < 0 is up)
+        function swipe(phase: string): void {
+            if (phase === "begin") overview.gestureBegin();
+            else overview.gestureEnd(false);
+        }
+        function move(dx: real, dy: real): void { overview.gestureUpdate(dx, dy); }
+        function bench(): void { overview.bench(); }   // frame timing, see Overview.qml
+        function search(text: string): void { overview.query = text; }   // like typing in the grid
     }
 
     Toast {

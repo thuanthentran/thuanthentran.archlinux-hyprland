@@ -281,6 +281,16 @@ hl.config({
     },
 })
 
+-- Let a client draw its next frame while the last one is still being shown. Without it
+-- Quickshell's overview / gesture got a frame callback only every other refresh: ~72 fps
+-- on the 144 Hz panel even though rendering took ~1 ms (measured with
+-- QT_LOGGING_RULES=qt.scenegraph.time.renderloop=true). With it: mostly 7-8 ms frames.
+hl.config({
+    render = {
+        new_render_scheduling = true,
+    },
+})
+
 hl.config({
     input = {
         kb_layout  = "us",
@@ -305,7 +315,7 @@ hl.config({
         scroll_factor = 1.0,
 
         touchpad = {
-            scroll_factor        = 1.0,
+            scroll_factor        = 0.5,   -- 1.0 scrolled too far per swipe on the TUF's pad
             natural_scroll       = true,  -- macOS-style scrolling
             tap_to_click         = true,
             clickfinger_behavior = true,  -- two-finger click = right click
@@ -314,17 +324,8 @@ hl.config({
     },
 })
 
--- 3-finger swipe left/right: cycle between windows in the current workspace
-local cycleScript = os.getenv("HOME") .. "/.config/hypr/scripts/cycle-window.sh"
-hl.gesture({ fingers = 3, direction = "left",  action = function() hl.exec_cmd(cycleScript .. " next") end })
-hl.gesture({ fingers = 3, direction = "right", action = function() hl.exec_cmd(cycleScript .. " prev") end })
-
--- 3-finger swipe up: show all windows (window overview)
-hl.gesture({
-    fingers = 3,
-    direction = "up",
-    action = function() hl.exec_cmd("pkill rofi || rofi -show window") end
-})
+-- 3-finger swipes are followed by Quickshell (Touchpad.qml -> Overview.qml: switch windows
+-- sideways, swipe up for the overview), not bound here.
 
 -- 4-finger swipe left/right: switch workspace (the old 3-finger behaviour)
 hl.gesture({

@@ -171,6 +171,7 @@ step_system() {
   [[ $HOST != none ]] && install_tree "$REPO/hosts/$HOST"
   run sudo udevadm control --reload
   run sudo udevadm trigger --subsystem-match=drm
+  run sudo udevadm trigger --subsystem-match=input --action=change
   run sudo sysctl --system --quiet
   info "Rebuilding initramfs"
   run sudo mkinitcpio -P

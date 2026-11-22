@@ -10,4 +10,6 @@ Singleton {
     property int held: 0
     // Set by `qs ipc call bar popup <name>` (sound, wifi, bluetooth) to open that drop-down
     signal popupRequested(string name)
+    // The Apps button asks the overview to close before opening the drawer
+    signal overviewDismiss()
 }

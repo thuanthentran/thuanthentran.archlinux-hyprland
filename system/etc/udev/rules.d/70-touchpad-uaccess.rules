@@ -1,0 +1,4 @@
+# Let the user at the seat read the touchpad (an ACL, like for audio / video devices), so
+# Quickshell can follow 3-finger swipes with `libinput debug-events`. Only touchpads: the
+# `input` group would also expose every keyboard. Must sort before 73-seat-late.rules.
+ACTION!="remove", KERNEL=="event*", ENV{ID_INPUT_TOUCHPAD}=="1", TAG+="uaccess"

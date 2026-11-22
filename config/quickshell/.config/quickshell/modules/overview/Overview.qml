@@ -561,32 +561,67 @@ PanelWindow {
     function tileMatches(t) {
         return !query || (!!t && matches(t.title + " " + t.appId));
     }
-    readonly property var apps: query === "" ? [] : DesktopEntries.applications.values
+    // Clicked into the empty field: recently opened apps; typing: apps that match
+    readonly property var apps: query === "" ? (searchField.engaged ? AppUsage.recent(6) : []) : DesktopEntries.applications.values
         .filter(e => !e.noDisplay && matches(e.name + " " + e.genericName + " " + (e.keywords ?? []).join(" ") + " " + e.id))
         .slice(0, 6)
 
     // The app row's model, changed by insert / move / remove only, so a card that stays
-    // while typing isn't rebuilt (and doesn't fade in again); new cards fade in
+    // while typing isn't rebuilt. New cards slide in (up, and sideways: from the right
+    // while typing more, from the left while deleting); cards that drop out are marked
+    // `leaving`, slide out the other way and are removed after (dropApp).
     ListModel {
         id: appModel
     }
+    property int slideDir: 1              // 1: the text grew (typing), -1: it shrank
     onAppsChanged: {
         const ids = apps.map(e => e.id);
-        for (let k = appModel.count - 1; k >= 0; k--)
-            if (!ids.includes(appModel.get(k).eid))
-                appModel.remove(k);
+        for (let k = 0; k < appModel.count; k++) {
+            const it = appModel.get(k);
+            if (!it.leaving && !ids.includes(it.eid))
+                appModel.setProperty(k, "leaving", true);
+        }
         ids.forEach((id, i) => {
-            let j = -1;
-            for (let k = i; k < appModel.count; k++)
-                if (appModel.get(k).eid === id) {
+            // where the i-th staying card is, and where this app is now
+            let pos = -1, j = -1, c = 0;
+            for (let k = 0; k < appModel.count; k++) {
+                const it = appModel.get(k);
+                if (it.leaving)
+                    continue;
+                if (c === i)
+                    pos = k;
+                if (it.eid === id)
                     j = k;
-                    break;
-                }
+                c++;
+            }
+            if (pos < 0)
+                pos = appModel.count;
             if (j < 0)
-                appModel.insert(i, { eid: id });
-            else if (j !== i)
-                appModel.move(j, i, 1);
+                appModel.insert(pos, { eid: id, leaving: false });
+            else if (j !== pos)
+                appModel.move(j, pos > j ? pos - 1 : pos, 1);
         });
+    }
+    function dropApp(eid) {
+        for (let k = 0; k < appModel.count; k++) {
+            const it = appModel.get(k);
+            if (it.eid === eid && it.leaving) {
+                appModel.remove(k);
+                return;
+            }
+        }
+    }
+
+    // Make way: once the search is in use (clicked or typed in), the windows step down and
+    // shrink a little to leave room for the app row under the field
+    readonly property real wayPx: 110
+    property real way: open && mode === "grid" && searchField.engaged ? 1 : 0
+    Behavior on way {
+        // closing: in step with the tiles flying back to their windows (anim)
+        NumberAnimation {
+            duration: root.open ? 480 : 260
+            easing.type: root.open ? Easing.OutQuint : Easing.OutCubic
+        }
     }
 
     onQueryChanged: {
@@ -605,6 +640,7 @@ PanelWindow {
     function launch(entry) {
         if (!entry)
             return;
+        AppUsage.record(entry);
         entry.execute();
         close("");
     }
@@ -958,6 +994,15 @@ PanelWindow {
         id: content
         anchors.fill: parent
         focus: true
+        transform: [
+            Scale {
+                origin.x: content.width / 2
+                origin.y: 0
+                xScale: 1 - root.way * root.wayPx / Math.max(1, content.height)
+                yScale: xScale
+            },
+            Translate { y: root.way * root.wayPx }
+        ]
 
         // Backup for the Alt watcher, while the strip has the keyboard
         Keys.onReleased: e => {
@@ -1063,72 +1108,123 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             hint: "Type to search windows and apps"
             onKey: e => root.gridKey(e)
-            onTextChanged: root.query = text
+            onTextChanged: {
+                root.slideDir = text.length >= root.query.length ? 1 : -1;
+                root.query = text;
+            }
+        }
+
+        // clicked into the field before any app was ever opened from here or the launcher
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: searchField.engaged && !root.query && appModel.count === 0
+            topPadding: 30
+            text: "Apps you open will show up here"
+            color: Theme.fgOff
+            font.family: Theme.font
+            font.pixelSize: Theme.fontSize
         }
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 8
-            visible: root.apps.length > 0
-            // cards that stay glide to their new place when others come or go
-            move: Transition {
-                NumberAnimation { properties: "x"; duration: 260; easing.type: Easing.OutCubic }
-            }
+            spacing: 0                    // gaps are part of each slot
+            visible: appModel.count > 0
 
             Repeater {
                 model: appModel
 
-                Rectangle {
-                    id: app
+                // A slot as wide as the card times `t`, so cards coming and going widen and
+                // narrow the row smoothly instead of the row jumping when one is removed
+                Item {
+                    id: slot
                     required property string eid
+                    required property bool leaving
                     required property int index
                     readonly property var modelData: DesktopEntries.byId(eid)
 
-                    // a new card fades in and rises a little, one after the other
-                    opacity: 0
-                    transform: Translate { id: rise; y: 8 }
-                    Component.onCompleted: appear.start()
+                    // One value drives the whole entrance: 0 -> 1 opens the slot, rises the
+                    // card 18 px, slides it in 40 px sideways (from where the text change
+                    // points), grows it from 94 % and fades it in; new cards follow each
+                    // other by 45 ms. Leaving runs it back towards the other side.
+                    property real t: 0
+                    property int inDir: 1
+                    property int outDir: -1
+                    readonly property int dir: leaving ? outDir : inDir
+                    width: 100 * t
+                    height: 86
+                    Component.onCompleted: {
+                        inDir = root.slideDir;
+                        let order = 0;            // place among the cards arriving now
+                        for (let k = 0; k < index; k++)
+                            if (!appModel.get(k).leaving)
+                                order++;
+                        pause.duration = Math.min(order, 5) * 45;
+                        appear.start();
+                    }
+                    onLeavingChanged: {
+                        if (!leaving)
+                            return;
+                        outDir = -root.slideDir;
+                        appear.stop();
+                        leave.start();
+                    }
                     SequentialAnimation {
                         id: appear
-                        PauseAnimation { duration: Math.min(app.index, 5) * 50 }
-                        ParallelAnimation {
-                            NumberAnimation { target: app; property: "opacity"; to: 1; duration: 450; easing.type: Easing.OutCubic }
-                            NumberAnimation { target: rise; property: "y"; to: 0; duration: 450; easing.type: Easing.OutCubic }
-                        }
+                        PauseAnimation { id: pause }
+                        NumberAnimation { target: slot; property: "t"; to: 1; duration: 620; easing.type: Easing.OutQuint }
+                    }
+                    SequentialAnimation {
+                        id: leave
+                        NumberAnimation { target: slot; property: "t"; to: 0; duration: 260; easing.type: Easing.InOutCubic }
+                        ScriptAction { script: root.dropApp(slot.eid) }
                     }
 
-                    // the first app is what Enter opens when no window matches
-                    readonly property bool first: index === 0 && !root.tileMatches(root.tiles[root.selected] ?? {})
-                    width: 92
-                    height: 86
-                    radius: 10
-                    color: appMouse.containsMouse ? Theme.active : first ? Theme.hover : Theme.popupBg
-                    border.color: first ? Qt.rgba(1, 1, 1, 0.6) : Theme.popupBorder
+                    Rectangle {
+                        id: app
+                        readonly property var modelData: slot.modelData
+                        readonly property bool leaving: slot.leaving
+                        readonly property string eid: slot.eid
+                        x: (slot.width - width) / 2
+                        opacity: slot.t
+                        scale: 0.94 + 0.06 * slot.t
+                        transform: Translate {
+                            x: slot.dir * 40 * (1 - slot.t)
+                            y: (slot.leaving ? 10 : 18) * (1 - slot.t)
+                        }
 
-                    Column {
-                        anchors.centerIn: parent
-                        width: parent.width - 12
-                        spacing: 6
-                        IconImage {
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            implicitSize: 40
-                            source: Quickshell.iconPath(app.modelData?.icon ?? "", "application-x-executable")
+                        // the first app is what Enter opens when no window matches
+                        readonly property bool first: !leaving && eid === (root.apps[0]?.id ?? "") && !root.tileMatches(root.tiles[root.selected] ?? {})
+                        width: 92
+                        height: 86
+                        radius: 10
+                        color: appMouse.containsMouse ? Theme.active : first ? Theme.hover : Theme.popupBg
+                        border.color: first ? Qt.rgba(1, 1, 1, 0.6) : Theme.popupBorder
+
+                        Column {
+                            anchors.centerIn: parent
+                            width: parent.width - 12
+                            spacing: 6
+                            IconImage {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                implicitSize: 40
+                                source: Quickshell.iconPath(app.modelData?.icon ?? "", "application-x-executable")
+                            }
+                            Text {
+                                width: parent.width
+                                horizontalAlignment: Text.AlignHCenter
+                                text: app.modelData?.name ?? ""
+                                color: Theme.fg
+                                font.family: Theme.font
+                                font.pixelSize: Theme.fontSize - 1
+                                elide: Text.ElideRight
+                            }
                         }
-                        Text {
-                            width: parent.width
-                            horizontalAlignment: Text.AlignHCenter
-                            text: app.modelData?.name ?? ""
-                            color: Theme.fg
-                            font.family: Theme.font
-                            font.pixelSize: Theme.fontSize - 1
-                            elide: Text.ElideRight
+                        MouseArea {
+                            id: appMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: root.launch(app.modelData)
                         }
-                    }
-                    MouseArea {
-                        id: appMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: root.launch(app.modelData)
                     }
                 }
             }

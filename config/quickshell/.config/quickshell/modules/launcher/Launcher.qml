@@ -3,8 +3,8 @@
 // app A-Z. Typing filters; Enter opens the selected app (the first match), arrows / Tab
 // move, Esc clears the search and then closes, a click on empty space closes.
 // Opened by the bar's Apps button, Super+R (GlobalShortcut quickshell:launcher) and
-// `qs ipc call launcher toggle`. How often each app was opened is kept in
-// Quickshell.statePath("launcher.json") for the "Frequent" row.
+// `qs ipc call launcher toggle`. How often each app was opened comes from AppUsage (the
+// "Frequent" row).
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
@@ -56,9 +56,7 @@ PanelWindow {
     function launch(entry) {
         if (!entry)
             return;
-        const c = Object.assign({}, usage.counts);
-        c[entry.id] = (c[entry.id] ?? 0) + 1;
-        usage.counts = c;
+        AppUsage.record(entry);
         close();
         entry.execute();
     }
@@ -84,15 +82,6 @@ PanelWindow {
     }
 
     // --- apps -------------------------------------------------------------------------
-
-    FileView {
-        path: Quickshell.statePath("launcher.json")
-        onAdapterUpdated: writeAdapter()
-        JsonAdapter {
-            id: usage
-            property var counts: ({})
-        }
-    }
 
     readonly property var all: DesktopEntries.applications.values
         .filter(e => !e.noDisplay)
@@ -121,8 +110,8 @@ PanelWindow {
             .map(x => x.e);
     }
     readonly property var frequent: query ? [] : all
-        .filter(e => (usage.counts[e.id] ?? 0) > 0)
-        .sort((a, b) => usage.counts[b.id] - usage.counts[a.id])
+        .filter(e => (AppUsage.counts[e.id] ?? 0) > 0)
+        .sort((a, b) => AppUsage.counts[b.id] - AppUsage.counts[a.id])
         .slice(0, 7)
 
     onResultsChanged: selected = 0

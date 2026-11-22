@@ -405,7 +405,7 @@ hl.bind(mainMod .. " + M",              hl.dsp.exec_cmd(minimize .. " minimize")
 hl.bind(mainMod .. " + SHIFT + Q",      hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")) -- log out
 hl.bind(mainMod .. " + CTRL + Q",       hl.dsp.exec_cmd("hyprlock"))               -- lock screen
 hl.bind(mainMod .. " + CTRL + F",       hl.dsp.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh"))
-hl.bind(mainMod .. " + space",          hl.dsp.exec_cmd("pkill rofi || rofi -show drun")) -- Spotlight
+hl.bind(mainMod .. " + space",          hl.dsp.global("quickshell:launcher"))  -- app launcher (Quickshell), like Spotlight
 -- Window overview (Quickshell Overview.qml): tap Super alone, or Super+Tab
 hl.bind(mainMod .. " + Tab",            hl.dsp.global("quickshell:overview"))
 hl.bind(mainMod .. " + Super_L",        hl.dsp.global("quickshell:overview-tap"), { release = true })

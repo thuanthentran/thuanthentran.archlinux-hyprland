@@ -52,7 +52,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Cửa sổ phóng to thì ẩn thanh tiêu đề, tên + 3 nút lên thanh trên cùng (phương án C; tag `maximized`)
 4. Tính năng
    - [x] Trang app (launcher) bằng Quickshell thay nwg-drawer, theo concept trắng đen xanh lá
-   - [ ] Gỡ gói `nwg-drawer` trên máy (`sudo pacman -Rns nwg-drawer`); cân nhắc cho Super+Space dùng launcher thay rofi
+   - [x] Gỡ gói `nwg-drawer` trên máy; Super+Space mở launcher thay rofi
    - [x] Cửa sổ mới mở ở 70% màn hình, căn giữa (rule `open-large`; trừ hộp thoại modal, PiP, cửa sổ tiện ích)
    - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
 5. Đăng nhập

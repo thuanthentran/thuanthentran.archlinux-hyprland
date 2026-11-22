@@ -57,7 +57,7 @@ nwg-look
 # builds the green WhiteSur GTK3 theme (setup.sh theme)
 sassc
 
-# Spotlight-style launcher / window switcher
+# Small pickers (clipboard history, restore a minimized window, Bluetooth PIN); apps open from the Quickshell launcher
 rofi
 
 # Fonts: Cascadia Code (Nerd Font build) for code and icons. The UI fonts, Lexend and

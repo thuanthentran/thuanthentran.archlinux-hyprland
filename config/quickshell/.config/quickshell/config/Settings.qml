@@ -20,6 +20,8 @@ Singleton {
     property alias mouseAccel: data.mouseAccel           // false: flat (same speed slow or fast)
     property alias mouseScroll: data.mouseScroll         // scroll distance factor
     property alias touchpadScroll: data.touchpadScroll
+    property alias font: data.font                       // UI font (fontconfig family name)
+    property alias displayFont: data.displayFont         // big text: clock, headings
     property alias barAutoHide: data.barAutoHide         // top bar hides until the pointer touches the top edge
 
     FileView {
@@ -45,6 +47,8 @@ Singleton {
             property real mouseScroll: 1.0
             property real touchpadScroll: 0.5
             property bool barAutoHide: false
+            property string font: "Lexend"
+            property string displayFont: "Comfortaa"
         }
     }
 

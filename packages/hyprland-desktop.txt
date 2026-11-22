@@ -59,7 +59,8 @@ nwg-look
 # Spotlight-style launcher / window switcher
 rofi
 
-# Fonts: IBM Plex Sans for the UI, Cascadia Code (Nerd Font build) for code and icons
+# Fonts: Cascadia Code (Nerd Font build) for code and icons. The UI fonts, Lexend and
+# Comfortaa, ship in config/fonts (Stow package, OFL); IBM Plex stays as a choice in Settings
 ttf-ibm-plex
 ttf-cascadia-code-nerd
 noto-fonts

@@ -363,6 +363,7 @@ do
                     bar_title_enabled      = true,
                     bar_text_align         = "center",
                     bar_text_size          = 9,
+                    bar_text_font          = "Lexend",
                     bar_buttons_alignment  = "right",
                     bar_padding            = 10,
                     bar_button_padding     = 6,

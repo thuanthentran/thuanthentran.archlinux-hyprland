@@ -19,9 +19,11 @@ Singleton {
     readonly property color popupBg: Qt.rgba(40 / 255, 40 / 255, 44 / 255, 0.95)
     readonly property color popupBorder: Qt.rgba(1, 1, 1, 0.12)
 
-    readonly property string font: "IBM Plex Sans"
+    // UI text and big display text (clock, headings), picked in Settings
+    readonly property string font: Settings.font
+    readonly property string displayFont: Settings.displayFont
     readonly property string iconFont: "CaskaydiaCove Nerd Font"
-    readonly property int fontSize: 13
+    readonly property int fontSize: 12      // Lexend runs large: 12 reads like 13 in most fonts
     readonly property int iconSize: 15
     readonly property int barHeight: 26
     // Space the bar takes from the windows (none when it auto-hides)

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Apply the macOS-like look (WhiteSur + IBM Plex Sans, Cascadia Code). Run inside a graphical session.
+# Apply the macOS-like look (WhiteSur + Lexend, Cascadia Code). Run inside a graphical session.
 set -euo pipefail
 s=org.gnome.desktop.interface
 gsettings set $s gtk-theme     'WhiteSur-Dark'
 gsettings set $s icon-theme    'WhiteSur-dark'
 gsettings set $s cursor-theme  'WhiteSur-cursors'
-gsettings set $s font-name           'IBM Plex Sans 10'
-gsettings set $s document-font-name  'IBM Plex Sans 11'
+gsettings set $s font-name           'Lexend 10'
+gsettings set $s document-font-name  'Lexend 11'
 gsettings set $s monospace-font-name 'CaskaydiaCove Nerd Font 11'
 # Subpixel + slight hinting, matching config/fontconfig; "manual" makes GTK4 honour it
 gsettings set $s font-antialiasing   'rgba'

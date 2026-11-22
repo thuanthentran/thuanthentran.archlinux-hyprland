@@ -13,7 +13,7 @@ FloatingWindow {
     title: "Settings"
     visible: false
     implicitWidth: 560
-    implicitHeight: 500
+    implicitHeight: 620
     color: Theme.popupBg
 
     // Closing it from the title bar destroys the surface but leaves `visible` true, so
@@ -89,10 +89,64 @@ FloatingWindow {
 
     component Heading: Text {
         color: Theme.fg
-        font.family: Theme.font
+        font.family: Theme.displayFont
         font.pixelSize: 18
         font.weight: Font.DemiBold
         bottomPadding: 8
+    }
+
+    // One choice out of a few, as a row of pills
+    component ChoiceRow: Item {
+        id: crow
+
+        property string label: ""
+        property var options: []
+        property string current: ""
+        property bool fontPreview: false      // draw each option in its own font
+        signal picked(string value)
+
+        width: parent ? parent.width : 0
+        implicitHeight: 52
+
+        Text {
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: crow.label
+            color: Theme.fg
+            font.family: Theme.font
+            font.pixelSize: Theme.fontSize
+        }
+        Row {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 4
+            Repeater {
+                model: crow.options
+                Rectangle {
+                    required property string modelData
+                    readonly property bool on: modelData === crow.current
+                    width: optText.implicitWidth + 20
+                    height: 26
+                    radius: 13
+                    color: on ? Theme.active : optArea.containsMouse ? Theme.hover : "transparent"
+                    border.color: Theme.popupBorder
+                    Text {
+                        id: optText
+                        anchors.centerIn: parent
+                        text: parent.modelData
+                        color: Theme.fg
+                        font.family: crow.fontPreview ? parent.modelData : Theme.font
+                        font.pixelSize: Theme.fontSize
+                    }
+                    MouseArea {
+                        id: optArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: crow.picked(parent.modelData)
+                    }
+                }
+            }
+        }
     }
 
     component SwitchRow: Item {
@@ -145,7 +199,26 @@ FloatingWindow {
             spacing: 4
 
             Heading {
+                text: "Appearance"
+            }
+            ChoiceRow {
+                label: "Interface font"
+                options: ["Lexend", "Comfortaa", "IBM Plex Sans"]
+                current: Settings.font
+                fontPreview: true
+                onPicked: v => Settings.font = v
+            }
+            ChoiceRow {
+                label: "Display font (clock, headings)"
+                options: ["Comfortaa", "Lexend", "IBM Plex Sans"]
+                current: Settings.displayFont
+                fontPreview: true
+                onPicked: v => Settings.displayFont = v
+            }
+
+            Heading {
                 text: "Top bar"
+                topPadding: 20
             }
             SwitchRow {
                 label: "Auto-hide"

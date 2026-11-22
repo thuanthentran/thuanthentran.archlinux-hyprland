@@ -1,5 +1,6 @@
 // Small message in the top-right corner, below the top bar; hides itself after 2 s.
 import QtQuick
+import qs.config
 import Quickshell
 import Quickshell.Wayland
 
@@ -43,7 +44,7 @@ PanelWindow {
             anchors.centerIn: parent
             text: root.text
             color: "white"
-            font.family: "IBM Plex Sans"
+            font.family: Theme.font
             font.pixelSize: 14
         }
     }

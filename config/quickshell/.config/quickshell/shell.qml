@@ -1,7 +1,10 @@
 //@ pragma UseQApplication
 //@ pragma IconTheme WhiteSur-dark
+//@ pragma NativeTextRendering
 // UseQApplication: needed for tray right-click menus. IconTheme: app / tray icons, keep in
-// sync with install/apply-theme.sh. Pragmas only apply on a restart.
+// sync with install/apply-theme.sh. NativeTextRendering: draw text with FreeType +
+// fontconfig hinting like other apps (Qt's default distance-field text looked frayed on
+// curves and diagonals at small sizes). Pragmas only apply on a restart.
 // Quickshell entry point: the top bar (one per screen) and small helpers.
 // Saving any file under this directory reloads the shell (hot reload).
 // Logs: `qs log`. Commands from scripts / keybinds: `qs ipc call <target> <fn>`.

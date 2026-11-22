@@ -22,7 +22,7 @@ DropPopup {
         leftPadding: 6
         text: Qt.formatDate(new Date(), "dddd, d MMMM")
         color: Theme.fg
-        font.family: Theme.font
+        font.family: Theme.displayFont
         font.pixelSize: 15
         font.weight: Font.DemiBold
     }

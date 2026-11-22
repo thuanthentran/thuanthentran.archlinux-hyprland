@@ -2,7 +2,7 @@
 //
 // It grows out of the item: `grow` 0 -> 1 interpolates the frame from a sliver as wide as
 // the item, right under it, to the full panel (position, size and corner radius together);
-// the content stays put, fading in as the frame uncovers it. Closing runs it all back.
+// the content stays put and fades in (more slowly, see openAnim). Closing runs it back.
 //
 // Not an xdg popup: the compositor closes those on an outside click at once, so the
 // closing animation could never run (and Hyprland faded them instead). It is a
@@ -84,6 +84,7 @@ PanelWindow {
         if (visible) {
             closeAnim.stop();
             grow = 0;
+            fade = 0;
             place();
             openAnim.restart();
         }
@@ -95,6 +96,7 @@ PanelWindow {
     readonly property int gap: 5          // between the bar's edge and the open panel
     readonly property real fullH: col.implicitHeight + 24
     property real grow: 0
+    property real fade: 0                 // content opacity: slower than `grow`, so it shows
 
     // The item's rect on the screen (the bar sits at the screen's top left), taken when
     // opening; the panel goes centred under it, kept on screen
@@ -112,17 +114,22 @@ PanelWindow {
         return a + (b - a) * grow;
     }
 
-    NumberAnimation {
+    // Opening: the frame grows in 280 ms, the content keeps fading in until 500 ms.
+    // Closing: the content fades out first; the frame starts shrinking 120 ms later.
+    ParallelAnimation {
         id: openAnim
-        target: root
-        property: "grow"
-        to: 1
-        duration: 280
-        easing.type: Easing.OutCubic
+        NumberAnimation { target: root; property: "grow"; to: 1; duration: 280; easing.type: Easing.OutCubic }
+        NumberAnimation { target: root; property: "fade"; to: 1; duration: 500; easing.type: Easing.OutQuad }
     }
     SequentialAnimation {
         id: closeAnim
-        NumberAnimation { target: root; property: "grow"; to: 0; duration: 200; easing.type: Easing.InOutCubic }
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "fade"; to: 0; duration: 300; easing.type: Easing.OutQuad }
+            SequentialAnimation {
+                PauseAnimation { duration: 120 }
+                NumberAnimation { target: root; property: "grow"; to: 0; duration: 220; easing.type: Easing.InOutCubic }
+            }
+        }
         ScriptAction { script: root.visible = false }
     }
 
@@ -152,10 +159,9 @@ PanelWindow {
                 acceptedButtons: Qt.AllButtons
             }
 
-            // the content in its final place, whatever the frame's size now; it fades in and
-            // out over the same time as the frame grows and shrinks
+            // the content in its final place, whatever the frame's size now
             Item {
-                opacity: root.grow
+                opacity: root.fade
                 x: root.openX - frame.x
                 y: root.openY - frame.y
                 width: root.contentWidth

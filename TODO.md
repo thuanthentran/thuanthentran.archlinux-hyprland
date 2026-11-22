@@ -46,7 +46,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Font: Lexend cho giao diện, Comfortaa cho chữ lớn (đã thử font pixel 8-bit, bỏ); chọn lại được trong Settings
    - [x] Sửa chữ "rách" nét xéo, nét cong trong Quickshell (`NativeTextRendering`)
    - [ ] Scale / DPI: chỉnh dần cho đến khi vừa mắt
-   - [ ] Panel (lịch, thông báo, quick settings, media...) mọc ra từ nút trên thanh bằng nội suy hình học, thay slide + fade
+   - [x] Panel (lịch + thông báo, media, Wi-Fi, Bluetooth, âm lượng, menu nguồn) mọc ra từ nút trên thanh bằng nội suy hình học, thay slide + fade
    - [x] Thanh trên cùng thấp hơn (26 px), tùy chọn tự ẩn trong Settings (chạm mép trên thì hiện)
    - [x] Thanh tiêu đề mảnh (20 px), 3 nút là chấm nhỏ, ký hiệu chỉ hiện khi rê chuột
    - [ ] Cửa sổ phóng to thì ẩn thanh tiêu đề, tên + 3 nút lên thanh trên cùng (phương án C)

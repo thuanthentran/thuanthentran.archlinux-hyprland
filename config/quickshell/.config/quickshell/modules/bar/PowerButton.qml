@@ -15,7 +15,7 @@ BarButton {
 
     text: "\u{23FB}"
     highlighted: menu.visible
-    onClicked: menu.visible = !menu.visible
+    onClicked: menu.toggle()
 
     function run(action) {
         if ((action.confirm ?? "") !== "" && armed !== action.id) {
@@ -24,7 +24,7 @@ BarButton {
             return;
         }
         armed = "";
-        menu.visible = false;
+        menu.close();
         Quickshell.execDetached(["sh", "-c", action.cmd]);
     }
 
@@ -64,88 +64,59 @@ BarButton {
         onTriggered: root.armed = ""
     }
 
-    PopupWindow {
+    DropPopup {
         id: menu
 
-        visible: false
-        grabFocus: true          // the compositor closes the menu on a click outside it
-        // counted in BarState.held so an auto-hiding bar stays down while it's open
-        property bool counted: false
-        onVisibleChanged: {
-            if (!visible)
-                root.armed = "";
-            if (visible !== counted) {
-                BarState.held += visible ? 1 : -1;
-                counted = visible;
-            }
-        }
-        Component.onDestruction: if (counted) BarState.held -= 1
-        anchor.item: root
-        anchor.rect.x: 0
-        anchor.rect.y: root.height + 6
-        anchor.rect.width: root.width
-        anchor.rect.height: 0
-        anchor.edges: Edges.Bottom | Edges.Right
-        anchor.gravity: Edges.Bottom | Edges.Left
-        color: "transparent"
-        implicitWidth: 220
-        implicitHeight: list.implicitHeight + 12
+        anchorItem: root
+        contentWidth: 220
+        onVisibleChanged: if (!visible) root.armed = ""
 
+        Column {
+            id: list
+            width: parent.width
+            spacing: 2
 
-        Rectangle {
-            anchors.fill: parent
-            radius: 10
-            color: Theme.popupBg
-            border.color: Theme.popupBorder
+            Repeater {
+                model: root.actions.filter(a => a.id !== "hibernate" || root.canHibernate)
 
-            Column {
-                id: list
-                anchors.fill: parent
-                anchors.margins: 6
-                spacing: 2
+                Rectangle {
+                    required property var modelData
+                    readonly property bool isArmed: root.armed === modelData.id
 
-                Repeater {
-                    model: root.actions.filter(a => a.id !== "hibernate" || root.canHibernate)
+                    width: list.width
+                    height: 32
+                    radius: 6
+                    color: isArmed ? Theme.redHover : area.containsMouse ? Theme.hover : "transparent"
+                    Behavior on color { ColorAnimation { duration: 120 } }
 
-                    Rectangle {
-                        required property var modelData
-                        readonly property bool isArmed: root.armed === modelData.id
+                    Row {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        anchors.leftMargin: 10
+                        spacing: 10
 
-                        width: list.width
-                        height: 32
-                        radius: 6
-                        color: isArmed ? Theme.redHover : area.containsMouse ? Theme.hover : "transparent"
-                        Behavior on color { ColorAnimation { duration: 120 } }
-
-                        Row {
+                        Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
-                            anchors.leftMargin: 10
-                            spacing: 10
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: 18
-                                text: modelData.icon
-                                color: Theme.fg
-                                font.family: Theme.iconFont
-                                font.pixelSize: Theme.iconSize
-                            }
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: isArmed ? modelData.confirm : modelData.label
-                                color: Theme.fg
-                                font.family: Theme.font
-                                font.pixelSize: Theme.fontSize
-                            }
+                            width: 18
+                            text: modelData.icon
+                            color: Theme.fg
+                            font.family: Theme.iconFont
+                            font.pixelSize: Theme.iconSize
                         }
-
-                        MouseArea {
-                            id: area
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onClicked: root.run(modelData)
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: isArmed ? modelData.confirm : modelData.label
+                            color: Theme.fg
+                            font.family: Theme.font
+                            font.pixelSize: Theme.fontSize
                         }
+                    }
+
+                    MouseArea {
+                        id: area
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: root.run(modelData)
                     }
                 }
             }

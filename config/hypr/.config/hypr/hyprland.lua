@@ -369,6 +369,8 @@ do
                     icon_on_hover          = true,
                     bar_part_of_window     = true,
                     bar_precedence_over_border = true,
+                    -- double-click the title bar: maximize (the top bar's title restores)
+                    on_double_click        = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh",
                 },
             },
         })

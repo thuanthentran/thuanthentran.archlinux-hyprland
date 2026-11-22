@@ -619,7 +619,7 @@ PanelWindow {
     Behavior on way {
         // closing: in step with the tiles flying back to their windows (anim)
         NumberAnimation {
-            duration: root.open ? 480 : 260
+            duration: root.open ? 320 : 260
             easing.type: root.open ? Easing.OutQuint : Easing.OutCubic
         }
     }
@@ -1145,7 +1145,7 @@ PanelWindow {
                     // One value drives the whole entrance: 0 -> 1 opens the slot, rises the
                     // card 18 px, slides it in 40 px sideways (from where the text change
                     // points), grows it from 94 % and fades it in; new cards follow each
-                    // other by 45 ms. Leaving runs it back towards the other side.
+                    // other by 30 ms. Leaving runs it back towards the other side.
                     property real t: 0
                     property int inDir: 1
                     property int outDir: -1
@@ -1158,7 +1158,7 @@ PanelWindow {
                         for (let k = 0; k < index; k++)
                             if (!appModel.get(k).leaving)
                                 order++;
-                        pause.duration = Math.min(order, 5) * 45;
+                        pause.duration = Math.min(order, 5) * 30;
                         appear.start();
                     }
                     onLeavingChanged: {
@@ -1171,11 +1171,11 @@ PanelWindow {
                     SequentialAnimation {
                         id: appear
                         PauseAnimation { id: pause }
-                        NumberAnimation { target: slot; property: "t"; to: 1; duration: 620; easing.type: Easing.OutQuint }
+                        NumberAnimation { target: slot; property: "t"; to: 1; duration: 410; easing.type: Easing.OutQuint }
                     }
                     SequentialAnimation {
                         id: leave
-                        NumberAnimation { target: slot; property: "t"; to: 0; duration: 260; easing.type: Easing.InOutCubic }
+                        NumberAnimation { target: slot; property: "t"; to: 0; duration: 175; easing.type: Easing.InOutCubic }
                         ScriptAction { script: root.dropApp(slot.eid) }
                     }
 

@@ -565,6 +565,30 @@ PanelWindow {
         .filter(e => !e.noDisplay && matches(e.name + " " + e.genericName + " " + (e.keywords ?? []).join(" ") + " " + e.id))
         .slice(0, 6)
 
+    // The app row's model, changed by insert / move / remove only, so a card that stays
+    // while typing isn't rebuilt (and doesn't fade in again); new cards fade in
+    ListModel {
+        id: appModel
+    }
+    onAppsChanged: {
+        const ids = apps.map(e => e.id);
+        for (let k = appModel.count - 1; k >= 0; k--)
+            if (!ids.includes(appModel.get(k).eid))
+                appModel.remove(k);
+        ids.forEach((id, i) => {
+            let j = -1;
+            for (let k = i; k < appModel.count; k++)
+                if (appModel.get(k).eid === id) {
+                    j = k;
+                    break;
+                }
+            if (j < 0)
+                appModel.insert(i, { eid: id });
+            else if (j !== i)
+                appModel.move(j, i, 1);
+        });
+    }
+
     onQueryChanged: {
         // `query` is also cleared from code (Esc, a new opening): keep the field in step
         if (searchField.text !== query)
@@ -1046,14 +1070,33 @@ PanelWindow {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 8
             visible: root.apps.length > 0
+            // cards that stay glide to their new place when others come or go
+            move: Transition {
+                NumberAnimation { properties: "x"; duration: 260; easing.type: Easing.OutCubic }
+            }
 
             Repeater {
-                model: root.apps
+                model: appModel
 
                 Rectangle {
                     id: app
-                    required property var modelData
+                    required property string eid
                     required property int index
+                    readonly property var modelData: DesktopEntries.byId(eid)
+
+                    // a new card fades in and rises a little, one after the other
+                    opacity: 0
+                    transform: Translate { id: rise; y: 8 }
+                    Component.onCompleted: appear.start()
+                    SequentialAnimation {
+                        id: appear
+                        PauseAnimation { duration: Math.min(app.index, 5) * 50 }
+                        ParallelAnimation {
+                            NumberAnimation { target: app; property: "opacity"; to: 1; duration: 450; easing.type: Easing.OutCubic }
+                            NumberAnimation { target: rise; property: "y"; to: 0; duration: 450; easing.type: Easing.OutCubic }
+                        }
+                    }
+
                     // the first app is what Enter opens when no window matches
                     readonly property bool first: index === 0 && !root.tileMatches(root.tiles[root.selected] ?? {})
                     width: 92
@@ -1069,12 +1112,12 @@ PanelWindow {
                         IconImage {
                             anchors.horizontalCenter: parent.horizontalCenter
                             implicitSize: 40
-                            source: Quickshell.iconPath(app.modelData.icon, "application-x-executable")
+                            source: Quickshell.iconPath(app.modelData?.icon ?? "", "application-x-executable")
                         }
                         Text {
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
-                            text: app.modelData.name
+                            text: app.modelData?.name ?? ""
                             color: Theme.fg
                             font.family: Theme.font
                             font.pixelSize: Theme.fontSize - 1

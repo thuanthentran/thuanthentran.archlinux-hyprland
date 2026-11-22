@@ -43,6 +43,9 @@ PanelWindow {
     function close() {
         if (!visible || closeAnim.running)
             return;
+        // let go of the keyboard now, not after the animation: while a layer holds it,
+        // Hyprland ignores focus changes (Alt+Tab, the 3-finger swipe)
+        grabFocus = false;
         openAnim.stop();
         closeAnim.restart();
     }

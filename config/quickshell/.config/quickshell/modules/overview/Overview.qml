@@ -181,9 +181,16 @@ PanelWindow {
             show();
     }
 
+    // A bar panel holds the keyboard, and while it does Hyprland ignores focus changes:
+    // close them all when the overview, Alt+Tab or a swipe starts
+    function closePanels() {
+        BarState.popupRequested("");
+    }
+
     function show() {
         if (open || fetch.running || session || gesture)
             return;
+        closePanels();
         mode = "grid";
         loaded = false;
         fetch.running = true;
@@ -201,6 +208,7 @@ PanelWindow {
         if (!session) {
             if (open)                     // still closing from the last pick
                 return;
+            closePanels();
             session = true;
             commitPending = false;
             mode = "strip";
@@ -258,6 +266,7 @@ PanelWindow {
         }
         if (open || fetch.running)
             return;
+        closePanels();
         gesture = "film";
         mode = "film";
         dragging = true;
@@ -1019,6 +1028,29 @@ PanelWindow {
                 color: root.query ? Theme.fg : Theme.fgOff
                 font.family: Theme.font
                 font.pixelSize: Theme.fontSize + 1
+            }
+            // Caret: typing anywhere in the grid goes here (the overlay has the keyboard),
+            // so show where it lands; after the text, or before the hint when empty
+            Rectangle {
+                x: root.query ? queryText.x + queryText.width + 1 : queryText.x - 4
+                anchors.verticalCenter: parent.verticalCenter
+                width: 1.5
+                height: 16
+                color: Theme.accent
+                SequentialAnimation on opacity {
+                    running: root.open && root.mode === "grid"
+                    loops: Animation.Infinite
+                    NumberAnimation { to: 1; duration: 0 }
+                    PauseAnimation { duration: 530 }
+                    NumberAnimation { to: 0; duration: 0 }
+                    PauseAnimation { duration: 530 }
+                }
+            }
+            // A click on the field is not a click on the empty space behind it (that
+            // closes the overview)
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.IBeamCursor
             }
         }
 

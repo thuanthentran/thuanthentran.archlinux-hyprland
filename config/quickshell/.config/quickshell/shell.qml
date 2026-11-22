@@ -5,12 +5,19 @@
 // Quickshell entry point: the top bar (one per screen) and small helpers.
 // Saving any file under this directory reloads the shell (hot reload).
 // Logs: `qs log`. Commands from scripts / keybinds: `qs ipc call <target> <fn>`.
-// Imports: `qs` is this directory (Theme), `qs.widgets` / `qs.bar` its subdirectories.
+// Imports: `qs.config` (Theme, Settings), `qs.services` (data singletons: BarState, SysStats,
+// Players, Notifs, Touchpad, WindowOrder...), `qs.widgets` (shared pieces), `qs.modules.*`
+// (bar, overview, osd, notifications, settings).
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs
-import qs.bar
+import qs.config
+import qs.services
+import qs.modules.bar
+import qs.modules.overview
+import qs.modules.osd
+import qs.modules.notifications
+import qs.modules.settings
 import qs.widgets
 
 ShellRoot {
@@ -67,6 +74,16 @@ ShellRoot {
             Notifs.dnd = !Notifs.dnd;
             return Notifs.dnd;
         }
+    }
+
+    SettingsWindow {
+        id: settings
+    }
+    // `qs ipc call settings open`: the Settings window (also in the power menu)
+    IpcHandler {
+        target: "settings"
+
+        function open(): void { settings.open(); }
     }
 
     Overview {

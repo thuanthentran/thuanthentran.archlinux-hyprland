@@ -2,7 +2,8 @@
 // (newest first) with Clear all and a Do Not Disturb switch.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 DropPopup {

@@ -7,7 +7,8 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
 import Quickshell.Wayland
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 PanelWindow {

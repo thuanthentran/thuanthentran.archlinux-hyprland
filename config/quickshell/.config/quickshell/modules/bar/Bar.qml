@@ -4,7 +4,8 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import qs
+import qs.config
+import qs.services
 
 PanelWindow {
     id: bar
@@ -35,7 +36,6 @@ PanelWindow {
 
         Item { Layout.fillWidth: true }
 
-        WindowControls {}
         SystemStats {}
         QuickSettings {}
         Tray {}

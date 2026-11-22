@@ -1,11 +1,12 @@
 // One icon per window, in WindowOrder (the order the 3-finger film and the overview use).
-// Click focuses it; a minimized window (in special:magic) is restored instead, middle
+// Pressing focuses it; a minimized window (in special:magic) is restored instead, middle
 // click closes. Drag an icon sideways to reorder.
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 Row {
@@ -37,13 +38,20 @@ Row {
                 source: Quickshell.iconPath(DesktopEntries.heuristicLookup(btn.appId)?.icon ?? btn.appId, "application-x-executable")
             }
 
+            // Act on press, not on click: a touchpad tap followed by a little finger
+            // movement turns into tap-and-drag, which the reorder drag below took over, so
+            // the click never came ("works sometimes")
+            onPressed: m => {
+                if (m.button !== Qt.LeftButton)
+                    return;
+                if (minimized)
+                    Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/minimize.sh", "restore", btn.addr]);
+                else
+                    Hyprland.dispatch(`hl.dsp.focus({ window = "address:0x${btn.addr}" })`);
+            }
             onClicked: m => {
                 if (m.button === Qt.MiddleButton)
                     modelData?.wayland?.close();
-                else if (minimized)
-                    Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/minimize.sh", "restore", btn.addr]);
-                else
-                    modelData?.wayland?.activate();
             }
 
             // Reorder: while dragging, the window takes the place of the button under the
@@ -52,6 +60,7 @@ Row {
                 id: drag
                 target: null
                 yAxis.enabled: false
+                dragThreshold: 14
                 onCentroidChanged: {
                     if (!active)
                         return;

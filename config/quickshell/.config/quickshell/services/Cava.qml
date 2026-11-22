@@ -22,7 +22,7 @@ Singleton {
 
     Process {
         id: proc
-        command: ["cava", "-p", Quickshell.shellPath("cava.conf")]
+        command: ["cava", "-p", Quickshell.shellPath("services/cava.conf")]
         stdout: SplitParser {
             onRead: line => {
                 const v = line.split(";").filter(x => x !== "").map(x => Number(x) / 100);

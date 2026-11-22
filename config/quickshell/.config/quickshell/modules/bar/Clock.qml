@@ -2,7 +2,8 @@
 // since the panel was last opened; a bell-off icon shows Do Not Disturb.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 BarButton {

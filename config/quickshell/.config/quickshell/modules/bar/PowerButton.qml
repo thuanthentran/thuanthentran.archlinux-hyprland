@@ -1,10 +1,11 @@
-// Power button with a menu: lock, sleep, hibernate (only when logind says it can), log
+// Power button with a menu: Settings, lock, sleep, hibernate (only when logind says it can), log
 // out, restart, shut down. Restart and shut
 // down ask for a second click so a slip doesn't turn the machine off.
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 BarButton {
@@ -28,6 +29,7 @@ BarButton {
     }
 
     readonly property var actions: [
+        { id: "settings", icon: "\u{F0493}", label: "Settings…", cmd: "qs ipc call settings open" },
         { id: "lock", icon: "\u{F033E}", label: "Lock", cmd: "loginctl lock-session" },
         // Real suspend hangs on the TUF (CLAUDE.md "Sleep and hibernation"): lock, then
         // turn the screen off; a key, the mouse or the power button brings it back

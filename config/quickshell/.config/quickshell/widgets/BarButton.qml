@@ -1,8 +1,9 @@
 // A bar item: optional text/icon plus any extra children, a hover pill, a tooltip,
-// and clicked / wheel signals for any mouse button.
+// and clicked / pressed / wheel signals for any mouse button.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 
 Rectangle {
     id: root
@@ -19,6 +20,7 @@ Rectangle {
     default property alias content: row.data
 
     signal clicked(var mouse)
+    signal pressed(var mouse)
     signal wheel(var wheel)
 
     implicitWidth: row.implicitWidth + padding * 2
@@ -33,6 +35,7 @@ Rectangle {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: m => root.clicked(m)
+        onPressed: m => root.pressed(m)
         onWheel: w => root.wheel(w)
     }
     HoverHandler {

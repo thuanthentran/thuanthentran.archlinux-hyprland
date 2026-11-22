@@ -1,4 +1,4 @@
-// Colours, fonts and sizes shared by every widget (`import qs`, then `Theme.fg`).
+// Colours, fonts and sizes shared by every widget (`import qs.config`, then `Theme.fg`).
 // Translucent dark bar, flat, soft hover pills (the look Waybar had before).
 pragma Singleton
 import QtQuick

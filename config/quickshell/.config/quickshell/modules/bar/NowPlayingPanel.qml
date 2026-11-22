@@ -6,7 +6,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
 import Quickshell.Widgets
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 DropPopup {

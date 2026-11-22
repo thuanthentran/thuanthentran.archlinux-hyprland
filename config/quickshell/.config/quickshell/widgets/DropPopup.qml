@@ -3,7 +3,8 @@
 // quick settings expanded, since the mouse leaves the bar to use it.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 
 PopupWindow {
     id: root

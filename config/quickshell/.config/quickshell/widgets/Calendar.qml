@@ -1,7 +1,8 @@
 // Month grid, Monday first. Arrows (or scrolling) change the month; clicking the month
 // name jumps back to today. Today is a filled circle.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Column {
     id: root

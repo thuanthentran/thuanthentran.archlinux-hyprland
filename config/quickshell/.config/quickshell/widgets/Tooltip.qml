@@ -1,7 +1,8 @@
 // Tooltip shown below `target` after a short hover.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 
 PopupWindow {
     id: root

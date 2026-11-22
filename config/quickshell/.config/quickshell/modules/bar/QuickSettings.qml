@@ -3,7 +3,8 @@
 // Click it to expand it in place (details slide out, the clock fades); moving the mouse
 // off it folds it back after a moment. The bar itself keeps its size.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Rectangle {
     id: root

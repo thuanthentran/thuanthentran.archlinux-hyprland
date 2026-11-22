@@ -2,7 +2,8 @@
 // Click cycles saver -> balanced -> performance.
 import QtQuick
 import Quickshell.Services.UPower
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 Reveal {

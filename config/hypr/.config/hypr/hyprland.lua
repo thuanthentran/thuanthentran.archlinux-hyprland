@@ -307,6 +307,9 @@ hl.config({
         -- the cycle / click put it.
         float_switch_override_focus = 0,
 
+        -- Pointer speed, acceleration and the scroll factors below are only defaults: the
+        -- Settings window (Quickshell, config/settings.json) pushes its own values over them
+        -- at start and after every reload.
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
         -- Scroll speed for every app (mouse wheel / touchpad). Higher = faster. Inertia is not

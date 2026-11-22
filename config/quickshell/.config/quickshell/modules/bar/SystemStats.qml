@@ -1,7 +1,8 @@
 // CPU and RAM graphs plus network speed. When the quick settings expand, the percentages
 // slide out next to the graphs.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 Row {

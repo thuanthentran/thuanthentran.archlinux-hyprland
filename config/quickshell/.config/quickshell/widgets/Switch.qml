@@ -1,6 +1,7 @@
 // On / off switch; `toggled` asks the owner to flip `checked`.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Rectangle {
     id: root

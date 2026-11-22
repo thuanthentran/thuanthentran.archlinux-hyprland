@@ -1,6 +1,7 @@
 // Bars from Cava.values, growing from the middle (or the bottom).
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Row {
     id: root

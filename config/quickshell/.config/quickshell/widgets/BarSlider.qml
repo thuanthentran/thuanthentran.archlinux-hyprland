@@ -3,7 +3,8 @@
 // `peak` (>= 0, linear audio peak from PwNodePeakMonitor) draws a level meter over the
 // filled part, Windows 11 style: it rises with the sound, up to the current value.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Item {
     id: root

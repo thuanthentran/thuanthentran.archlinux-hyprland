@@ -3,7 +3,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
-import qs
+import qs.config
+import qs.services
 
 Item {
     id: root

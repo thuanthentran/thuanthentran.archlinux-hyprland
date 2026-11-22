@@ -33,13 +33,13 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, tính năng, cuối cùng màn đăng nhập.
 
 1. Nền móng
-   - [ ] Tổ chức lại Quickshell: `services/` (singleton dữ liệu), `modules/` (bar, overview, osd, launcher, lock...), `widgets/`; tách `Overview.qml` thành nhiều file
-   - [ ] `Settings` singleton lưu ra JSON (`JsonAdapter`), panel Settings: màu nhấn, font, scale, tốc độ chuột / touchpad, thông số cử chỉ
+   - [x] Tổ chức lại Quickshell: `services/` (singleton dữ liệu), `modules/` (bar, overview, osd, launcher, lock...), `widgets/`; tách `Overview.qml` thành nhiều file
+   - [x] `Settings` singleton lưu ra JSON (`JsonAdapter`), cửa sổ Settings (mới có chuột / touchpad; sẽ thêm màu nhấn, font, scale, thông số cử chỉ)
    - [ ] Một nguồn màu duy nhất, sinh màu cho Quickshell, Hyprland, rofi, kitty, khóa màn hình
 2. Sửa nhanh
-   - [ ] Icon app trên taskbar lúc bấm được lúc không (nghi `DragHandler` giành cú bấm)
-   - [ ] Bỏ cụm 3 nút cửa sổ trên thanh (`WindowControls.qml`)
-   - [ ] Tốc độ chuột / touchpad tách riêng, chỉnh trong Settings
+   - [x] Icon app trên taskbar lúc bấm được lúc không (nghi `DragHandler` giành cú bấm)
+   - [x] Bỏ cụm 3 nút cửa sổ trên thanh (`WindowControls.qml`)
+   - [x] Tốc độ chuột / touchpad tách riêng, chỉnh trong Settings
 3. Diện mạo
    - [ ] Tông trắng + đen + xanh lá, sạch, tối giản; xanh lá chỉ để nhấn, hover / chọn ám trắng xám; GTK WhiteSur bản green
    - [ ] Font thiên hướng pixel 8-bit làm phong cách (phải đủ dấu tiếng Việt); scale / DPI chỉnh dần sau

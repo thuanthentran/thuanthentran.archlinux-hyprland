@@ -1,7 +1,8 @@
 // Screen brightness: icon (scroll to change, % in the tooltip); expanded adds a slider.
 import QtQuick
 import Quickshell
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 BarButton {

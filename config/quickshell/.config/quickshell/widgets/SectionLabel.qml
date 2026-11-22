@@ -1,6 +1,7 @@
 // Small heading inside a drop-down ("Output", "Apps").
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Text {
     topPadding: 4

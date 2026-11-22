@@ -1,6 +1,7 @@
 // A row in a drop-down list: icon, text, optional detail on the right, hover highlight.
 import QtQuick
-import qs
+import qs.config
+import qs.services
 
 Rectangle {
     id: root

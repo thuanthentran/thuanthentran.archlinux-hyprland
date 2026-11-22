@@ -1,7 +1,8 @@
 // Regular workspaces (special ones like the minimized-window stash have id < 0).
 import QtQuick
 import Quickshell.Hyprland
-import qs
+import qs.config
+import qs.services
 import qs.widgets
 
 Row {

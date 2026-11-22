@@ -47,7 +47,9 @@ Row {
                 if (minimized)
                     Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/minimize.sh", "restore", btn.addr]);
                 else
-                    Hyprland.dispatch(`hl.dsp.focus({ window = "address:0x${btn.addr}" })`);
+                    // focus alone leaves a covered floating window under the others (it
+                    // only looked like the click did nothing): raise it in the same go
+                    Hyprland.dispatch(`(function() hl.dispatch(hl.dsp.focus({ window = "address:0x${btn.addr}" })) hl.dispatch(hl.dsp.window.bring_to_top()) end)`);
             }
             onClicked: m => {
                 if (m.button === Qt.MiddleButton)

@@ -52,7 +52,8 @@ m = next(m for m in json.load(sys.stdin) if m["focused"])
 print(m["activeWorkspace"]["id"], 1 if m["specialWorkspace"]["name"] else 0)')
     hyprctl dispatch "hl.dsp.window.move({ workspace = $ws, follow = false, window = \"address:$addr\" })" >/dev/null
     ((open)) && hyprctl dispatch 'hl.dsp.workspace.toggle_special("magic")' >/dev/null
-    hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null
+    # focus alone can leave it under other floating windows
+    hyprctl dispatch "(function() hl.dispatch(hl.dsp.focus({ window = \"address:$addr\" })) hl.dispatch(hl.dsp.window.bring_to_top()) end)" >/dev/null
     ;;
 
   *)

@@ -14,4 +14,7 @@ Singleton {
     signal overviewDismiss()
     // The Apps button: open / close the launcher
     signal launcherToggle()
+    // The launcher is on screen (opening, open or still fading out); the overview waits
+    // for it to be gone before flying in, so the two animations don't run on top of each other
+    property bool launcherVisible: false
 }

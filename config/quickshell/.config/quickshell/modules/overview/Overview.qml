@@ -188,10 +188,27 @@ PanelWindow {
         BarState.popupRequested("");
     }
 
+    // Super / Super+Tab while the launcher is up: let it fade out first (it closes on
+    // closePanels), then fly in, one animation after the other
+    property bool showAfterLauncher: false
+    Connections {
+        target: BarState
+        function onLauncherVisibleChanged() {
+            if (!BarState.launcherVisible && root.showAfterLauncher) {
+                root.showAfterLauncher = false;
+                root.show();
+            }
+        }
+    }
+
     function show() {
         if (open || fetch.running || session || gesture)
             return;
         closePanels();
+        if (BarState.launcherVisible) {
+            showAfterLauncher = true;
+            return;
+        }
         mode = "grid";
         loaded = false;
         fetch.running = true;

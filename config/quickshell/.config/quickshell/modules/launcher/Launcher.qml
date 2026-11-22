@@ -72,6 +72,7 @@ PanelWindow {
     }
 
     visible: open || shown > 0
+    onVisibleChanged: BarState.launcherVisible = visible
     anchors {
         top: true
         bottom: true

@@ -28,6 +28,30 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
 - [x] OSD khi đổi âm lượng / độ sáng (thay cho việc không có phản hồi gì)
 - [x] Lịch + thông báo khi bấm đồng hồ (Quickshell thay mako)
 
+## Refactor giao diện (đợt 2)
+
+Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, tính năng, cuối cùng màn đăng nhập.
+
+1. Nền móng
+   - [ ] Tổ chức lại Quickshell: `services/` (singleton dữ liệu), `modules/` (bar, overview, osd, launcher, lock...), `widgets/`; tách `Overview.qml` thành nhiều file
+   - [ ] `Settings` singleton lưu ra JSON (`JsonAdapter`), panel Settings: màu nhấn, font, scale, tốc độ chuột / touchpad, thông số cử chỉ
+   - [ ] Một nguồn màu duy nhất, sinh màu cho Quickshell, Hyprland, rofi, kitty, khóa màn hình
+2. Sửa nhanh
+   - [ ] Icon app trên taskbar lúc bấm được lúc không (nghi `DragHandler` giành cú bấm)
+   - [ ] Bỏ cụm 3 nút cửa sổ trên thanh (`WindowControls.qml`)
+   - [ ] Tốc độ chuột / touchpad tách riêng, chỉnh trong Settings
+3. Diện mạo
+   - [ ] Tông trắng + đen + xanh lá, sạch, tối giản; xanh lá chỉ để nhấn, hover / chọn ám trắng xám; GTK WhiteSur bản green
+   - [ ] Font thiên hướng pixel 8-bit làm phong cách (phải đủ dấu tiếng Việt); scale / DPI chỉnh dần sau
+   - [ ] Sửa chữ "rách" nét xéo, nét cong (thử `Text.NativeRendering`, hinting, scale)
+   - [ ] Panel (lịch, thông báo, quick settings, media...) mọc ra từ nút trên thanh bằng nội suy hình học, thay slide + fade
+   - [ ] Thanh tiêu đề + 3 nút: bớt chiếm chỗ (thanh trên + thanh tiêu đề gần 10% chiều cao)
+4. Tính năng
+   - [ ] Trang app (launcher) bằng Quickshell thay nwg-drawer, theo concept trắng đen xanh lá
+   - [ ] Cửa sổ mới mở ở ~70% vùng làm việc, căn giữa (nhớ kích thước theo app nếu không quá phức tạp)
+5. Đăng nhập
+   - [ ] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell, khóa màn hình bằng Quickshell thay hyprlock
+
 ## Cửa sổ và desktop
 
 - [ ] Bấm icon trên dock (nwg-dock) của app đang minimize có thể mở ngăn ẩn thay vì đưa cửa sổ về; kiểm tra và sửa (hoặc để Quickshell làm dock sau này)
@@ -42,8 +66,6 @@ Thay Waybar bằng thanh viết bằng Quickshell, rồi biến nó thành "cont
   - [x] Gõ để tìm cửa sổ và app trong overview
   - [ ] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (giờ theo ô rộng nhất)
 - [ ] Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸
-- [ ] Nút trên thanh tiêu đề: giữ màu macOS hay đổi sang kiểu Windows (icon xám, nút đóng đỏ khi hover)
-- [ ] Chốt phong cách: bảng màu, mức animation và blur (đang mở trong [docs/05](docs/05-repo-plan.md))
 - [ ] Cắm màn hình qua USB-C, xem đi qua GPU nào (`hyprctl monitors`); ghi vào [docs/02](docs/02-machine-tuf-f16.md)
 - [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
 

@@ -32,7 +32,7 @@ BarButton {
         width: 6
         height: 6
         radius: 3
-        color: Theme.cpu
+        color: Theme.accent
     }
 
     ClockPanel {

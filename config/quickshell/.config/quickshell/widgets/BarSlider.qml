@@ -30,7 +30,7 @@ Item {
         width: parent.width
         height: 4
         radius: 2
-        color: Qt.rgba(1, 1, 1, 0.2)
+        color: Theme.track
 
         Rectangle {
             width: track.width * Math.max(0, Math.min(1, root.value))
@@ -44,7 +44,7 @@ Item {
             width: track.width * Math.max(0, Math.min(1, root.value)) * root.meter
             height: parent.height
             radius: 2
-            color: Theme.cpu
+            color: Theme.accent
             Behavior on width {
                 NumberAnimation { duration: 120; easing.type: Easing.OutQuad }
             }

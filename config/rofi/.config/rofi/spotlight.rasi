@@ -1,9 +1,10 @@
-/* macOS Spotlight look */
+/* Spotlight look, white + black + green palette (Theme.qml in Quickshell) */
 * {
-    bg:      rgba(30, 30, 34, 0.88);
-    bg-sel:  rgba(255, 255, 255, 0.14);
-    fg:      #f2f2f5;
-    fg-dim:  rgba(242, 242, 245, 0.55);
+    bg:      rgba(17, 18, 17, 0.94);
+    bg-sel:  rgba(255, 255, 255, 0.10);
+    accent:  #4ade80;
+    fg:      #f4f5f4;
+    fg-dim:  rgba(244, 245, 244, 0.5);
     font:    "Lexend 13";
     background-color: transparent;
     text-color: @fg;
@@ -16,7 +17,7 @@ window {
     width: 640px;
     background-color: @bg;
     border: 1px;
-    border-color: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.08);
     border-radius: 16px;
 }
 
@@ -27,8 +28,8 @@ inputbar {
     padding: 12px 14px;
     spacing: 10px;
 }
-prompt { text-color: @fg-dim; }
-entry { placeholder: "Spotlight Search"; placeholder-color: @fg-dim; }
+prompt { text-color: @accent; }
+entry { placeholder: "Spotlight Search"; placeholder-color: @fg-dim; cursor-color: @accent; }
 
 listview {
     lines: 7;

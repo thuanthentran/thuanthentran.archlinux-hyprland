@@ -86,8 +86,8 @@ DropPopup {
                 width: parent.width
                 height: visible ? 30 : 0
                 radius: 6
-                color: Qt.rgba(1, 1, 1, 0.08)
-                border.color: pw.activeFocus ? Theme.cpu : Theme.popupBorder
+                color: Theme.field
+                border.color: pw.activeFocus ? Theme.accent : Theme.popupBorder
 
                 TextInput {
                     id: pw

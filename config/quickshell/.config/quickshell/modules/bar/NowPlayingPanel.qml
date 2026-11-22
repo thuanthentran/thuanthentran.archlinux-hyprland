@@ -40,7 +40,7 @@ DropPopup {
         Text {
             anchors.centerIn: parent
             text: ctl.icon
-            color: !ctl.on ? Theme.fgOff : ctl.accent ? Theme.cpu : Theme.fg
+            color: !ctl.on ? Theme.fgOff : ctl.accent ? Theme.accent : Theme.fg
             font.family: Theme.iconFont
             font.pixelSize: ctl.size
         }
@@ -60,7 +60,7 @@ DropPopup {
             width: 84
             height: 84
             radius: 8
-            color: Qt.rgba(1, 1, 1, 0.08)
+            color: Theme.field
 
             Image {
                 anchors.fill: parent
@@ -326,8 +326,8 @@ DropPopup {
             width: parent.width
             height: 30
             radius: 6
-            color: Qt.rgba(1, 1, 1, 0.08)
-            border.color: queryInput.activeFocus ? Theme.cpu : Theme.popupBorder
+            color: Theme.field
+            border.color: queryInput.activeFocus ? Theme.accent : Theme.popupBorder
 
             TextInput {
                 id: queryInput
@@ -358,7 +358,7 @@ DropPopup {
             barWidth: 6
             maxHeight: 30
             centered: false
-            color: Theme.cpu
+            color: Theme.accent
             opacity: root.player?.isPlaying ? 0.9 : 0.3
         }
     }

@@ -12,7 +12,7 @@ Rectangle {
     implicitWidth: 36
     implicitHeight: 20
     radius: height / 2
-    color: checked ? Theme.cpu : Qt.rgba(1, 1, 1, 0.18)
+    color: checked ? Theme.accent : Theme.track
     Behavior on color { ColorAnimation { duration: 150 } }
 
     Rectangle {

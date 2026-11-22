@@ -35,7 +35,7 @@ Rectangle {
         x: 9
         y: (32 - height) / 2
         level: root.wifiLevel
-        color: root.active ? Theme.cpu : Theme.fg
+        color: root.active ? Theme.accent : Theme.fg
     }
     Text {
         id: iconText
@@ -44,7 +44,7 @@ Rectangle {
         height: 32
         verticalAlignment: Text.AlignVCenter
         text: root.icon
-        color: root.active ? Theme.cpu : root.dim ? Theme.fgOff : Theme.fg
+        color: root.active ? Theme.accent : root.dim ? Theme.fgOff : Theme.fg
         font.family: Theme.iconFont
         font.pixelSize: Theme.iconSize
     }

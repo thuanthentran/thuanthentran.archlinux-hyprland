@@ -159,7 +159,7 @@ hl.config({
             enabled      = true,
             range        = 24,
             render_power = 3,
-            color        = 0xee1a1a1a,
+            color        = 0xee050605,
         },
 
         blur = {
@@ -357,8 +357,8 @@ do
             plugin = {
                 hyprbars = {
                     bar_height             = 20,   -- thin; keep in sync with titleBar in Overview.qml
-                    bar_color              = "rgba(2b2b2ef0)",
-                    inactive_button_color  = "rgba(5a5a5eff)",
+                    bar_color              = "rgba(111211f0)",   -- palette: Theme.titleBar in Quickshell
+                    inactive_button_color  = "rgba(2a2c2aff)",
                     bar_blur               = true,
                     bar_title_enabled      = true,
                     bar_text_align         = "center",
@@ -373,13 +373,15 @@ do
                 },
             },
         })
-        -- Buttons on the right, Windows order: minimize / maximize / close.
+        -- Buttons on the right, Windows order: minimize / maximize / close. All three are the
+        -- same grey dot (white + black + green look); the symbol, shown on hover, carries
+        -- the colour: red close, green maximize, white minimize.
         -- With right alignment the first button added sits at the far right.
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(ff5f57)", fg_color = "rgb(4d0000)", size = 11, icon = "x",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(ff6b6b)", size = 11, icon = "x",
             action = "hyprctl dispatch 'hl.dsp.window.close()'" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(28c840)", fg_color = "rgb(003d0a)", size = 11, icon = "+",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(4ade80)", size = 11, icon = "+",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(febc2e)", fg_color = "rgb(5a3b00)", size = 11, icon = "-",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(f4f5f4)", size = 11, icon = "-",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh minimize" })
     end)
 end

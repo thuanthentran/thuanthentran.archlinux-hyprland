@@ -36,8 +36,8 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         radius: 10
-        color: "#e6202020"
-        border.color: "#33ffffff"
+        color: Theme.popupBg
+        border.color: Theme.popupBorder
 
         Text {
             id: label

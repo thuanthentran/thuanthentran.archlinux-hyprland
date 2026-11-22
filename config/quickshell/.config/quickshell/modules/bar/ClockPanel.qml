@@ -126,7 +126,7 @@ DropPopup {
                     required property var modelData
                     notification: modelData
                     compact: true
-                    color: Qt.rgba(1, 1, 1, 0.05)
+                    color: Theme.card
                     onCloseClicked: modelData.dismiss()
                 }
             }

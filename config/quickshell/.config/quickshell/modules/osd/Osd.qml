@@ -103,7 +103,7 @@ PanelWindow {
                 width: 180
                 height: 6
                 radius: 3
-                color: Qt.rgba(1, 1, 1, 0.18)
+                color: Theme.track
 
                 Rectangle {
                     width: parent.width * Math.max(0, Math.min(1, root.value))

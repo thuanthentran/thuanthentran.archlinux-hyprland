@@ -125,7 +125,7 @@ Item {
                 width: parent.width
                 height: tile.info.bar
                 visible: tile.info.bar > 0
-                color: Qt.rgba(43 / 255, 43 / 255, 46 / 255, 0.94)
+                color: Theme.titleBar
 
                 Text {
                     anchors.centerIn: parent
@@ -144,7 +144,7 @@ Item {
                     spacing: 6
                     layoutDirection: Qt.RightToLeft
                     Repeater {
-                        model: ["#ff5f57", "#28c840", "#febc2e"]
+                        model: [Theme.titleButton, Theme.titleButton, Theme.titleButton]
                         Rectangle {
                             required property string modelData
                             width: 11
@@ -217,7 +217,7 @@ Item {
         width: 26
         height: 26
         radius: 13
-        color: closeMouse.containsMouse ? Theme.red : Qt.rgba(40 / 255, 40 / 255, 44 / 255, 0.95)
+        color: closeMouse.containsMouse ? Theme.red : Theme.popupBg
         border.color: Theme.popupBorder
 
         Text {

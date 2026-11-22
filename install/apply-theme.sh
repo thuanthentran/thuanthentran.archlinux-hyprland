@@ -4,6 +4,8 @@ set -euo pipefail
 s=org.gnome.desktop.interface
 gsettings set $s gtk-theme     'WhiteSur-Dark'
 gsettings set $s icon-theme    'WhiteSur-dark'
+# Accent for libadwaita (GTK4) apps: green, as in the desktop palette (Theme.qml)
+gsettings set $s accent-color  'green'
 gsettings set $s cursor-theme  'WhiteSur-cursors'
 gsettings set $s font-name           'Lexend 10'
 gsettings set $s document-font-name  'Lexend 11'

@@ -108,12 +108,12 @@ Column {
                     width: 28
                     height: 28
                     radius: 14
-                    color: parent.isToday ? Theme.cpu : "transparent"
+                    color: parent.isToday ? Theme.accent : "transparent"
                 }
                 Text {
                     anchors.centerIn: parent
                     text: parent.day.getDate()
-                    color: parent.isToday ? "white" : parent.inMonth ? Theme.fg : Theme.fgOff
+                    color: parent.isToday ? Theme.accentText : parent.inMonth ? Theme.fg : Theme.fgOff
                     font.family: Theme.font
                     font.pixelSize: 12
                     font.weight: parent.isToday ? Font.DemiBold : Font.Normal

@@ -1143,7 +1143,7 @@ PanelWindow {
                     readonly property var modelData: DesktopEntries.byId(eid)
 
                     // One value drives the whole entrance: 0 -> 1 opens the slot, rises the
-                    // card 18 px, slides it in 40 px sideways (from where the text change
+                    // card 64 px (from well below its own square), slides it in 40 px sideways (from where the text change
                     // points), grows it from 94 % and fades it in; new cards follow each
                     // other by 30 ms. Leaving runs it back towards the other side.
                     property real t: 0
@@ -1189,7 +1189,7 @@ PanelWindow {
                         scale: 0.94 + 0.06 * slot.t
                         transform: Translate {
                             x: slot.dir * 40 * (1 - slot.t)
-                            y: (slot.leaving ? 10 : 18) * (1 - slot.t)
+                            y: (slot.leaving ? 10 : 64) * (1 - slot.t)
                         }
 
                         // the first app is what Enter opens when no window matches

@@ -52,7 +52,8 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [ ] Cửa sổ phóng to thì ẩn thanh tiêu đề, tên + 3 nút lên thanh trên cùng (phương án C)
 4. Tính năng
    - [ ] Trang app (launcher) bằng Quickshell thay nwg-drawer, theo concept trắng đen xanh lá
-   - [ ] Cửa sổ mới mở ở ~70% vùng làm việc, căn giữa (nhớ kích thước theo app nếu không quá phức tạp)
+   - [x] Cửa sổ mới mở ở 70% màn hình, căn giữa (rule `open-large`; trừ hộp thoại modal, PiP, cửa sổ tiện ích)
+   - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
 5. Đăng nhập
    - [ ] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell, khóa màn hình bằng Quickshell thay hyprlock
 

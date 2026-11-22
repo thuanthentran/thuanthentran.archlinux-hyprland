@@ -546,6 +546,21 @@ hl.window_rule({
     center = true,
 })
 
+-- New windows open at 70% of the screen (centred by the rule above) instead of whatever
+-- small size the app asks for, so there is something to see at once. Left alone: modal
+-- dialogs (save / open...), picture-in-picture and small utility windows that size
+-- themselves (Quickshell's Settings, mixers, network / Bluetooth managers, polkit).
+hl.window_rule({
+    name  = "open-large",
+    match = {
+        modal = false,
+        class = "negative:^(org\\.quickshell|hyprland-run|hyprpolkitagent|org\\.pulseaudio\\.pavucontrol|nm-connection-editor|blueman-manager|xdg-desktop-portal.*)$",
+        title = "negative:^(Picture.in.[Pp]icture)$",
+    },
+
+    size = "monitor_w*0.7 monitor_h*0.7",
+})
+
 local suppressMaximizeRule = hl.window_rule({
     -- Ignore maximize requests from all apps. You'll probably like this.
     name  = "suppress-maximize-events",

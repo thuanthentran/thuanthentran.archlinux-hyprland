@@ -472,14 +472,31 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- under the top bar or off the screen edge can no longer be grabbed, so push it back: title
 -- bar fully below the reserved top area, at least `keep` px of it left on screen
 -- horizontally and at the bottom.
+-- A maximized window (tag `maximized`, scripts/toggle-maximize.sh) has no title bar and
+-- fills the work area; once it is moved or resized away from that it gets the tag (and
+-- so its title bar) back, and the check applies again.
+local function has_tag(w, tag)
+    for _, t in ipairs(type(w.tags) == "table" and w.tags or {}) do
+        if t:gsub("%*$", "") == tag then return true end
+    end
+    return false
+end
 local function keep_on_screen(w)
     if not w or not w.floating or (w.fullscreen or 0) ~= 0 or not w.monitor then return end
     local m = w.monitor
-    local bar, border, keep = 30, 1, 120          -- hyprbars bar height, window border
+    local bar, border, keep = 20, 1, 120          -- hyprbars bar_height, window border
     local mx, my = m.position.x, m.position.y
     local mw, mh = m.width / m.scale, m.height / m.scale
     local r = m.reserved
     local x, y = w.at.x, w.at.y
+    if has_tag(w, "maximized") then
+        local function near(a, b) return math.abs(a - b) <= 2 end
+        local fits = near(x, mx + r.left) and near(y, my + r.top)
+            and near(w.size.x, mw - r.left - r.right) and near(w.size.y, mh - r.top - r.bottom)
+        if fits then return end
+        hl.dispatch(hl.dsp.window.tag({ tag = "-maximized", window = "address:" .. w.address }))
+        hl.exec_cmd("qs ipc call windows refresh")
+    end
     local nx = math.min(math.max(x, mx + r.left - w.size.x + keep), mx + mw - r.right - keep)
     local ny = math.min(math.max(y, my + r.top + bar + border), my + mh - r.bottom - keep)
     if nx ~= x or ny ~= y then
@@ -543,6 +560,17 @@ hl.window_rule({
 
     float  = true,
     center = true,
+})
+
+-- Maximized windows (tag set by scripts/toggle-maximize.sh) lose their title bar, border
+-- and rounding; the Quickshell top bar shows their title and buttons instead
+hl.window_rule({
+    name  = "maximized-bare",
+    match = { tag = "maximized" },
+
+    ["hyprbars:no_bar"] = true,
+    border_size = 0,
+    rounding    = 0,
 })
 
 -- New windows open at 70% of the screen (centred by the rule above) instead of whatever

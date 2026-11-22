@@ -49,7 +49,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Panel (lịch + thông báo, media, Wi-Fi, Bluetooth, âm lượng, menu nguồn) mọc ra từ nút trên thanh bằng nội suy hình học, thay slide + fade
    - [x] Thanh trên cùng thấp hơn (26 px), tùy chọn tự ẩn trong Settings (chạm mép trên thì hiện)
    - [x] Thanh tiêu đề mảnh (20 px), 3 nút là chấm nhỏ, ký hiệu chỉ hiện khi rê chuột
-   - [ ] Cửa sổ phóng to thì ẩn thanh tiêu đề, tên + 3 nút lên thanh trên cùng (phương án C)
+   - [x] Cửa sổ phóng to thì ẩn thanh tiêu đề, tên + 3 nút lên thanh trên cùng (phương án C; tag `maximized`)
 4. Tính năng
    - [x] Trang app (launcher) bằng Quickshell thay nwg-drawer, theo concept trắng đen xanh lá
    - [ ] Gỡ gói `nwg-drawer` trên máy (`sudo pacman -Rns nwg-drawer`); cân nhắc cho Super+Space dùng launcher thay rofi

@@ -27,6 +27,9 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-bar"
     WlrLayershell.layer: WlrLayer.Top
 
+    // The focused window on this screen is maximized: its title and buttons are up here
+    readonly property bool maximized: ActiveWindow.maximizedOn(screen)
+
     // Auto-hide: shown while the pointer is on it (after touching the top edge) or
     // something opened from it is in use
     property bool revealed: false
@@ -76,18 +79,34 @@ PanelWindow {
             Taskbar {}
             NowPlaying {}
 
-            Item { Layout.fillWidth: true }
+            // free space; the maximized window's title sits at its left
+            Item {
+                id: gap
+                Layout.fillWidth: true
+                implicitHeight: Theme.barHeight
+
+                WindowTitle {
+                    x: 8
+                    shown: bar.maximized
+                    // up to the clock (or the whole gap while the clock is hidden)
+                    maxWidth: (BarState.expanded ? gap.width : clock.x - 4 - gap.x) - x - 16
+                }
+            }
 
             SystemStats {}
             QuickSettings {}
             Tray {}
             Battery {}
             PowerButton {}
+            WindowButtons {
+                shown: bar.maximized
+            }
         }
 
         // Centred on the screen, not between the left and right groups. Fades out while the
         // quick settings are expanded, which may need its space.
         Clock {
+            id: clock
             anchors.centerIn: parent
             opacity: BarState.expanded ? 0 : 1
             visible: opacity > 0

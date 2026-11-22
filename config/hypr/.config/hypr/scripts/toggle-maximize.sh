@@ -1,15 +1,19 @@
-#!/usr/bin/env bash
 # Maximize / restore the active window to fill the work area (below the top bar).
 # Uses a real resize instead of Hyprland's "maximized" state, because maximized windows
 # are drawn below floating ones, which breaks window switching.
+# A maximized window carries the tag `maximized`: a window rule in hyprland.lua drops its
+# hyprbars title bar, border and rounding, and the Quickshell top bar shows its title and
+# buttons instead. keep_on_screen (hyprland.lua) takes the tag off when the window is moved
+# or resized away from the work area.
 set -eu
 state="${XDG_RUNTIME_DIR:-/tmp}/toggle-maximize"
 mkdir -p "$state"
 
-read -r addr pid floating x y w h < <(hyprctl -j activewindow | python3 -c '
+read -r addr pid floating maxed x y w h < <(hyprctl -j activewindow | python3 -c '
 import sys, json
 d = json.load(sys.stdin)
-print(d.get("address", ""), d.get("pid", 0), int(d.get("floating", False)), *d["at"], *d["size"])') || exit 0
+maxed = int(any(t.rstrip("*") == "maximized" for t in d.get("tags", [])))
+print(d.get("address", ""), d.get("pid", 0), int(d.get("floating", False)), maxed, *d["at"], *d["size"])') || exit 0
 [[ -z "$addr" ]] && exit 0
 
 # Saved sizes are keyed by address AND pid: Hyprland reuses window addresses, so a new
@@ -26,35 +30,44 @@ if [[ "$floating" != 1 ]]; then
     exit 0
 fi
 
+# Work area: maximized (no title bar, no border) and, for the 65% fallback, with them
 read -r tx ty tw th < <(hyprctl -j monitors | python3 -c '
 import sys, json
-m = json.load(sys.stdin)[0]
-rt, rb, rl, rr = m["reserved"][1], m["reserved"][3], m["reserved"][0], m["reserved"][2]
-bar, border = 30, 1   # hyprbars bar height, window border
+m = next(m for m in json.load(sys.stdin) if m["focused"])
+rl, rt, rr, rb = m["reserved"]
 W, H = int(m["width"] / m["scale"]), int(m["height"] / m["scale"])
-print(rl + border, rt + bar + border, W - rl - rr - 2 * border, H - rt - rb - bar - 2 * border)')
+print(m["x"] + rl, m["y"] + rt, W - rl - rr, H - rt - rb)')
+bar=20 border=1    # hyprbars bar_height, general.border_size (hyprland.lua)
+
+# Everything in one dispatch, so keep_on_screen never sees the tag with the old size
+apply() {   # tag x y w h
+    hyprctl dispatch "(function()
+        hl.dispatch(hl.dsp.window.tag({ tag = \"$1maximized\", window = \"address:$addr\" }))
+        hl.dispatch(hl.dsp.window.resize({ x = $4, y = $5, window = \"address:$addr\" }))
+        hl.dispatch(hl.dsp.window.move({ x = $2, y = $3, window = \"address:$addr\" }))
+        hl.dispatch(hl.dsp.window.bring_to_top())
+    end)" >/dev/null
+}
 
 saved="$state/$addr-$pid"
-# Maximized = filling the work area exactly (position and size). Anything else, including
-# a full-size window that has been dragged aside, gets maximized.
-d() { local v=$(( $1 - $2 )); echo $(( v < 0 ? -v : v )); }
-if (( $(d "$x" "$tx") <= 4 && $(d "$y" "$ty") <= 4 && $(d "$w" "$tw") <= 4 && $(d "$h" "$th") <= 4 )); then
+if (( maxed )); then
     sw=0 sh=0
     if [[ -f "$saved" ]]; then
         read -r sx sy sw sh < "$saved"
         rm -f "$saved"
     fi
-    if (( sw >= tw - 4 && sh >= th - 4 )); then
-        # Nothing smaller to go back to (opened full size, or a full-size window was
-        # dragged aside before maximizing), so use a 65% popup, centered
-        sw=$(( tw * 65 / 100 )) sh=$(( th * 65 / 100 ))
-        sx=$(( tx + (tw - sw) / 2 )) sy=$(( ty + (th - sh) / 2 ))
+    # area a window with a title bar can use
+    aw=$(( tw - 2 * border )) ah=$(( th - bar - 2 * border ))
+    if (( sw <= 0 || (sw >= aw - 4 && sh >= ah - 4) )); then
+        # Nothing smaller to go back to (opened full size, or maximized by an older
+        # version of this script): a 65% window, centred
+        sw=$(( aw * 65 / 100 )) sh=$(( ah * 65 / 100 ))
+        sx=$(( tx + (tw - sw) / 2 )) sy=$(( ty + bar + border + (ah - sh) / 2 ))
     fi
-    hyprctl dispatch "hl.dsp.window.resize({ x = $sw, y = $sh })" >/dev/null
-    hyprctl dispatch "hl.dsp.window.move({ x = $sx, y = $sy })" >/dev/null
+    apply - "$sx" "$sy" "$sw" "$sh"
 else
     echo "$x $y $w $h" > "$saved"
-    hyprctl dispatch "hl.dsp.window.resize({ x = $tw, y = $th })" >/dev/null
-    hyprctl dispatch "hl.dsp.window.move({ x = $tx, y = $ty })" >/dev/null
+    apply + "$tx" "$ty" "$tw" "$th"
 fi
-hyprctl dispatch 'hl.dsp.window.bring_to_top()' >/dev/null
+# the top bar reads the tag from Hyprland's window list
+qs ipc call windows refresh >/dev/null 2>&1 || true

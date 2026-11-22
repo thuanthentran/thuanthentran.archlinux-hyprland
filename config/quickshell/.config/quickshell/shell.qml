@@ -52,6 +52,14 @@ ShellRoot {
         function popup(name: string): void { BarState.popupRequested(name); }
     }
 
+    // `qs ipc call windows refresh`: re-read Hyprland's windows (toggle-maximize.sh calls
+    // it after tagging a window `maximized`)
+    IpcHandler {
+        target: "windows"
+
+        function refresh(): void { ActiveWindow.refresh(); }
+    }
+
     Osd {
         id: osd
     }

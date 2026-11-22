@@ -664,6 +664,8 @@ PanelWindow {
         const ox = mon.x, oy = mon.y + Theme.barReserved;     // overlay origin (below the bar)
         const mru = (a, b) => a.focusHistoryID - b.focusHistoryID;
         const byOrder = (a, b) => WindowOrder.rank(a.address) - WindowOrder.rank(b.address);
+        // fullscreen and maximized (toggle-maximize.sh's tag) windows have no title bar
+        const bare = c => c.fullscreen || (c.tags ?? []).some(t => t.replace(/\*$/, "") === "maximized");
         const info = c => ({
             addr: c.address,
             mru: c.focusHistoryID,
@@ -671,8 +673,8 @@ PanelWindow {
             appId: c["class"],
             // real place, relative to the overlay, including the hyprbars title bar
             // (not part of the screencopy, so the tile draws its own)
-            bar: c.fullscreen ? 0 : root.titleBar,
-            x: c.at[0] - ox, y: c.at[1] - oy - (c.fullscreen ? 0 : root.titleBar), w: c.size[0], h: c.size[1] + (c.fullscreen ? 0 : root.titleBar)
+            bar: bare(c) ? 0 : root.titleBar,
+            x: c.at[0] - ox, y: c.at[1] - oy - (bare(c) ? 0 : root.titleBar), w: c.size[0], h: c.size[1] + (bare(c) ? 0 : root.titleBar)
         });
         const wins = clients.filter(c => c.mapped && c.workspace.id === ws).sort(byOrder).map(info);
         const mins = clients.filter(c => c.workspace.name === "special:magic").sort(mru).map(info);

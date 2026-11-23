@@ -62,7 +62,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
 
 ## Cửa sổ và desktop
 
-- [ ] Bấm icon trên dock (nwg-dock) của app đang minimize có thể mở ngăn ẩn thay vì đưa cửa sổ về; kiểm tra và sửa (hoặc để Quickshell làm dock sau này)
+- [x] Bấm icon trên dock (nwg-dock) của app đang minimize mở ngăn ẩn thay vì đưa cửa sổ về: `ActiveWindow.qml` thấy ngăn ẩn mở mà không phải do Super+Shift+S thì đưa cửa sổ về
 - [ ] Kéo cửa sổ lên thanh trên cùng rồi giữ chuột đứng yên ~1 giây: kiểm tra cửa sổ có bị đẩy về trước khi thả không (tùy `hl.is_key_down(272)` có đọc được nút chuột không)
 - [x] Đa nhiệm kiểu thanh home iOS (`Overview.qml`), thay cho vuốt 3 ngón cũ hay lẩn quẩn giữa 2 cửa sổ:
   - [x] Overview: nhấn Super / Super+Tab hiện mọi cửa sổ trong workspace
@@ -72,8 +72,8 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
   - [x] Thêm trục dọc: kéo lên thì cửa sổ nhỏ dần thành dải, kéo đủ cao thì vào overview, kéo xuống lại thì thu về
   - [x] Thứ tự cửa sổ cố định, chung với taskbar; kéo thả trên taskbar / lưới overview để sắp xếp
   - [x] Gõ để tìm cửa sổ và app trong overview
-  - [ ] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (giờ theo ô rộng nhất)
-- [ ] Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸
+  - [x] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (khe 60 px, `stripAt`)
+- [x] ~~Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸~~ không cần: nút đó là của Waybar cũ, cửa sổ minimize giờ hiện mờ ngay trên taskbar
 - [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
 
 ## Hệ thống và tái lập

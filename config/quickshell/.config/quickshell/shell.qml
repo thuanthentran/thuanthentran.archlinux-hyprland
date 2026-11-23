@@ -72,6 +72,7 @@ ShellRoot {
         target: "windows"
 
         function refresh(): void { ActiveWindow.refresh(); }
+        function peek(): void { ActiveWindow.peek(); }
     }
 
     Osd {

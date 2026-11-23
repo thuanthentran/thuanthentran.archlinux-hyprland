@@ -81,7 +81,8 @@ PanelWindow {
     property var slots: []                // grid: tile indices in display order
     property string query: ""             // grid: typed search
     property real scroll: 0               // strip / film: which card is in the middle
-    property real slot: 0                 // strip: distance between card centres
+    property real slot: 0                 // strip: card spacing past the ends (widest + gap)
+    property var centers: []              // strip: each card's centre along the strip
     property real lift: 0                 // film: how far the fingers went up, past deadMm
     property real rawLift: 0              // film: the same, dead zone included
     property real rawPan: 0               // film: sideways so far, for the dead zone
@@ -451,13 +452,25 @@ PanelWindow {
         const z = 1 - (1 - zoomTo) * (mode === "film" ? vHz : 0);
         const cx = t.x + t.w / 2 + d * (areaW + pageGap) * z, cy = t.y + t.h / 2;
         const page = { x: cx - t.w * z / 2, y: cy - t.h * z / 2, w: t.w * z, h: t.h * z };
-        const card = { x: areaW / 2 + d * slot - t.sw / 2, y: (areaH - t.sh + labelH) / 2, w: t.sw, h: t.sh };
+        const card = { x: areaW / 2 + stripAt(i) - stripAt(vScroll) - t.sw / 2, y: (areaH - t.sh + labelH) / 2, w: t.sw, h: t.sh };
         return {
             x: page.x + (card.x - page.x) * s,
             y: page.y + (card.y - page.y) * s,
             w: page.w + (card.w - page.w) * s,
             h: page.h + (card.h - page.h) * s
         };
+    }
+
+    // Where position v (fractional while scrolling) is along the strip: the cards' own
+    // centres, each card `stripGap` from the next whatever its width; between two cards it
+    // moves linearly, past the ends it carries on at the end pair's spacing
+    readonly property real stripGap: 60
+    function stripAt(v) {
+        const n = centers.length;
+        if (n < 2)
+            return (centers[0] ?? 0) + v * slot;
+        const k = Math.max(0, Math.min(n - 2, Math.floor(v)));
+        return centers[k] + (v - k) * (centers[k + 1] - centers[k]);
     }
 
     // Close, focusing `addr` (a window address) or nothing
@@ -705,7 +718,13 @@ PanelWindow {
             const sw = Math.min(ch * w.w / w.h, maxW, w.w);
             return Object.assign(w, { sw, sh: sw * w.h / w.w });
         });
-        slot = Math.max(...tiles.map(t => t.sw), 0) + 60;
+        slot = Math.max(...tiles.map(t => t.sw), 0) + stripGap;
+        let along = 0;
+        centers = tiles.map(t => {
+            const c = along + t.sw / 2;
+            along += t.sw + stripGap;
+            return c;
+        });
         // the active window: where the film / strip starts and what Esc goes back to
         let c = 0;
         tiles.forEach((t, i) => { if (t.mru < tiles[c].mru) c = i; });

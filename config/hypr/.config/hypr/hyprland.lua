@@ -482,7 +482,7 @@ end
 
 -- Example special workspace (scratchpad)
 hl.bind(mainMod .. " + S",         hl.dsp.exec_cmd(minimize .. " restore"))   -- restore a minimized window
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.workspace.toggle_special("magic"))  -- peek at all minimized windows
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("qs ipc call windows peek"))  -- peek at all minimized windows (through Quickshell, which otherwise brings back a window focused in the stash)
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))

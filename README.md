@@ -41,6 +41,7 @@ Chi tiết, kiểm tra sau khi cài và cách rollback: [docs/06-setup-and-rollb
 | [04 – Cài Arch từ USB](docs/04-install-arch.md) | Cài bằng script hoặc từng lệnh, đọc được trên điện thoại |
 | [05 – Kế hoạch repo](docs/05-repo-plan.md) | Cấu trúc dự kiến, lựa chọn mặc định, việc chưa quyết định |
 | [06 – Dựng desktop và rollback](docs/06-setup-and-rollback.md) | Chạy setup.sh, kiểm tra sau khi cài, khôi phục từ snapshot |
+| [07 – Dự phòng: chuyển sang Ubuntu](docs/07-migrate-to-ubuntu.md) | Việc cần làm và rủi ro nếu buộc phải bỏ Arch |
 
 ## Lộ trình
 

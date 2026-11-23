@@ -23,7 +23,7 @@ set -Eeuo pipefail
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 readonly REPO
 readonly HOST=${SETUP_HOST:-tuf-f16}
-readonly ALL_STEPS=(mirrors packages aur dotfiles system services snapper hibernate plugins theme)
+readonly ALL_STEPS=(mirrors packages aur dotfiles system services greeter snapper hibernate plugins theme)
 
 readonly BOLD=$'\e[1m' RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' RESET=$'\e[0m'
 DRY_RUN=0
@@ -62,7 +62,8 @@ Steps (default: all, in this order):
   dotfiles  link config/* into \$HOME with GNU Stow (existing files are backed up),
             and extras/firefox/user.js into each Firefox profile
   system    copy system/etc and hosts/\$SETUP_HOST/etc into /etc, rebuild initramfs
-  services  enable system services (network, bluetooth, login, power, zram)
+  services  enable system services (network, bluetooth, power, zram)
+  greeter   boot login screen: greetd + the Quickshell greeter (extras/greeter), replaces sddm
   snapper   snapper config for /, timeline snapshots, snapshot entries in GRUB
   hibernate swapfile (size of RAM) on its own Btrfs subvolume @swap, for hibernation
   plugins   build and enable the hyprbars plugin with hyprpm (inside Hyprland only)
@@ -192,8 +193,6 @@ enable_units() {
 
 step_services() {
   step "System services"
-  # sddm only on next boot: starting it now would switch away from the current session
-  enable_units sddm.service
   enable_units --now NetworkManager.service bluetooth.service power-profiles-daemon.service
   # NVIDIA: keep video memory across suspend (nvidia-utils ships these, not always enabled)
   enable_units nvidia-suspend.service nvidia-resume.service nvidia-hibernate.service
@@ -210,6 +209,40 @@ step_services() {
     run sudo systemctl start systemd-zram-setup@zram0.service ||
       warn "zram did not start now; check after reboot with: swapon --show"
   fi
+}
+
+# Boot login screen: greetd runs a small Hyprland (extras/greeter/hyprland.lua) with the
+# Quickshell greeter (extras/greeter/shell.qml), the lock screen's twin. The `greeter` user
+# can't read $HOME, so its files are copied into /etc/greetd/quickshell: rerun this step
+# after changing the lock screen, Theme / Settings or the wallpaper. Takes effect on the
+# next boot. sddm stays installed as the way back:
+#   sudo systemctl disable greetd && sudo systemctl enable sddm
+step_greeter() {
+  step "Login screen (greetd + Quickshell greeter)"
+  if ! pacman -Qq greetd >/dev/null 2>&1 && ! ((DRY_RUN)); then
+    warn "greetd is not installed (packages step); login screen left as it is"
+    return 0
+  fi
+  local qs=$REPO/config/quickshell/.config/quickshell g=$REPO/extras/greeter
+  local dst=/etc/greetd/quickshell fonts=$REPO/config/fonts/.local/share/fonts f
+  run sudo install -Dm644 "$g/config.toml" /etc/greetd/config.toml
+  run sudo install -Dm644 "$g/hyprland.lua" /etc/greetd/hyprland.lua
+  run sudo rm -rf "$dst"
+  run sudo install -Dm644 "$g/shell.qml" "$dst/shell.qml"
+  for f in "$qs"/config/*; do
+    run sudo install -Dm644 "$f" "$dst/config/${f##*/}"
+  done
+  run sudo install -Dm644 "$qs/modules/lock/LockSurface.qml" "$dst/modules/lock/LockSurface.qml"
+  run sudo install -Dm644 "$REPO/config/hypr/.config/hypr/wallpapers/default.png" "$dst/wallpaper.png"
+  # The UI fonts (Lexend, Comfortaa) for every user, the greeter included
+  while IFS= read -r f; do
+    run sudo install -Dm644 "$fonts/$f" "/usr/local/share/fonts/$f"
+  done < <(cd "$fonts" && find . -type f -printf '%P\n')
+  run sudo fc-cache -f /usr/local/share/fonts
+  if systemctl is-enabled --quiet sddm.service 2>/dev/null; then
+    run sudo systemctl disable sddm.service
+  fi
+  enable_units greetd.service
 }
 
 step_snapper() {

@@ -57,7 +57,8 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
 5. Đăng nhập
    - [x] Khóa màn hình bằng Quickshell thay hyprlock (`modules/lock`; hyprlock còn làm dự phòng)
-   - [ ] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell (cần sudo)
+   - [x] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell (`extras/greeter`, bước `setup.sh greeter`)
+   - [ ] Chạy `sudo pacman -S greetd && bash install/setup.sh greeter` trên máy, reboot, kiểm tra đăng nhập; ổn thì cân nhắc gỡ sddm
 
 ## Cửa sổ và desktop
 

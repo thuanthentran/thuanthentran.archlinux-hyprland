@@ -3,6 +3,8 @@
 // password pill. Typing goes to the pill from anywhere; Enter checks it, Esc clears it (or
 // closes the preview). A wrong password shakes the pill and says why under it.
 // Comes in by fading and settling the clock down, goes out by fading up before unlocking.
+// Also the boot login screen: the greeter (extras/greeter/shell.qml) passes a `lock` object
+// with the same members, backed by greetd, plus the user and a wallpaper it can read.
 import QtQuick
 import Quickshell
 import qs.config
@@ -12,6 +14,8 @@ Item {
 
     required property var lock
     property bool preview: false
+    property string user: Quickshell.env("USER") ?? ""
+    property string wallpaper: Quickshell.env("HOME") + "/.config/hypr/wallpapers/default.png"
 
     // 0 -> 1 on arrival, back to 0 while unlocking
     property real shown: 0
@@ -39,7 +43,7 @@ Item {
 
     Image {
         anchors.fill: parent
-        source: "file://" + Quickshell.env("HOME") + "/.config/hypr/wallpapers/default.png"
+        source: "file://" + root.wallpaper
         fillMode: Image.PreserveAspectCrop
         asynchronous: false
     }
@@ -103,7 +107,7 @@ Item {
                 border.color: Qt.rgba(1, 1, 1, 0.16)
                 Text {
                     anchors.centerIn: parent
-                    text: (Quickshell.env("USER") ?? "?").charAt(0).toUpperCase()
+                    text: (root.user || "?").charAt(0).toUpperCase()
                     color: Theme.fg
                     font.family: Theme.displayFont
                     font.pixelSize: 34
@@ -112,7 +116,7 @@ Item {
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: Quickshell.env("USER") ?? ""
+                text: root.user
                 color: Theme.fg
                 font.family: Theme.font
                 font.pixelSize: 15

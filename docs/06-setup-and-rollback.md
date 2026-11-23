@@ -15,10 +15,22 @@ bash install/setup.sh              # chạy thật, hỏi mật khẩu sudo
 
 Chạy lại bao nhiêu lần cũng được. Muốn chạy một phần thì ghi tên bước: `bash install/setup.sh dotfiles theme`. Danh sách bước: `bash install/setup.sh --help`.
 
-Hai bước `plugins` và `theme` cần đang ở trong Hyprland. Lần đầu chạy từ TTY thì hai bước này bỏ qua; sau khi reboot và đăng nhập Hyprland qua SDDM, chạy:
+Hai bước `plugins` và `theme` cần đang ở trong Hyprland. Lần đầu chạy từ TTY thì hai bước này bỏ qua; sau khi reboot và đăng nhập Hyprland ở màn đăng nhập (greetd + greeter Quickshell, bước `greeter`), chạy:
 
 ```sh
 bash install/setup.sh plugins theme
+```
+
+## Màn đăng nhập
+
+Bước `greeter` thay SDDM bằng greetd. greetd chạy một Hyprland nhỏ ([extras/greeter/hyprland.lua](../extras/greeter/hyprland.lua)) dưới user `greeter`, trong đó Quickshell vẽ màn đăng nhập ([extras/greeter/shell.qml](../extras/greeter/shell.qml)), giống hệt màn khóa vì dùng chung `LockSurface.qml`. User `greeter` không đọc được thư mục home, nên bước này chép greeter, Theme, hình nền vào `/etc/greetd/quickshell` và font Lexend / Comfortaa vào `/usr/local/share/fonts`. Đổi màn khóa, Theme hay hình nền xong thì chạy lại `bash install/setup.sh greeter`. Có hiệu lực từ lần boot sau.
+
+Xem thử mà không cần cài (Esc để thoát, mật khẩu nào cũng "sai"): dựng thư mục như bước `greeter` rồi chạy `qs -p <thư mục>`.
+
+Nếu màn đăng nhập hỏng: Ctrl+Alt+F2, đăng nhập ở TTY, rồi quay về SDDM (vẫn còn cài):
+
+```sh
+sudo systemctl disable greetd && sudo systemctl enable sddm && reboot
 ```
 
 ## Mirror pacman

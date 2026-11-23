@@ -1,0 +1,8 @@
+# greetd: boot login screen (installed to /etc/greetd/config.toml by `setup.sh greeter`).
+# A small Hyprland runs the Quickshell greeter (extras/greeter/shell.qml); see hyprland.lua.
+[terminal]
+vt = 1
+
+[default_session]
+command = "Hyprland --config /etc/greetd/hyprland.lua"
+user = "greeter"

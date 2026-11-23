@@ -44,6 +44,8 @@ fcitx5-configtool
 fcitx5-unikey
 
 # Mouse-friendly desktop (Ubuntu-like): login, dock, app grid, tray, files, theme
+# Login screen: greetd + the Quickshell greeter (setup.sh greeter); sddm stays as the way back
+greetd
 sddm
 nwg-dock-hyprland
 # blueman-manager ("Bluetooth settings…" in the bar's Bluetooth list)

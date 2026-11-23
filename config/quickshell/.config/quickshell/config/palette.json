@@ -1,0 +1,18 @@
+{
+    "_about": "The one palette of the desktop (white + black + green). Quickshell reads it live (Theme.qml); after editing run `python3 install/palette.py` to write it into Hyprland, the greeter, rofi, kitty and hyprlock, and `python3 install/make-wallpaper.py` for the wallpaper. Alphas are chosen where each colour is used.",
+    "accent": "#4ade80",
+    "accentText": "#07130b",
+    "accentDim": "#3fbf6f",
+    "bg": "#0b0c0b",
+    "bar": "#0a0b0a",
+    "surface": "#111211",
+    "fg": "#f4f5f4",
+    "fgTerm": "#e8eae8",
+    "selection": "#2b2e2b",
+    "button": "#4a4d4a",
+    "buttonInactive": "#2a2c2a",
+    "shadow": "#050605",
+    "red": "#ff6b6b",
+    "yellow": "#facc15",
+    "gtkAccent": "green"
+}

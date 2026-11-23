@@ -1,10 +1,12 @@
-/* Spotlight look, white + black + green palette (Theme.qml in Quickshell) */
+/* Spotlight look, white + black + green palette (palette.json in the quickshell config) */
 * {
+    /* palette:begin (written by install/palette.py from quickshell config/palette.json) */
     bg:      rgba(17, 18, 17, 0.94);
     bg-sel:  rgba(255, 255, 255, 0.10);
     accent:  #4ade80;
     fg:      #f4f5f4;
     fg-dim:  rgba(244, 245, 244, 0.5);
+    /* palette:end */
     font:    "Lexend 13";
     background-color: transparent;
     text-color: @fg;

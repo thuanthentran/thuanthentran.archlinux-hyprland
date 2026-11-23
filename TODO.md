@@ -4,7 +4,7 @@ Backlog của repo, xếp theo thứ tự nên làm. Mốc lớn nằm ở mục
 
 ## Ngay bây giờ
 
-- [ ] Push các commit đang chờ lên GitHub
+- [x] Push các commit đang chờ lên GitHub
 - [x] Thêm `LICENSE` (MIT, đã chốt trong [docs/05](docs/05-repo-plan.md))
 - [x] Tạo snapshot mốc: `sudo snapper -c root create -d "baseline sau setup"` (snapshot #2, 2026-11-20)
 - [x] Cập nhật [docs/04](docs/04-install-arch.md) theo lần cài thật: bỏ cảnh báo "chưa được chạy thử", sửa những bước khác với thực tế
@@ -35,7 +35,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
 1. Nền móng
    - [x] Tổ chức lại Quickshell: `services/` (singleton dữ liệu), `modules/` (bar, overview, osd, launcher, lock...), `widgets/`; tách `Overview.qml` thành nhiều file
    - [x] `Settings` singleton lưu ra JSON (`JsonAdapter`), cửa sổ Settings (mới có chuột / touchpad; sẽ thêm màu nhấn, font, scale, thông số cử chỉ)
-   - [ ] Một nguồn màu duy nhất, sinh màu cho Quickshell, Hyprland, rofi, kitty, khóa màn hình
+   - [x] Một nguồn màu duy nhất: `palette.json` trong config Quickshell (Theme đọc trực tiếp), `install/palette.py` ghi vào Hyprland, greeter, rofi, kitty, hyprlock; hình nền và accent GTK cũng đọc từ đó
 2. Sửa nhanh
    - [x] Icon app trên taskbar lúc bấm được lúc không (nghi `DragHandler` giành cú bấm)
    - [x] Bỏ cụm 3 nút cửa sổ trên thanh (`WindowControls.qml`)
@@ -54,7 +54,6 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] Trang app (launcher) bằng Quickshell thay nwg-drawer, theo concept trắng đen xanh lá
    - [x] Gỡ gói `nwg-drawer` trên máy; Super+Space mở launcher thay rofi
    - [x] Cửa sổ mới mở ở 70% màn hình, căn giữa (rule `open-large`; trừ hộp thoại modal, PiP, cửa sổ tiện ích)
-   - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
 5. Đăng nhập
    - [x] Khóa màn hình bằng Quickshell thay hyprlock (`modules/lock`; hyprlock còn làm dự phòng)
    - [x] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell (`extras/greeter`, bước `setup.sh greeter`)
@@ -75,11 +74,13 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
   - [x] Gõ để tìm cửa sổ và app trong overview
   - [ ] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (giờ theo ô rộng nhất)
 - [ ] Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸
-- [ ] Cắm màn hình qua USB-C, xem đi qua GPU nào (`hyprctl monitors`); ghi vào [docs/02](docs/02-machine-tuf-f16.md)
 - [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
 
 ## Hệ thống và tái lập
 
+Cần ngồi ở máy (sudo, cắm thiết bị, reboot); để sau các việc giao diện.
+
+- [ ] Cắm màn hình qua USB-C, xem đi qua GPU nào (`hyprctl monitors`); ghi vào [docs/02](docs/02-machine-tuf-f16.md)
 - [x] Hibernate: swapfile 16 GB trên subvolume `@swap` (`setup.sh hibernate`), có trong menu nguồn, hypridle tự hibernate sau 30 phút
 - [ ] Sleep thật (suspend to RAM) treo ở giai đoạn noirq/ACPI; đang thay bằng khóa + tắt màn hình. Nếu muốn dò tiếp: boot không có driver NVIDIA (`module_blacklist=nvidia,nvidia_modeset,nvidia_drm,nvidia_uvm`), rồi `pcie_port_pm=off`; xem bản BIOS mới hơn FX607VUR.340
 
@@ -87,3 +88,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
 - [ ] Kiểm tra phần mềm công việc bắt buộc trên Arch (VPN công ty, tool của hãng)
 - [ ] Quyết định có dùng ổ D làm ổ dữ liệu chung với Windows không
 - [ ] Cài lại từ đầu (máy ảo hoặc phân vùng thử) bằng `arch-install.sh` + `setup.sh` để chứng minh repo tái lập được
+
+## Để sau
+
+- [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app

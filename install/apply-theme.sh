@@ -7,8 +7,10 @@ gtk=WhiteSur-Dark
 [[ -d $HOME/.themes/WhiteSur-Dark-green ]] && gtk=WhiteSur-Dark-green
 gsettings set $s gtk-theme     "$gtk"
 gsettings set $s icon-theme    'WhiteSur-dark'
-# Accent for libadwaita (GTK4) apps: green, as in the desktop palette (Theme.qml)
-gsettings set $s accent-color  'green'
+# Accent for libadwaita (GTK4) apps: gtkAccent from the palette (palette.json; GTK has named accents only)
+accent=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["gtkAccent"])' \
+    "$(dirname "$0")/../config/quickshell/.config/quickshell/config/palette.json" 2>/dev/null || echo green)
+gsettings set $s accent-color  "$accent"
 gsettings set $s cursor-theme  'WhiteSur-cursors'
 gsettings set $s font-name           'Lexend 10'
 gsettings set $s document-font-name  'Lexend 11'

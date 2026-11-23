@@ -3,6 +3,25 @@
 -- iGPU setup, the panel, keyboard / touchpad, cursor, no logo or splash. It runs the
 -- Quickshell greeter and exits with it, so greetd can start the user's session.
 
+-- palette:begin (written by install/palette.py from quickshell config/palette.json; edit there)
+local P = {   -- hex without '#'
+    accent         = "4ade80",
+    accentText     = "07130b",
+    accentDim      = "3fbf6f",
+    bg             = "0b0c0b",
+    bar            = "0a0b0a",
+    surface        = "111211",
+    fg             = "f4f5f4",
+    fgTerm         = "e8eae8",
+    selection      = "2b2e2b",
+    button         = "4a4d4a",
+    buttonInactive = "2a2c2a",
+    shadow         = "050605",
+    red            = "ff6b6b",
+    yellow         = "facc15",
+}
+-- palette:end
+
 local function exists(p) local f = io.open(p, "r"); if f then f:close() return true end return false end
 -- Hybrid GPU (TUF F16): same as the desktop config
 if exists("/dev/dri/igpu") then
@@ -22,7 +41,7 @@ hl.config({
         disable_hyprland_logo   = true,
         disable_splash_rendering = true,
         force_default_wallpaper = 0,
-        background_color        = "rgb(0b0c0b)",
+        background_color        = "rgb(" .. P.bg .. ")",
     },
     animations = { enabled = false },
     input = {

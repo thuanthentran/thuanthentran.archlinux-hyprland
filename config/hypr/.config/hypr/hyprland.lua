@@ -17,6 +17,25 @@
 -- require("myColors")
 
 
+-- palette:begin (written by install/palette.py from quickshell config/palette.json; edit there)
+local P = {   -- hex without '#'
+    accent         = "4ade80",
+    accentText     = "07130b",
+    accentDim      = "3fbf6f",
+    bg             = "0b0c0b",
+    bar            = "0a0b0a",
+    surface        = "111211",
+    fg             = "f4f5f4",
+    fgTerm         = "e8eae8",
+    selection      = "2b2e2b",
+    button         = "4a4d4a",
+    buttonInactive = "2a2c2a",
+    shadow         = "050605",
+    red            = "ff6b6b",
+    yellow         = "facc15",
+}
+-- palette:end
+
 ------------------
 ---- MONITORS ----
 ------------------
@@ -158,7 +177,7 @@ hl.config({
             enabled      = true,
             range        = 24,
             render_power = 3,
-            color        = 0xee050605,
+            color        = tonumber("ee" .. P.shadow, 16),
         },
 
         blur = {
@@ -359,8 +378,8 @@ do
             plugin = {
                 hyprbars = {
                     bar_height             = 20,   -- thin; keep in sync with titleBar in Overview.qml
-                    bar_color              = "rgba(111211f0)",   -- palette: Theme.titleBar in Quickshell
-                    inactive_button_color  = "rgba(2a2c2aff)",
+                    bar_color              = "rgba(" .. P.surface .. "f0)",   -- Theme.titleBar in Quickshell
+                    inactive_button_color  = "rgb(" .. P.buttonInactive .. ")",
                     bar_blur               = true,
                     bar_title_enabled      = true,
                     bar_text_align         = "center",
@@ -381,11 +400,11 @@ do
         -- same grey dot (white + black + green look); the symbol, shown on hover, carries
         -- the colour: red close, green maximize, white minimize.
         -- With right alignment the first button added sits at the far right.
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(ff6b6b)", size = 11, icon = "x",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(" .. P.button .. ")", fg_color = "rgb(" .. P.red .. ")", size = 11, icon = "x",
             action = "hyprctl dispatch 'hl.dsp.window.close()'" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(4ade80)", size = 11, icon = "+",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(" .. P.button .. ")", fg_color = "rgb(" .. P.accent .. ")", size = 11, icon = "+",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/toggle-maximize.sh" })
-        hl.plugin.hyprbars.add_button({ bg_color = "rgb(4a4d4a)", fg_color = "rgb(f4f5f4)", size = 11, icon = "-",
+        hl.plugin.hyprbars.add_button({ bg_color = "rgb(" .. P.button .. ")", fg_color = "rgb(" .. P.fg .. ")", size = 11, icon = "-",
             action = os.getenv("HOME") .. "/.config/hypr/scripts/minimize.sh minimize" })
     end)
 end

@@ -37,7 +37,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
    - [x] `Settings` singleton lưu ra JSON (`JsonAdapter`), cửa sổ Settings (mới có chuột / touchpad; sẽ thêm màu nhấn, font, scale, thông số cử chỉ)
    - [x] Một nguồn màu duy nhất: `palette.json` trong config Quickshell (Theme đọc trực tiếp), `install/palette.py` ghi vào Hyprland, greeter, rofi, kitty, hyprlock; hình nền và accent GTK cũng đọc từ đó
 2. Sửa nhanh
-   - [x] Icon app trên taskbar lúc bấm được lúc không (nghi `DragHandler` giành cú bấm)
+   - [x] Icon app trên taskbar bấm không ăn: `DragHandler` (kéo để sắp xếp) nằm trên vùng bắt chuột của `BarButton` và nuốt cú nhấn (xác nhận bằng log); giờ kéo-thả làm bằng `moved` / `released` của nút
    - [x] Bỏ cụm 3 nút cửa sổ trên thanh (`WindowControls.qml`)
    - [x] Tốc độ chuột / touchpad tách riêng, chỉnh trong Settings
 3. Diện mạo

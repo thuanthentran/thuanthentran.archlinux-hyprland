@@ -28,8 +28,8 @@ Row {
 
             padding: 5
             visible: modelData !== null
-            tooltip: drag.active ? "" : (modelData?.title ?? "")
-            highlighted: (modelData?.activated ?? false) || drag.active
+            tooltip: dragging ? "" : (modelData?.title ?? "")
+            highlighted: (modelData?.activated ?? false) || dragging
             opacity: minimized ? 0.5 : 1
 
             IconImage {
@@ -39,43 +39,41 @@ Row {
             }
 
             // Act on press, not on click: a touchpad tap followed by a little finger
-            // movement turns into tap-and-drag, which the reorder drag below took over, so
-            // the click never came ("works sometimes")
+            // movement turns into tap-and-drag, so a click may never come
             onPressed: m => {
                 if (m.button !== Qt.LeftButton)
                     return;
-                if (minimized)
-                    Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/minimize.sh", "restore", btn.addr]);
-                else
-                    // focus alone leaves a covered floating window under the others (it
-                    // only looked like the click did nothing): raise it in the same go
-                    Hyprland.dispatch(`(function() hl.dispatch(hl.dsp.focus({ window = "address:0x${btn.addr}" })) hl.dispatch(hl.dsp.window.bring_to_top()) end)`);
+                pressX = m.x;
+                dragging = false;
+                ActiveWindow.focus(btn.addr, minimized);
             }
             onClicked: m => {
                 if (m.button === Qt.MiddleButton)
                     modelData?.wayland?.close();
             }
 
-            // Reorder: while dragging, the window takes the place of the button under the
-            // pointer (the row reflows, so the dragged button stays under it)
-            DragHandler {
-                id: drag
-                target: null
-                yAxis.enabled: false
-                dragThreshold: 14
-                onCentroidChanged: {
-                    if (!active)
-                        return;
-                    const x = btn.mapToItem(row, centroid.position.x, 0).x;
-                    for (let i = 0; i < rep.count; i++) {
-                        const it = rep.itemAt(i);
-                        if (it && it !== btn && x >= it.x && x < it.x + it.width) {
-                            WindowOrder.moveTo(btn.addr, it.addr);
-                            break;
-                        }
+            // Reorder: once the pointer has moved 14 px sideways with the button held, the
+            // window takes the place of the button under the pointer (the row reflows, so the
+            // dragged button stays under it). Done here, not with a DragHandler, which sat
+            // above the button's mouse area and swallowed every press.
+            property real pressX: 0
+            property bool dragging: false
+            onMoved: m => {
+                if (!(m.buttons & Qt.LeftButton))
+                    return;
+                if (!dragging && Math.abs(m.x - pressX) < 14)
+                    return;
+                dragging = true;
+                const x = btn.mapToItem(row, m.x, 0).x;
+                for (let i = 0; i < rep.count; i++) {
+                    const it = rep.itemAt(i);
+                    if (it && it !== btn && x >= it.x && x < it.x + it.width) {
+                        WindowOrder.moveTo(btn.addr, it.addr);
+                        break;
                     }
                 }
             }
+            onReleased: dragging = false
         }
     }
 }

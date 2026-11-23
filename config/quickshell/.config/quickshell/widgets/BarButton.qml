@@ -1,5 +1,8 @@
 // A bar item: optional text/icon plus any extra children, a hover pill, a tooltip,
-// and clicked / pressed / wheel signals for any mouse button.
+// and clicked / pressed / moved / released / wheel signals for any mouse button.
+// Children go into an inner row that sits above the mouse area: don't put pointer
+// handlers (DragHandler, TapHandler) in a BarButton, they would take presses before it
+// (the taskbar's DragHandler made its icons unclickable); use moved / released instead.
 import QtQuick
 import Quickshell
 import qs.config
@@ -21,6 +24,8 @@ Rectangle {
 
     signal clicked(var mouse)
     signal pressed(var mouse)
+    signal moved(var mouse)               // while a button is held
+    signal released(var mouse)
     signal wheel(var wheel)
 
     implicitWidth: row.implicitWidth + padding * 2
@@ -36,6 +41,8 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         onClicked: m => root.clicked(m)
         onPressed: m => root.pressed(m)
+        onPositionChanged: m => root.moved(m)
+        onReleased: m => root.released(m)
         onWheel: w => root.wheel(w)
     }
     HoverHandler {

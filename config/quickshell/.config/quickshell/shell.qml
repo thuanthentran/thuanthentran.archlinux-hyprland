@@ -73,6 +73,7 @@ ShellRoot {
 
         function refresh(): void { ActiveWindow.refresh(); }
         function peek(): void { ActiveWindow.peek(); }
+        function focus(addr: string): void { ActiveWindow.focus(addr, false); }
     }
 
     Osd {

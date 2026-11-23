@@ -35,6 +35,15 @@ Singleton {
     function toggleMaximize() {
         Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/toggle-maximize.sh"]);
     }
+    // Focus a window (address with or without 0x) and raise it: focus alone leaves a covered
+    // floating window under the others. Minimized ones (in the stash) are restored instead.
+    function focus(addr, minimized) {
+        const a = "0x" + (addr ?? "").replace(/^0x/, "");
+        if (minimized)
+            Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/minimize.sh", "restore", a]);
+        else
+            Hyprland.dispatch(`(function() hl.dispatch(hl.dsp.focus({ window = "address:${a}" })) hl.dispatch(hl.dsp.window.bring_to_top()) end)`);
+    }
     function close() {
         Hyprland.dispatch("hl.dsp.window.close()");
     }

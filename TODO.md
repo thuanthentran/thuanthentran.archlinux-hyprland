@@ -58,7 +58,8 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
 5. Đăng nhập
    - [x] Khóa màn hình bằng Quickshell thay hyprlock (`modules/lock`; hyprlock còn làm dự phòng)
    - [x] Màn đăng nhập lúc boot cùng giao diện với màn khóa: greetd + greeter Quickshell (`extras/greeter`, bước `setup.sh greeter`)
-   - [ ] Chạy `sudo pacman -S greetd && bash install/setup.sh greeter` trên máy, reboot, kiểm tra đăng nhập; ổn thì cân nhắc gỡ sddm
+   - [x] Chạy `sudo pacman -S greetd && bash install/setup.sh greeter` trên máy, reboot, kiểm tra đăng nhập
+   - [ ] Gỡ sddm khi greetd đã chạy ổn một thời gian (`sudo pacman -Rns sddm`, bỏ khỏi packages/hyprland-desktop.txt)
 
 ## Cửa sổ và desktop
 

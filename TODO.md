@@ -63,7 +63,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
 ## Cửa sổ và desktop
 
 - [x] Bấm icon trên dock (nwg-dock) của app đang minimize mở ngăn ẩn thay vì đưa cửa sổ về: `ActiveWindow.qml` thấy ngăn ẩn mở mà không phải do Super+Shift+S thì đưa cửa sổ về
-- [ ] Kéo cửa sổ lên thanh trên cùng rồi giữ chuột đứng yên ~1 giây: kiểm tra cửa sổ có bị đẩy về trước khi thả không (tùy `hl.is_key_down(272)` có đọc được nút chuột không)
+- [x] Kéo cửa sổ lên thanh trên cùng rồi giữ chuột đứng yên ~1 giây: cửa sổ không bị đẩy về trước khi thả (`hl.is_key_down(272)` đọc được nút chuột)
 - [x] Đa nhiệm kiểu thanh home iOS (`Overview.qml`), thay cho vuốt 3 ngón cũ hay lẩn quẩn giữa 2 cửa sổ:
   - [x] Overview: nhấn Super / Super+Tab hiện mọi cửa sổ trong workspace
   - [x] Alt+Tab / Alt+Shift+Tab: nhấn nhanh nhảy thẳng, giữ Alt hiện dải cửa sổ
@@ -84,7 +84,8 @@ Cần ngồi ở máy (sudo, cắm thiết bị, reboot); để sau các việc 
 - [x] Hibernate: swapfile 16 GB trên subvolume `@swap` (`setup.sh hibernate`), có trong menu nguồn, hypridle tự hibernate sau 30 phút
 - [ ] Sleep thật (suspend to RAM) treo ở giai đoạn noirq/ACPI; đang thay bằng khóa + tắt màn hình. Nếu muốn dò tiếp: boot không có driver NVIDIA (`module_blacklist=nvidia,nvidia_modeset,nvidia_drm,nvidia_uvm`), rồi `pcie_port_pm=off`; xem bản BIOS mới hơn FX607VUR.340
 
-- [ ] Thiết lập distrobox (Ubuntu) cho app chỉ có trên Ubuntu
+- [x] Thiết lập distrobox (Ubuntu) cho app chỉ có trên Ubuntu: gói `distrobox` + `podman`, bước `setup.sh distrobox`, hướng dẫn trong [docs/06](docs/06-setup-and-rollback.md)
+- [ ] Chạy `sudo pacman -S distrobox podman && bash install/setup.sh distrobox` trên máy, thử một app trong container
 - [ ] Kiểm tra phần mềm công việc bắt buộc trên Arch (VPN công ty, tool của hãng)
 - [ ] Quyết định có dùng ổ D làm ổ dữ liệu chung với Windows không
 - [ ] Cài lại từ đầu (máy ảo hoặc phân vùng thử) bằng `arch-install.sh` + `setup.sh` để chứng minh repo tái lập được

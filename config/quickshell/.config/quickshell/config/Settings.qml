@@ -10,6 +10,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
+import Quickshell.Services.UPower
 
 Singleton {
     id: root
@@ -23,6 +24,7 @@ Singleton {
     property alias font: data.font                       // UI font (fontconfig family name)
     property alias displayFont: data.displayFont         // big text: clock, headings
     property alias barAutoHide: data.barAutoHide         // top bar hides until the pointer touches the top edge
+    property alias autoPowerProfile: data.autoPowerProfile // balanced on battery, performance plugged in
 
     FileView {
         id: file
@@ -47,10 +49,24 @@ Singleton {
             property real mouseScroll: 1.0
             property real touchpadScroll: 0.5
             property bool barAutoHide: false
+            property bool autoPowerProfile: true
             property string font: "Lexend"
             property string displayFont: "Comfortaa"
         }
     }
+
+    // --- Power profile ----------------------------------------------------------------
+
+    // Follows the plug: at start and whenever the charger goes in or out (choosing one by
+    // hand on the bar holds until the next change)
+    readonly property bool pluggedIn: !UPower.onBattery
+    function applyPower() {
+        if (!autoPowerProfile)
+            return;
+        PowerProfiles.profile = pluggedIn && PowerProfiles.hasPerformanceProfile ? PowerProfile.Performance : PowerProfile.Balanced;
+    }
+    onPluggedInChanged: applyPower()
+    onAutoPowerProfileChanged: applyPower()
 
     // --- Hyprland ---------------------------------------------------------------------
 
@@ -78,6 +94,7 @@ Singleton {
     // Batched: several values often change together (a slider drag, a file reload)
     function apply() {
         applyLater.restart();
+        applyPower();
     }
     Timer {
         id: applyLater

@@ -74,7 +74,7 @@ Thứ tự đã chốt: nền móng trước, rồi sửa nhanh, diện mạo, t
   - [x] Gõ để tìm cửa sổ và app trong overview
   - [x] Dải Alt+Tab: khoảng cách giữa các ô theo kích thước từng ô (khe 60 px, `stripAt`)
 - [x] ~~Thanh trên cùng: hiện số cửa sổ đang minimize trên nút 󰘸~~ không cần: nút đó là của Waybar cũ, cửa sổ minimize giờ hiện mờ ngay trên taskbar
-- [ ] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (power-profiles-daemon hoặc udev rule)
+- [x] Power profile: tự `balanced` khi chạy pin, `performance` khi cắm sạc (`Settings.qml` theo `UPower.onBattery`, tắt được trong Settings)
 
 ## Hệ thống và tái lập
 

@@ -4,5 +4,6 @@
     "mouseSpeed": 0,
     "touchpadScroll": 0.5,
     "touchpadSpeed": 0,
-    "barAutoHide": false
+    "barAutoHide": false,
+    "autoPowerProfile": true
 }

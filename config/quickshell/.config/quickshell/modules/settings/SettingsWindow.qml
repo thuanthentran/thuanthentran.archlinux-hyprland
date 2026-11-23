@@ -228,6 +228,17 @@ FloatingWindow {
             }
 
             Heading {
+                text: "Power"
+                topPadding: 20
+            }
+            SwitchRow {
+                label: "Power profile follows the charger"
+                hint: "Balanced on battery, Performance when plugged in"
+                checked: Settings.autoPowerProfile
+                onToggled: Settings.autoPowerProfile = !Settings.autoPowerProfile
+            }
+
+            Heading {
                 text: "Mouse & touchpad"
                 topPadding: 20
             }

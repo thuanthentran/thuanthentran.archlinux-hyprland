@@ -1,7 +1,3 @@
 # Everyday apps (official repos)
 firefox
 code
-
-# Ubuntu-only apps in a container that shares home and the screen (setup.sh distrobox)
-distrobox
-podman

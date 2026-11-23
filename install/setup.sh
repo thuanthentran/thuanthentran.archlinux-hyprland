@@ -23,7 +23,7 @@ set -Eeuo pipefail
 REPO=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
 readonly REPO
 readonly HOST=${SETUP_HOST:-tuf-f16}
-readonly ALL_STEPS=(mirrors packages aur dotfiles system services greeter snapper hibernate distrobox plugins theme)
+readonly ALL_STEPS=(mirrors packages aur dotfiles system services greeter snapper hibernate plugins theme)
 
 readonly BOLD=$'\e[1m' RED=$'\e[31m' GREEN=$'\e[32m' YELLOW=$'\e[33m' RESET=$'\e[0m'
 DRY_RUN=0
@@ -66,7 +66,6 @@ Steps (default: all, in this order):
   greeter   boot login screen: greetd + the Quickshell greeter (extras/greeter), replaces sddm
   snapper   snapper config for /, timeline snapshots, snapshot entries in GRUB
   hibernate swapfile (size of RAM) on its own Btrfs subvolume @swap, for hibernation
-  distrobox an Ubuntu container (\$DISTROBOX_IMAGE) for Ubuntu-only apps, with podman
   plugins   build and enable the hyprbars plugin with hyprpm (inside Hyprland only)
   theme     GTK/icon/cursor theme and fonts (inside a graphical session only)
 
@@ -244,29 +243,6 @@ step_greeter() {
     run sudo systemctl disable sddm.service
   fi
   enable_units greetd.service
-}
-
-# Ubuntu-only apps: a distrobox container named `ubuntu` (rootless podman). It shares $HOME,
-# the Wayland display, audio and the GPU; `distrobox enter ubuntu`, then apt as usual, and
-# `distrobox-export --app <name>` inside puts an app in the launcher. The image is pulled
-# only the first time.
-readonly DISTROBOX_NAME=ubuntu
-readonly DISTROBOX_IMAGE=${DISTROBOX_IMAGE:-docker.io/library/ubuntu:24.04}
-step_distrobox() {
-  step "Distrobox ($DISTROBOX_NAME, $DISTROBOX_IMAGE)"
-  if ! command -v distrobox >/dev/null && ! ((DRY_RUN)); then
-    warn "distrobox is not installed (packages step); skipped"
-    return 0
-  fi
-  # rootless podman maps container users onto these ranges (useradd usually adds them)
-  if ! grep -q "^$USER:" /etc/subuid 2>/dev/null || ! grep -q "^$USER:" /etc/subgid 2>/dev/null; then
-    run sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER"
-  fi
-  if podman container exists "$DISTROBOX_NAME" 2>/dev/null; then
-    info "Container $DISTROBOX_NAME already exists"
-  else
-    run distrobox create --yes --name "$DISTROBOX_NAME" --image "$DISTROBOX_IMAGE"
-  fi
 }
 
 step_snapper() {

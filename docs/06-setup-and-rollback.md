@@ -33,20 +33,6 @@ Nếu màn đăng nhập hỏng: Ctrl+Alt+F2, đăng nhập ở TTY, rồi quay 
 sudo systemctl disable greetd && sudo systemctl enable sddm && reboot
 ```
 
-## App chỉ có trên Ubuntu (distrobox)
-
-Bước `distrobox` tạo container `ubuntu` (Ubuntu 24.04, chạy bằng podman không cần root). Container dùng chung thư mục home, màn hình Wayland, âm thanh và GPU với máy, nên app trong đó mở ra như app thường.
-
-```sh
-sudo pacman -S distrobox podman          # nếu chưa chạy bước packages
-bash install/setup.sh distrobox          # lần đầu tải image Ubuntu
-distrobox enter ubuntu                   # vào container, dùng apt như trên Ubuntu
-sudo apt install ./app.deb               # (trong container) cài app
-distrobox-export --app app               # (trong container) đưa app ra launcher
-```
-
-App đã export hiện trong launcher (Super+Space) như app thường. Đổi image bằng `DISTROBOX_IMAGE=docker.io/library/ubuntu:22.04 bash install/setup.sh distrobox` (với tên container khác thì xóa container cũ trước: `distrobox rm ubuntu`). Không dùng được cho phần mềm cần can thiệp kernel (một số VPN công ty, phần mềm giám sát): xem [01](01-why-arch-hyprland.md).
-
 ## Mirror pacman
 
 Mirrorlist mặc định có mirror CDN đứng đầu, đo từ Việt Nam (2026-11-19) chỉ được ~11 KiB/s với gói lớn, dù file database nhỏ vẫn tải nhanh. Bước `mirrors` chạy [install/rank-mirrors.sh](../install/rank-mirrors.sh): tải thử vài giây một gói ~100 MB từ từng mirror ở VN, SG, HK, JP, TW, KR rồi giữ 8 mirror nhanh nhất (bản cũ lưu ở `/etc/pacman.d/mirrorlist.bak`). Thấy tải chậm lại thì chạy lại:

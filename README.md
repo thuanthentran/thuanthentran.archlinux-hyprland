@@ -6,6 +6,8 @@ Cấu hình Arch Linux + Hyprland cá nhân. Mục tiêu là cài lại Arch tr�
 
 Arch và Hyprland đã chạy trên máy thật (2026-11-19). Repo có đủ danh sách gói, dotfiles, file hệ thống và [install/setup.sh](install/setup.sh) để dựng lại desktop từ một bản Arch nền. Chưa thử cài lại từ đầu.
 
+Giao diện (2026-11-23): tông trắng, đen, xanh lá từ một bảng màu duy nhất; thanh trên cùng, overview / Alt+Tab / vuốt 3 ngón, trang app, màn khóa và màn đăng nhập (greetd) đều viết bằng Quickshell; cửa sổ phóng to đưa tiêu đề và 3 nút lên thanh trên cùng.
+
 ## Cài nhanh
 
 Từ USB Arch, sau khi nối mạng:
@@ -51,6 +53,6 @@ Mốc lớn. Việc cụ thể và thứ tự làm: [TODO.md](TODO.md).
 - [x] Đưa config vào repo
 - [x] Viết danh sách gói và script cài đặt
 - [x] Thiết lập snapshot Btrfs (snapper, snap-pac, grub-btrfs)
-- [ ] Thiết lập distrobox
 - [x] Thanh trên cùng bằng Quickshell thay Waybar (cài đặt nhanh, đồ thị hệ thống, media, lời bài hát)
+- [x] Refactor giao diện đợt 2: bảng màu trắng đen xanh lá, font, launcher, màn khóa, màn đăng nhập, Settings
 - [ ] Cài thử lại từ đầu để kiểm tra khả năng tái lập

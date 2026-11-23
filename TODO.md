@@ -84,7 +84,6 @@ Cần ngồi ở máy (sudo, cắm thiết bị, reboot); để sau các việc 
 - [x] Hibernate: swapfile 16 GB trên subvolume `@swap` (`setup.sh hibernate`), có trong menu nguồn, hypridle tự hibernate sau 30 phút
 - [ ] Sleep thật (suspend to RAM) treo ở giai đoạn noirq/ACPI; đang thay bằng khóa + tắt màn hình. Nếu muốn dò tiếp: boot không có driver NVIDIA (`module_blacklist=nvidia,nvidia_modeset,nvidia_drm,nvidia_uvm`), rồi `pcie_port_pm=off`; xem bản BIOS mới hơn FX607VUR.340
 
-- [ ] (Khi gặp app chỉ có trên Ubuntu) distrobox: container Ubuntu dùng chung home / màn hình; chưa cần nên chưa dựng (đã thử dựng rồi revert, xem commit 4febf3f)
 - [ ] Kiểm tra phần mềm công việc bắt buộc trên Arch (VPN công ty, tool của hãng)
 - [ ] Quyết định có dùng ổ D làm ổ dữ liệu chung với Windows không
 - [ ] Cài lại từ đầu (máy ảo hoặc phân vùng thử) bằng `arch-install.sh` + `setup.sh` để chứng minh repo tái lập được
@@ -92,3 +91,11 @@ Cần ngồi ở máy (sudo, cắm thiết bị, reboot); để sau các việc 
 ## Để sau
 
 - [ ] (Có thể) nhớ kích thước / vị trí cửa sổ theo từng app
+- [ ] Flatpak + Flathub làm nguồn app thứ ba (sau pacman, AUR)
+
+## Dự phòng
+
+Phương án cho trường hợp xấu, chưa cần làm ngay.
+
+- [ ] Bản đồ chuyển distro (vd. sang Ubuntu): ghi vào docs phần nào mang đi nguyên vẹn (dotfiles `config/`, Quickshell, font, palette, theme), phần nào phải build lại (Hyprland 0.57+ với Lua API và các thư viện hypr*, Quickshell, hyprbars), phần nào phải viết lại (`setup.sh` + `packages/` theo apt, `arch-install.sh`, mkinitcpio -> initramfs-tools trong `system/` / `hosts/`); tách rõ chỗ phụ thuộc Arch trong repo
+- [ ] Distrobox khi gặp app chỉ phát hành cho Ubuntu: container Ubuntu dùng chung home / màn hình (đã dựng thử rồi revert, lấy lại từ commit 4febf3f)
